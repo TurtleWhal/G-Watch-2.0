@@ -1,0 +1,2 @@
+void screenInit();
+void screenPeriodic();

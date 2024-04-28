@@ -1,0 +1,2 @@
+void rtcInit();
+void rtcPeriodic();

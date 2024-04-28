@@ -1,5 +1,5 @@
 #include "Arduino.h"
 
-void initDisplay();
-void displayPeriodic();
+void displayInit();
+uint32_t displayPeriodic();
 void setBacklight(int16_t);

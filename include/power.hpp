@@ -1,0 +1,2 @@
+void powerInit();
+void powerPeriodic();

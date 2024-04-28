@@ -22,6 +22,14 @@ void my_flush_cb(lv_display_t *disp, const lv_area_t *area, void *px_map)
     tft.pushImageDMA(area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1), buf16);
     tft.endWrite();
 
+    // for (int j = area->y1; j < area->y2; j++)
+    // {
+    //     for (int i = area->x1; i < area->x2; i++)
+    //     {
+    //         Serial.print(buf16[1]);
+    //     }
+    // }
+
     lv_display_flush_ready(disp);
 }
 
@@ -44,10 +52,23 @@ void my_input_read(lv_indev_t *indev, lv_indev_data_t *data)
     data->point.y = last_y;
 }
 
-void initDisplay()
+// void lvglHandle(void *params)
+// {
+//     for (;;)
+//     {
+//         Serial.println(millis());
+//         lv_task_handler();
+//     }
+// }
+
+static uint32_t lvTick()
+{
+    return millis();
+}
+
+void displayInit()
 {
     // Init Backlight
-    Serial.println("Initializing Backlight");
     pinMode(TFT_LED, OUTPUT);
     ledcSetup(0, 2000, 14);
     ledcAttachPin(TFT_LED, 0);
@@ -61,6 +82,8 @@ void initDisplay()
     // Init LVGL
     lv_init();
 
+    lv_tick_set_cb(lvTick);
+
     display = lv_display_create(TFT_WIDTH, TFT_HEIGHT);
     lv_display_set_flush_cb(display, (lv_display_flush_cb_t)my_flush_cb);
 
@@ -73,20 +96,29 @@ void initDisplay()
 
     indev = lv_indev_create();
     lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
-    lv_indev_set_read_cb(indev, my_input_read);     
+    lv_indev_set_read_cb(indev, my_input_read);
+
+    // Init Theme
+    lv_theme_t *th = lv_theme_default_init(display,                                                                     /*Use the DPI, size, etc from this display*/
+                                           lv_palette_main(LV_PALETTE_ORANGE), lv_palette_main(LV_PALETTE_DEEP_ORANGE), /*Primary and secondary palette*/
+                                           true,                                                                        /*Light or dark mode*/
+                                           &lv_font_montserrat_14);                                                     /*Small, normal, large fonts*/
+
+    lv_display_set_theme(display, th); /*Assign the theme to the display*/
+
+    // xTaskCreatePinnedToCore(
+    //     lvglHandle,                  /* Function to implement the task */
+    //     "lvgl_handle",               /* Name of the task */
+    //     LV_MEM_SIZE,             /* Stack size in words */
+    //     NULL,                        /* Task input parameter */
+    //     0,                           /* Priority of the task */
+    //     (TaskHandle_t *)&lvglHandle, /* Task handle. */
+    //     0);                          /* Core where the task should run */
 }
 
-void displayPeriodic()
+uint32_t displayPeriodic()
 {
-    static long lastmillis = 0;
-
-    lv_tick_inc(millis() - lastmillis);
-    // lv_indev_read(indev);
-    lv_timer_handler();
-    // touch.available();
-    // Serial.println(touch.data.x);
-
-    lastmillis = millis();
+    return lv_task_handler();
 }
 
 void setBacklight(int16_t val)
