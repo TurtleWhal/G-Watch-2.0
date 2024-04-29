@@ -36,9 +36,6 @@ public:
 
         int32_t batx = -75;
 
-        batnum = lv_label_create(scr);
-        lv_obj_align(batnum, LV_ALIGN_CENTER, batx, 0);
-
         batarc = lv_arc_create(scr);
         lv_obj_align(batarc, LV_ALIGN_CENTER, batx, 0);
         lv_obj_set_size(batarc, 60, 60);
@@ -55,6 +52,9 @@ public:
         lv_arc_set_value(batarc, 50);
 
         lv_obj_set_style_bg_opa(batarc, 0, LV_PART_KNOB | LV_STATE_DEFAULT);
+
+        batnum = lv_label_create(scr);
+        lv_obj_align(batnum, LV_ALIGN_CENTER, batx, 0);
 
         baticn = lv_label_create(scr);
         lv_obj_align(baticn, LV_ALIGN_CENTER, batx, -22);

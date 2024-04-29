@@ -12,10 +12,8 @@ typedef struct
         uint8_t hour12;
         uint8_t minute;
         uint8_t second;
-        // seconds lined up with valusec
-        uint8_t valsec;
-        // microseconds since second changed (0 - 1,000,000)
-        long valusec;
+        // Milliseconds
+        unsigned long millis;
     } TimeInfo;
     TimeInfo time;
 

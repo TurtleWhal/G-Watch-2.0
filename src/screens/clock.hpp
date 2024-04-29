@@ -55,7 +55,7 @@ public:
     {
         int secondlength = 100;
         // double secondangle = fmod(-((millis() % 60000) * 0.006), 360);
-        double secondangle = 180 - (sysinfo.time.valsec * 6 + sysinfo.time.valusec * 0.000006);
+        double secondangle = 180 - (sysinfo.time.second * 6 + sysinfo.time.millis * 0.006);
         secondpoints[1] = (lv_point_precise_t){120 + (sin(DEG_TO_RAD * secondangle) * secondlength), 120 + (cos(DEG_TO_RAD * secondangle) * secondlength)};
 
         int minlength = 90;

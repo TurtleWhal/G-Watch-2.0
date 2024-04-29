@@ -2,6 +2,7 @@
 #include "CST816S.h"
 #include "lvgl.h"
 #include "display.hpp"
+#include <ArduinoLog.h>
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -10,7 +11,7 @@ lv_indev_t *indev;
 
 int16_t bgval;
 
-CST816S touch(IIC_SDA, IIC_SCL, 33, 32); // sda, scl, rst, irq
+CST816S touch(IIC_SDA, IIC_SCL, TP_RST, TP_INT); // sda, scl, rst, irq
 
 void my_flush_cb(lv_display_t *disp, const lv_area_t *area, void *px_map)
 {
@@ -35,6 +36,8 @@ void my_flush_cb(lv_display_t *disp, const lv_area_t *area, void *px_map)
 
 void my_input_read(lv_indev_t *indev, lv_indev_data_t *data)
 {
+    // Log.verboseln("Screen Touched at: %d, %d", touch.data.x, touch.data.y);
+
     static uint16_t last_x = 0;
     static uint16_t last_y = 0;
 
@@ -78,6 +81,10 @@ void displayInit()
     tft.begin();
     tft.initDMA();
     tft.setSwapBytes(true); // fix inverted colors
+
+#ifdef WAVESHARE_ESP32_LCD
+    tft.setRotation(3);
+#endif
 
     // Init LVGL
     lv_init();

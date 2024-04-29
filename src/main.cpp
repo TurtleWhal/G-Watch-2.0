@@ -7,6 +7,7 @@
 #include "screen.hpp"
 #include "rtc.hpp"
 #include "power.hpp"
+#include "ble.hpp"
 
 SystemInfo sysinfo;
 
@@ -15,27 +16,15 @@ void setup()
   Serial.begin(115200);
   Log.begin(LOG_LEVEL_VERBOSE, &Serial);
 
+  esp_log_level_set("gpio", ESP_LOG_NONE);
+
   rtcInit();
   powerInit();
 
-  // lv_init();
+  bleInit();
 
   displayInit();
   setBacklight(100);
-
-  // lv_obj_t *scr = lv_obj_create(NULL);
-  // lv_obj_remove_flag(scr, LV_OBJ_FLAG_SCROLLABLE);
-
-  // lv_screen_load(scr);
-
-  // lv_obj_t *btn = lv_button_create(scr);
-
-  // lv_obj_align(btn, LV_ALIGN_CENTER, 0, 0);
-
-  // lv_obj_t *lbl = lv_label_create(btn);
-  // lv_label_set_text(lbl, "Button!!!");
-
-  // lv_obj_add_event_cb(btn, drag, LV_EVENT_PRESSING, nullptr);
 
   screenInit();
 }
@@ -44,6 +33,10 @@ void loop()
 {
   rtcPeriodic();
   powerPeriodic();
+  blePeriodic();
   screenPeriodic();
   delay(displayPeriodic());
+
+  //esp_sleep_enable_timer_wakeup(5 * 1000000); // microseconds
+  //esp_light_sleep_start();
 }

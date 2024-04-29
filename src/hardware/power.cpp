@@ -2,9 +2,16 @@
 #include "system.hpp"
 #include <ArduinoLog.h>
 
-#define BAT_PIN 36
 #define PWR_ON 5
 #define CHRG_PIN 2
+
+#ifdef LILYGO_TWATCH_2021
+#define CHARGING (!digitalRead(CHRG_PIN) || voltage > 4000)
+#define VOLT_MULT 2
+#else
+#define CHARGING (voltage > 4000)
+#define VOLT_MULT 3
+#endif
 
 float percentage = 0;
 float voltage = 0.0;
@@ -21,18 +28,23 @@ static const float Qcm[2][11] =
 
 void powerInit()
 {
+    pinMode(BAT_ADC, INPUT);
+
+#ifdef LILYGO_TWATCH_2021
     pinMode(PWR_ON, OUTPUT);
-    pinMode(BAT_PIN, INPUT);
     pinMode(CHRG_PIN, INPUT_PULLUP);
     digitalWrite(PWR_ON, HIGH);
+#endif // LILYGO_TWATCH_2021
 }
 
 void powerPeriodic()
 {
-    voltage = ((analogRead(BAT_PIN) * 3300 * 2) / 4096) + 200;
+    voltage = ((analogRead(BAT_ADC) * 3300 * VOLT_MULT) / 4096) + 200;
     sysinfo.bat.voltage = voltage;
 
-    charging = (!digitalRead(CHRG_PIN) || voltage > 4000);
+    // Log.verboseln("analog: %d, processed: %d", analogRead(BAT_ADC), voltage);
+
+    charging = CHARGING;
 
     uint8_t chrgint = charging ? 1 : 0;
 

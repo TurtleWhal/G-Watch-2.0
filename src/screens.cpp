@@ -2,7 +2,7 @@
 #include "lvgl.h"
 // #include "system.hpp"
 
-NumbersScreen screen;
+ClockScreen screen;
 
 void screenInit() {
 

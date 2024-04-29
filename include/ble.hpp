@@ -1,0 +1,2 @@
+void bleInit();
+void blePeriodic();
