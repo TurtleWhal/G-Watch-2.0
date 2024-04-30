@@ -1,6 +1,6 @@
 #include "lvgl.h"
-#include "clock.hpp"
-// #include "numbers.hpp"
+// #include "clock.hpp"
+#include "numbers.hpp"
 
 // class WatchScreen
 // {

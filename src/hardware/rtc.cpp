@@ -14,10 +14,12 @@ ESP32Time rtc(0);
 void rtcInit()
 {
 #ifdef LILYGO_TWATCH_2021
-    pcf.begin(Wire);
+    pcf.begin();
+    RTC_Date now = pcf.getDateTime();
+    Log.verboseln("RTC: %d-%d-%d %d:%d:%d", now.year, now.month, now.day, now.hour, now.minute, now.second);
+#else
+    // rtc.setTime(56, 34, 12, 3, 12, 2008);
 #endif // LILYGO_TWATCH_2021
-
-    rtc.setTime(56, 34, 12, 3, 12, 2008);
 }
 
 void rtcPeriodic()
@@ -28,7 +30,8 @@ void rtcPeriodic()
 
     if (now.minute != lastmin)
     {
-        pcf.syncToSystem();
+        // pcf.syncToSystem();
+        rtc.setTime(now.second, now.minute, now.hour, now.day, now.month, now.year);
         lastmin = now.minute;
     }
 #endif // LILYGO_TWATCH_2021
@@ -48,10 +51,10 @@ void rtcPeriodic()
 
     String months[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     String days[7] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
-    
+
     sysinfo.date.dow = t_tm.tm_wday;
     sysinfo.date.doy = t_tm.tm_yday;
-    
+
     sysinfo.date.dayname = days[t_tm.tm_wday];
     sysinfo.date.monthname = months[t_tm.tm_mon];
 
