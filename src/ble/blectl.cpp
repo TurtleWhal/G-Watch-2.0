@@ -92,6 +92,8 @@ static bool blectl_powermgm_event_cb( EventBits_t event, void *arg );
             snprintf( pin, sizeof( pin ), "%06d", pass_key );
             Log.verboseln("BLECTL confirm PIN: %s", pin );
 
+            pairBT(UINT32_MAX);
+
             //powermgm_resume_from_ISR();
 
             return( false );
