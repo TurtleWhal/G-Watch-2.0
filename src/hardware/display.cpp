@@ -36,13 +36,15 @@ void my_flush_cb(lv_display_t *disp, const lv_area_t *area, void *px_map)
 
 void my_input_read(lv_indev_t *indev, lv_indev_data_t *data)
 {
-    // Log.verboseln("Screen Touched at: %d, %d", touch.data.x, touch.data.y);
 
     static uint16_t last_x = 0;
     static uint16_t last_y = 0;
 
     if (touch.available())
     {
+
+        Log.verboseln("Screen Touched at: %d, %d", touch.data.x, touch.data.y);
+
         last_x = touch.data.x;
         last_y = touch.data.y;
         data->state = LV_INDEV_STATE_PR;
@@ -77,6 +79,8 @@ void displayInit()
     ledcAttachPin(TFT_LED, 0);
     ledcWrite(0, 0);
 
+    // Log.verboseln("Backlight Init");
+
     // Init TFT_eSPI
     tft.begin();
     tft.initDMA();
@@ -85,6 +89,8 @@ void displayInit()
 #ifdef WAVESHARE_ESP32_LCD
     tft.setRotation(3);
 #endif
+
+    // Log.verboseln("TFT_eSPI Init");
 
     // Init LVGL
     lv_init();
@@ -98,12 +104,16 @@ void displayInit()
     static uint16_t buf2[TFT_WIDTH * TFT_HEIGHT / 10];
     lv_display_set_buffers(display, buf1, buf2, sizeof(buf1), LV_DISPLAY_RENDER_MODE_PARTIAL);
 
+    // Log.verboseln("LVGL Init");
+
     // Init Touch
     touch.begin();
 
     indev = lv_indev_create();
     lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
     lv_indev_set_read_cb(indev, my_input_read);
+
+    // Log.verboseln("Touch Init");
 
     // Init Theme
     lv_theme_t *th = lv_theme_default_init(display,                                                                     /*Use the DPI, size, etc from this display*/
@@ -113,6 +123,8 @@ void displayInit()
 
     lv_display_set_theme(display, th); /*Assign the theme to the display*/
 
+    // Log.verboseln("Theme Init");
+
     // xTaskCreatePinnedToCore(
     //     lvglHandle,                  /* Function to implement the task */
     //     "lvgl_handle",               /* Name of the task */
@@ -121,6 +133,10 @@ void displayInit()
     //     0,                           /* Priority of the task */
     //     (TaskHandle_t *)&lvglHandle, /* Task handle. */
     //     0);                          /* Core where the task should run */
+
+    // tft.fillScreen(TFT_RED);
+
+    // Log.verboseln("Display Init");
 }
 
 uint32_t displayPeriodic()

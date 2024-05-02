@@ -69,7 +69,7 @@ class CharacteristicCallbacks : public NimBLECharacteristicCallbacks
                  * Send message
                  */
                 parseBLE(buff);
-                Serial.println(buff);
+                // Serial.println(buff);
                 //if (xQueueSendFromISR(gadgetbridge_msg_receive_queue, &buff, 0) != pdTRUE)
                 //    log_e("fail to send a receive BLE msg (%d bytes)", size);
                 gadgetbridge_RX_msg.clear();

@@ -58,7 +58,7 @@
     /**
      * @brief ble setup function
      */
-    void blectl_setup( void );
+    void blectl_setup( String );
     /**
      * @brief trigger a blectl managemt event
      * 
