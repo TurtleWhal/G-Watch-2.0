@@ -90,6 +90,8 @@ void displayInit()
     tft.setRotation(3);
 #endif
 
+    tft.fillScreen(TFT_BLACK);
+
     // Log.verboseln("TFT_eSPI Init");
 
     // Init LVGL
@@ -133,8 +135,6 @@ void displayInit()
     //     0,                           /* Priority of the task */
     //     (TaskHandle_t *)&lvglHandle, /* Task handle. */
     //     0);                          /* Core where the task should run */
-
-    // tft.fillScreen(TFT_RED);
 
     // Log.verboseln("Display Init");
 }
