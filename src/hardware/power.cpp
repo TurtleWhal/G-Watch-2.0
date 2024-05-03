@@ -46,6 +46,8 @@ void powerPeriodic()
 
     charging = CHARGING;
 
+    sysinfo.bat.charging = charging;
+
     uint8_t chrgint = charging ? 1 : 0;
 
     int8_t i = 10;

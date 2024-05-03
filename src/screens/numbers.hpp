@@ -74,6 +74,32 @@ private:
     {
         lv_arc_set_value(arc->arc, (int32_t)sysinfo.bat.percent);
         lv_label_set_text_fmt(arc->lbl, "%i%%", sysinfo.bat.percent);
+
+        if (sysinfo.bat.charging)
+        {
+            lv_label_set_text(arc->icon, LV_SYMBOL_CHARGE);
+        }
+        else
+        {
+            switch ((int)(sysinfo.bat.percent / 20 + 1))
+            {
+            default:
+                lv_label_set_text(arc->icon, LV_SYMBOL_BATTERY_FULL);
+                break;
+            case 4:
+                lv_label_set_text(arc->icon, LV_SYMBOL_BATTERY_3);
+                break;
+            case 3:
+                lv_label_set_text(arc->icon, LV_SYMBOL_BATTERY_2);
+                break;
+            case 2:
+                lv_label_set_text(arc->icon, LV_SYMBOL_BATTERY_1);
+                break;
+            case 1:
+                lv_label_set_text(arc->icon, LV_SYMBOL_BATTERY_EMPTY);
+                break;
+            }
+        }
     }
 
 public:

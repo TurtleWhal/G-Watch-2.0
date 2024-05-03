@@ -14,6 +14,7 @@
 // NimBLEService *pService;
 NimBLEService *pBatteryService;
 NimBLECharacteristic *pBatteryCharacteristic;
+NimBLE2904* pBatteryDescriptor;
 
 void parseGB(char *);
 
@@ -25,6 +26,7 @@ void bleInit()
 
 void blePeriodic()
 {
+    setBLEBatteryLevel(sysinfo.bat.percent);
 }
 
 void ble_setup()
@@ -36,10 +38,20 @@ void ble_setup()
     // pService = pServer->createService(NimBLEUUID((uint32_t)BATTERY_SERVICE_UUID));
 
     // pBatteryService = pHIDDevice->batteryService();
-    pBatteryService = pServer->createService(NimBLEUUID(BATTERY_SERVICE_UUID));
-    // pBatteryCharacteristic = pBatteryService->createCharacteristic((uint16_t) 0x2a19, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+	pBatteryService = pServer->createService(NimBLEUUID((uint16_t) 0x180f));
 
-    // pAdvertising->addServiceUUID(pBatteryService->getUUID());
+	/*
+	 * Mandatory battery level characteristic with notification and presence descriptor
+	 */
+	pBatteryCharacteristic = pBatteryService->createCharacteristic((uint16_t) 0x2a19, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+	pBatteryDescriptor = (NimBLE2904*)pBatteryCharacteristic->createDescriptor((uint16_t) 0x2904);
+	pBatteryDescriptor->setFormat(NimBLE2904::FORMAT_UINT8);
+	pBatteryDescriptor->setNamespace(1);
+	pBatteryDescriptor->setUnit(0x27ad);
+
+    pAdvertising->addServiceUUID(pBatteryService->getUUID());
+
+    pBatteryService->start();
 }
 
 void pairBT(uint32_t passkey)
@@ -56,7 +68,8 @@ void pairBT(uint32_t passkey)
 
 void setBLEBatteryLevel(uint8_t level)
 {
-    // pBatteryCharacteristic->setValue(level);
+    // Serial.println(level);
+    // pBatteryCharacteristic->setValue(&level, 1);
 }
 
 void parseBLE(char *Message)
