@@ -59,5 +59,7 @@ void rtcPeriodic()
     sysinfo.date.monthname = months[t_tm.tm_mon];
 
     sysinfo.date.strdate = rtc.getTime("%a %b %e");
+    sysinfo.date.strdate.replace("  ", " ");
+    
     sysinfo.date.numdate = rtc.getTime("%D");
 }

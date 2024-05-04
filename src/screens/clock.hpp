@@ -14,11 +14,13 @@ private:
     lv_point_precise_t minutepoints[2] = {{120, 120}, {120, 20}};
     lv_point_precise_t secondpoints[2] = {{120, 120}, {120, 20}};
 
-
 public:
-    void create()
+    void create(lv_obj_t *screen, uint8_t x, uint8_t y)
     {
-        scr = lv_obj_create(nullptr);
+        scr = lv_obj_create(screen);
+
+        lv_obj_set_size(scr, TFT_WIDTH, TFT_HEIGHT);
+        lv_obj_align(scr, LV_ALIGN_CENTER, TFT_WIDTH * x, TFT_HEIGHT * y);
 
         static lv_style_t style_hour;
         static lv_style_t style_minute;
@@ -51,6 +53,7 @@ public:
         lv_obj_add_style(minutehand, &style_minute, 0);
         lv_obj_add_style(secondhand, &style_second, 0);
     };
+
     void periodic()
     {
         int secondlength = 100;

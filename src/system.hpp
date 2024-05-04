@@ -1,5 +1,8 @@
 #include "Arduino.h"
 
+#ifndef SYSINFO
+#define SYSINFO
+
 typedef struct
 // class SystemInfo
 {
@@ -41,7 +44,8 @@ typedef struct
     } DateInfo;
     DateInfo date;
 
-    typedef struct {
+    typedef struct
+    {
         // Battery Percentage
         uint8_t percent;
         // Battery Voltage in mV
@@ -52,5 +56,7 @@ typedef struct
     BatteryInfo bat;
 
 } SystemInfo;
+
+#endif
 
 extern SystemInfo sysinfo;

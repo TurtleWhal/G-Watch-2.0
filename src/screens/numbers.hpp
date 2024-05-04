@@ -103,9 +103,12 @@ private:
     }
 
 public:
-    void create()
+    void create(lv_obj_t *screen, uint8_t x, uint8_t y)
     {
-        scr = lv_obj_create(nullptr);
+        scr = lv_obj_create(screen);
+
+        lv_obj_set_size(scr, TFT_WIDTH, TFT_HEIGHT);
+        lv_obj_align(scr, LV_ALIGN_CENTER, TFT_WIDTH * x, TFT_HEIGHT * y);
 
         hour = lv_label_create(scr);
         minute = lv_label_create(scr);
@@ -140,7 +143,17 @@ public:
     {
         lv_label_set_text_fmt(minute, "%02i", sysinfo.time.minute);
         lv_label_set_text_fmt(hour, "%02i", sysinfo.time.hour12);
-        lv_label_set_text(date, sysinfo.date.strdate.c_str());
+
+        String colored = sysinfo.date.strdate;
+
+        // ***** colored text not yet supported in lvgl 9.1 *****
+        // colored = "#0000ff" + colored.substring(0, 3) + "#" + colored.substring(3);
+        // lv_color_t c = lv_theme_get_color_primary(scr);
+        // char hex[8] = "#0000ff";
+        // sprintf(hex, "#%02X%02X%02X", c.red, c.green, c.blue);
+        // colored.replace("#0000ff", hex);
+
+        lv_label_set_text(date, colored.c_str());
 
         scheduleCallback(&arcs[0]);
         stepsCallback(&arcs[1]);
