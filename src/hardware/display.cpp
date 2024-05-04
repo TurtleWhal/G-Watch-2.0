@@ -42,27 +42,6 @@ void my_input_read(lv_indev_t *indev, lv_indev_data_t *data)
     if (touch.available())
     {
 
-#ifdef WAVESHARE_ESP32_LCD // invert x and y for rotated screen // run after touch.availible because it reads values
-        int temp = touch.data.x;
-        switch (tft.getRotation())
-        {
-        default:
-            break;
-        case 1:
-            touch.data.x = touch.data.y;
-            touch.data.y = temp;
-            break;
-        case 2:
-            touch.data.x = TFT_WIDTH - touch.data.x;
-            touch.data.y = TFT_HEIGHT - touch.data.y;
-            break;
-        case 3:
-            touch.data.x = TFT_HEIGHT - touch.data.y;
-            touch.data.y = TFT_WIDTH - temp;
-            break;
-        }
-#endif
-
         Log.verboseln("Screen Touched at: %d, %d", touch.data.x, touch.data.y);
 
         last_x = touch.data.x;
@@ -106,10 +85,6 @@ void displayInit()
     tft.initDMA();
     tft.setSwapBytes(true); // fix inverted colors
 
-#ifdef WAVESHARE_ESP32_LCD
-    tft.setRotation(3);
-#endif
-
     tft.fillScreen(TFT_BLACK);
 
     // Log.verboseln("TFT_eSPI Init");
@@ -126,6 +101,11 @@ void displayInit()
     static uint16_t buf2[TFT_WIDTH * TFT_HEIGHT / 10];
     lv_display_set_buffers(display, buf1, buf2, sizeof(buf1), LV_DISPLAY_RENDER_MODE_PARTIAL);
 
+#ifdef WAVESHARE_ESP32_LCD
+    tft.setRotation(3);
+    lv_display_set_rotation(display, LV_DISPLAY_ROTATION_90); // lvgl rotation is counter-clockwise
+#endif
+
     // Log.verboseln("LVGL Init");
 
     // Init Touch
@@ -138,10 +118,10 @@ void displayInit()
     // Log.verboseln("Touch Init");
 
     // Init Theme
-    lv_theme_t *th = lv_theme_default_init(display,                                                                     /*Use the DPI, size, etc from this display*/
-                                           lv_palette_main(LV_PALETTE_ORANGE), lv_palette_main(LV_PALETTE_DEEP_ORANGE), /*Primary and secondary palette*/
-                                           true,                                                                        /*Light or dark mode*/
-                                           &lv_font_montserrat_14);                                                     /*Small, normal, large fonts*/
+    lv_theme_t *th = lv_theme_default_init(display,                                                                  /*Use the DPI, size, etc from this display*/
+                                           lv_palette_main(LV_PALETTE_BLUE), lv_palette_lighten(LV_PALETTE_BLUE, 4), /*Primary and secondary palette*/
+                                           true,                                                                     /*Light or dark mode*/
+                                           &lv_font_montserrat_14);                                                  /*Small, normal, large fonts*/
 
     lv_display_set_theme(display, th); /*Assign the theme to the display*/
 

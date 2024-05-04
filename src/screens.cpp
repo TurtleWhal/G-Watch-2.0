@@ -1,11 +1,13 @@
 // #include "screens/screens.hpp"
 #include "screens/numbers.hpp"
 #include "screens/clock.hpp"
+// #include "screens/notifications.hpp"
 // #include "lvgl.h"
 // #include "system.hpp"
 
 ClockScreen clockscreen;
 NumbersScreen numbersscreen;
+// NotificationsScreen notificationscreen;
 
 lv_obj_t *scr;
 
@@ -21,8 +23,11 @@ void screenInit()
 
     lv_obj_set_scrollbar_mode(scr, LV_SCROLLBAR_MODE_OFF);
 
+    lv_obj_remove_flag(scr, LV_OBJ_FLAG_SCROLL_ELASTIC);
+
     numbersscreen.create(scr, 0, 0);
     clockscreen.create(scr, 1, 0);
+    // notificationscreen.create(scr, 0, 1);
     lv_screen_load(scr);
 }
 
