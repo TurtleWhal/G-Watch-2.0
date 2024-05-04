@@ -36,12 +36,32 @@ void my_flush_cb(lv_display_t *disp, const lv_area_t *area, void *px_map)
 
 void my_input_read(lv_indev_t *indev, lv_indev_data_t *data)
 {
-
     static uint16_t last_x = 0;
     static uint16_t last_y = 0;
 
     if (touch.available())
     {
+
+#ifdef WAVESHARE_ESP32_LCD // invert x and y for rotated screen // run after touch.availible because it reads values
+        int temp = touch.data.x;
+        switch (tft.getRotation())
+        {
+        default:
+            break;
+        case 1:
+            touch.data.x = touch.data.y;
+            touch.data.y = temp;
+            break;
+        case 2:
+            touch.data.x = TFT_WIDTH - touch.data.x;
+            touch.data.y = TFT_HEIGHT - touch.data.y;
+            break;
+        case 3:
+            touch.data.x = TFT_HEIGHT - touch.data.y;
+            touch.data.y = TFT_WIDTH - temp;
+            break;
+        }
+#endif
 
         Log.verboseln("Screen Touched at: %d, %d", touch.data.x, touch.data.y);
 

@@ -1,6 +1,7 @@
 #include "Arduino.h"
 #include "lvgl.h"
 #include "system.hpp"
+#include "screens.hpp"
 
 LV_FONT_DECLARE(RedditSans_80_Light);
 LV_FONT_DECLARE(RedditSans_20_Light);
@@ -105,10 +106,7 @@ private:
 public:
     void create(lv_obj_t *screen, uint8_t x, uint8_t y)
     {
-        scr = lv_obj_create(screen);
-
-        lv_obj_set_size(scr, TFT_WIDTH, TFT_HEIGHT);
-        lv_obj_align(scr, LV_ALIGN_CENTER, TFT_WIDTH * x, TFT_HEIGHT * y);
+        scr = screenCreate(x, y);
 
         hour = lv_label_create(scr);
         minute = lv_label_create(scr);

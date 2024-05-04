@@ -1,6 +1,6 @@
 #include "lvgl.h"
-#include "clock.hpp"
-#include "numbers.hpp"
+
+lv_obj_t *screenCreate(uint8_t, uint8_t);
 
 // class WatchScreen
 // {
