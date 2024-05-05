@@ -68,4 +68,8 @@ void rtcPeriodic()
 void setTime(ulong timevalue, short timezone)
 {
     rtc.setTime(timevalue + (timezone * 60 * 60));
+
+    #ifdef LILYGO_TWATCH_2021
+    pcf.syncToRtc();
+    #endif // LILYGO_TWATCH_2021
 }

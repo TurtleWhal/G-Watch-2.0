@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "ArduinoLog.h"
+#include <Wire.h>
 
 #include "system.hpp"
 
@@ -7,8 +8,10 @@
 #include "screen.hpp"
 #include "rtc.hpp"
 #include "power.hpp"
+
+#ifndef DISABLE_BLE
 #include "ble.hpp"
-#include <Wire.h>
+#endif // DISABLE_BLE
 
 SystemInfo sysinfo;
 
@@ -18,6 +21,7 @@ void setup()
   Log.begin(LOG_LEVEL_VERBOSE, &Serial);
 
   esp_log_level_set("gpio", ESP_LOG_NONE);
+  setCpuFrequencyMhz(240);
 
   Wire.begin(IIC_SDA, IIC_SCL);
 
