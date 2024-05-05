@@ -1,8 +1,9 @@
+#include <ArduinoLog.h>
 #include "TFT_eSPI.h"
 #include "CST816S.h"
 #include "lvgl.h"
 #include "display.hpp"
-#include <ArduinoLog.h>
+#include "fonts/fonts.hpp"
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -121,7 +122,7 @@ void displayInit()
     lv_theme_t *th = lv_theme_default_init(display,                                                                  /*Use the DPI, size, etc from this display*/
                                            lv_palette_main(LV_PALETTE_BLUE), lv_palette_lighten(LV_PALETTE_BLUE, 4), /*Primary and secondary palette*/
                                            true,                                                                     /*Light or dark mode*/
-                                           &lv_font_montserrat_14);                                                  /*Small, normal, large fonts*/
+                                           &Outfit_16);                                                              /*Small, normal, large fonts*/
 
     lv_display_set_theme(display, th); /*Assign the theme to the display*/
 

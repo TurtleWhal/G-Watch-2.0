@@ -2,9 +2,7 @@
 #include "lvgl.h"
 #include "system.hpp"
 #include "screens.hpp"
-
-LV_FONT_DECLARE(RedditSans_80_Light);
-LV_FONT_DECLARE(RedditSans_20_Light);
+#include "fonts/fonts.hpp"
 
 typedef struct
 {
@@ -117,8 +115,8 @@ public:
         lv_obj_align(hour, LV_ALIGN_CENTER, 30, -65);
         lv_obj_align(minute, LV_ALIGN_CENTER, 30, 5);
 
-        lv_obj_set_style_text_font(hour, &RedditSans_80_Light, 0);
-        lv_obj_set_style_text_font(minute, &RedditSans_80_Light, 0);
+        lv_obj_set_style_text_font(hour, &Outfit_80_Light, 0);
+        lv_obj_set_style_text_font(minute, &Outfit_80_Light, 0);
 
         lv_obj_set_style_text_color(hour, lv_color_lighten(lv_theme_get_color_primary(scr), 100), 0);
         lv_obj_set_style_text_color(minute, lv_color_lighten(lv_theme_get_color_primary(scr), 200), 0);
@@ -126,7 +124,7 @@ public:
         date = lv_label_create(scr);
         lv_obj_align(date, LV_ALIGN_CENTER, 30, 55);
         lv_label_set_text(date, "Mon Jan 1");
-        lv_obj_set_style_text_font(date, &RedditSans_20_Light, 0);
+        lv_obj_set_style_text_font(date, &Outfit_20, 0);
 
         arcs[0].symbol = LV_SYMBOL_LIST;
         arcs[1].symbol = LV_SYMBOL_IMAGE;

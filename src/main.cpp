@@ -8,6 +8,7 @@
 #include "screen.hpp"
 #include "rtc.hpp"
 #include "power.hpp"
+#include "music.hpp"
 
 #ifndef DISABLE_BLE
 #include "ble.hpp"
@@ -31,6 +32,8 @@ void setup()
 #ifndef DISABLE_BLE
   bleInit();
 #endif // DISABLE_BLE
+
+  musicInit();
 
   displayInit();
   setBacklight(100);

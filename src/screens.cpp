@@ -1,12 +1,14 @@
 // #include "screens/screens.hpp"
 #include "screens/numbers.hpp"
 #include "screens/clock.hpp"
+#include "screens/music.hpp"
 // #include "screens/notifications.hpp"
 // #include "lvgl.h"
 // #include "system.hpp"
 
 ClockScreen clockscreen;
 NumbersScreen numbersscreen;
+MusicScreen musicscreen;
 // NotificationsScreen notificationscreen;
 
 lv_obj_t *scr;
@@ -27,6 +29,7 @@ void screenInit()
 
     numbersscreen.create(scr, 0, 0);
     clockscreen.create(scr, 1, 0);
+    musicscreen.create(scr, 0, 1);
     // notificationscreen.create(scr, 0, 1);
     lv_screen_load(scr);
 }
@@ -35,6 +38,8 @@ void screenPeriodic()
 {
     numbersscreen.periodic();
     clockscreen.periodic();
+    // notificationscreen.periodic();
+    musicscreen.periodic();
 }
 
 lv_obj_t *screenCreate(uint8_t x, uint8_t y)

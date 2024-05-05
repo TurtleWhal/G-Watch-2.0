@@ -8,6 +8,8 @@
 #include "ble/blectl.h"
 #include <NimBLEHIDDevice.h>
 
+#include "music.hpp"
+
 #define BLE_TERM_CHAR "\x1e" // 0x1e is "record seperator" in ascii and is used to seperate messages
 
 #define HID_SERVICE_UUID (uint16_t)0x1812
@@ -31,11 +33,14 @@ void bleInit()
     // setBLEBatteryLevel(100);
 
     // BTmsgloop 50ms timer
-    hw_timer_t *timer2 = NULL;
-    timer2 = timerBegin(1, 80, true);
-    timerAttachInterrupt(timer2, []() { BLEtimer = true; }, true);
-    timerAlarmWrite(timer2, BLECTL_CHUNKDELAY * 1000, true);
-    timerAlarmEnable(timer2);
+    hw_timer_t *timer = NULL;
+    timer = timerBegin(1, 80, true);
+    timerAttachInterrupt(
+        timer, []()
+        { BLEtimer = true; },
+        true);
+    timerAlarmWrite(timer, BLECTL_CHUNKDELAY * 1000, true);
+    timerAlarmEnable(timer);
 }
 
 void blePeriodic()
@@ -95,7 +100,7 @@ void parseBLE(char *message)
 {
     Log.verboseln("BLE message: %s", message);
 
-    struct timeval val;
+    // struct timeval val;
     char *settime_str = NULL;
     ulong timevalue;
     short timezone;
@@ -161,6 +166,28 @@ void parseGB(char *message)
     else if (strcmp(notifType, "reboot") == 0)
     {
         ESP.restart();
+    }
+    else if (strcmp(notifType, "musicinfo") == 0)
+    {
+        static MusicInfo_t musicInfo;
+
+        musicInfo.song = received["track"].as<String>();
+        musicInfo.artist = received["artist"].as<String>();
+        musicInfo.album = received["album"].as<String>();
+        musicInfo.length = received["dur"].as<uint16_t>();
+
+        updateMusicInfo(&musicInfo);
+    }
+    else if (strcmp(notifType, "musicstate") == 0)
+    {
+        static MusicInfo_t musicState;
+
+        // musicState.position = (int)received["position"];
+        // musicState.playing = (strcmp((received["state"].as<char *>()), "play") == 0 ? true : false);
+        musicState.position = received["position"].as<uint16_t>();
+        musicState.playing = ((received["state"].as<String>() == "play") ? true : false);
+
+        updateMusicState(&musicState);
     }
 }
 
