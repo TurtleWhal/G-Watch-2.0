@@ -8,6 +8,8 @@
 #include "ble/blectl.h"
 #include <NimBLEHIDDevice.h>
 
+#define BLE_TERM_CHAR "\x1e" // 0x1e is "record seperator" in ascii and is used to seperate messages
+
 #define HID_SERVICE_UUID (uint16_t)0x1812
 #define BATTERY_SERVICE_UUID (uint16_t)0x180F
 
@@ -17,17 +19,33 @@ NimBLEService *pBatteryService;
 NimBLECharacteristic *pBatteryCharacteristic;
 NimBLE2904 *pBatteryDescriptor;
 
+static String msg;
+bool BLEtimer = false;
+
 void parseGB(char *);
+void BLEmsgloop();
 
 void bleInit()
 {
     blectl_setup("Garrett's Watch");
     // setBLEBatteryLevel(100);
+
+    // BTmsgloop 50ms timer
+    hw_timer_t *timer2 = NULL;
+    timer2 = timerBegin(1, 80, true);
+    timerAttachInterrupt(timer2, []() { BLEtimer = true; }, true);
+    timerAlarmWrite(timer2, BLECTL_CHUNKDELAY * 1000, true);
+    timerAlarmEnable(timer2);
 }
 
 void blePeriodic()
 {
     setBLEBatteryLevel(sysinfo.bat.percent);
+    if (BLEtimer)
+    {
+        BLEtimer = false;
+        BLEmsgloop();
+    }
 }
 
 void ble_setup()
@@ -107,7 +125,8 @@ void parseGB(char *message)
     // int info.music.length = 600;
     //  GB({t:"notify",id:1689704373,src:"Gadgetbridge",title:"",subject:"Testgh",body:"Testgh",sender:"Testgh",tel:"Testgh"})
 
-    StaticJsonDocument<2048> received;
+    // StaticJsonDocument<2048> received; // Depricated
+    JsonDocument received;
 
     // char Message2[] = "{t:\"notify\",id:1689704373,src:\"Gadgetbridge\",title:\"\",subject:\"Testgh\",body:\"Testgh\",sender:\"Testgh\",tel:\"Testgh\"}";
     // message = "GB({t:\"notify\",id:1234567890,src:\"Messages\",title:\"Dad\",body:\"Test\"})";
@@ -135,5 +154,61 @@ void parseGB(char *message)
 
     // Log.verboseln(message);
 
-    //   if (strcmp(NotifType, "notify") == 0)
+    if (strcmp(notifType, "is_gps_active") == 0)
+    {
+        sendBLE("{t:\"gps_power\", status: false}");
+    }
+    else if (strcmp(notifType, "reboot") == 0)
+    {
+        ESP.restart();
+    }
+}
+
+void sendBLE(String message, int repeat)
+{
+    for (int i = repeat; i > 0; i--)
+    {
+        msg = msg + "\r\n" + message + "\r\n" + BLE_TERM_CHAR;
+        Log.verboseln("Sending BLE message: %s", message.c_str());
+    }
+}
+
+void sendBLEf(const char *fmt, ...)
+{
+    char msg[256];
+
+    va_list args;
+    va_start(args, fmt);
+
+    vsprintf(msg, fmt, args);
+
+    va_end(args);
+
+    sendBLE(msg);
+}
+
+bool isBLEConnected()
+{
+    return blectl_get_event(BLECTL_CONNECT | BLECTL_AUTHWAIT);
+}
+
+void BLEmsgloop()
+{
+    unsigned char tempmsg[BLECTL_CHUNKSIZE + 1];
+    if (msg.length() and isBLEConnected())
+    {
+        if (msg.indexOf(BLE_TERM_CHAR) - 1 > BLECTL_CHUNKSIZE)
+        {
+            msg.getBytes(tempmsg + 1, BLECTL_CHUNKSIZE);
+            msg.remove(0, BLECTL_CHUNKSIZE - 1);
+            gadgetbridge_send_chunk(tempmsg, BLECTL_CHUNKSIZE);
+        }
+        else
+        {
+            msg.getBytes(tempmsg, BLECTL_CHUNKSIZE);
+            gadgetbridge_send_chunk(tempmsg, msg.indexOf(BLE_TERM_CHAR) - 1);
+            msg.remove(0, msg.indexOf(BLE_TERM_CHAR) + 1);
+        }
+        // Log.verboseln(msg);
+    }
 }
