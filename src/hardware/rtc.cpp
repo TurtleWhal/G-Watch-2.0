@@ -60,6 +60,12 @@ void rtcPeriodic()
 
     sysinfo.date.strdate = rtc.getTime("%a %b %e");
     sysinfo.date.strdate.replace("  ", " ");
-    
+
     sysinfo.date.numdate = rtc.getTime("%D");
+}
+
+// timevalue is unix time in seconds, timezone is offset in hours
+void setTime(ulong timevalue, short timezone)
+{
+    rtc.setTime(timevalue + (timezone * 60 * 60));
 }

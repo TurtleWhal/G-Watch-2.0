@@ -44,11 +44,22 @@ class CharacteristicCallbacks : public NimBLECharacteristicCallbacks
     void onWrite(NimBLECharacteristic *pCharacteristic)
     {
         size_t msgLen = pCharacteristic->getValue().length();
-        const char *msg = pCharacteristic->getValue().c_str();
+        // const char *msg = pCharacteristic->getValue().c_str();
+        String smsg = pCharacteristic->getValue().c_str();
+        // const uint8_t *data = pCharacteristic->getValue().data();
+
+        // for (int i = 0; i < msgLen; i++)
+        // {
+        //     // Serial.printf("%02X ", data[i]);
+        //     // Serial.printf("%c", data[i]);
+        //     Serial.printf("%c", msg[i]);
+        // }
+        // Serial.println(msg);
+        // Serial.println(smsg);
 
         for (int i = 0; i < msgLen; i++)
         {
-            switch (msg[i])
+            switch (smsg.charAt(i))
             {
             case EndofText:
                 gadgetbridge_RX_msg.clear();
@@ -68,15 +79,17 @@ class CharacteristicCallbacks : public NimBLECharacteristicCallbacks
                 /*
                  * Send message
                  */
+                // Serial.println();
                 parseBLE(buff);
                 // Serial.println(buff);
-                //if (xQueueSendFromISR(gadgetbridge_msg_receive_queue, &buff, 0) != pdTRUE)
+                // if (xQueueSendFromISR(gadgetbridge_msg_receive_queue, &buff, 0) != pdTRUE)
                 //    log_e("fail to send a receive BLE msg (%d bytes)", size);
                 gadgetbridge_RX_msg.clear();
                 break;
             }
             default:
-                gadgetbridge_RX_msg.append(msg[i]);
+                gadgetbridge_RX_msg.append(smsg.charAt(i));
+                break;
             }
         }
     };
