@@ -18,9 +18,9 @@ private:
     lv_obj_t *songlbl;
     lv_obj_t *artistlbl;
     lv_obj_t *albumlbl;
+    lv_obj_t *timelbl;
 
 public:
-
     void create(lv_obj_t *screen, uint8_t x, uint8_t y)
     {
         scr = screenCreate(x, y);
@@ -60,33 +60,54 @@ public:
 
         // Slider
         bar = lv_bar_create(scr);
-        lv_obj_align(bar, LV_ALIGN_CENTER, 0, 12);
-        lv_obj_set_size(bar, 200, 5);
+        lv_obj_align(bar, LV_ALIGN_CENTER, 0, 14);
+        lv_obj_set_size(bar, 210, 5);
 
         // Labels
         songlbl = lv_label_create(scr);
-        lv_obj_align(songlbl, LV_ALIGN_LEFT_MID, 0, -10);
+        lv_obj_align(songlbl, LV_ALIGN_LEFT_MID, 0, -24);
         lv_label_set_text(songlbl, "Safe and Sound");
         lv_obj_set_style_text_font(songlbl, &Outfit_32, 0);
+        lv_label_set_long_mode(songlbl, LV_LABEL_LONG_SCROLL_CIRCULAR);
+        lv_obj_set_width(songlbl, 210);
 
         artistlbl = lv_label_create(scr);
-        lv_obj_align(artistlbl, LV_ALIGN_LEFT_MID, 0, -26);
+        lv_obj_align(artistlbl, LV_ALIGN_LEFT_MID, 0, -48);
         lv_label_set_text(artistlbl, "Capitol Cities");
 
+        timelbl = lv_label_create(scr);
+        lv_obj_align(timelbl, LV_ALIGN_LEFT_MID, 0, 0);
+        lv_label_set_text(timelbl, "0:00 / 0:00");
+        // lv_label_set_long_mode(albumlbl, LV_LABEL_LONG_CLIP);
+        lv_obj_set_width(timelbl, 90);
+
         albumlbl = lv_label_create(scr);
-        lv_obj_align(albumlbl, LV_ALIGN_LEFT_MID, 0, 12);
+        lv_obj_align(albumlbl, LV_ALIGN_LEFT_MID, 90, 0);
         lv_label_set_text(albumlbl, "In a tidal wave of mystery");
+        lv_obj_set_width(timelbl, 120);
+        lv_label_set_long_mode(albumlbl, LV_LABEL_LONG_SCROLL);
     };
 
     void periodic()
     {
         MusicInfo_t *state = getMusicState();
-        
+
         lv_bar_set_value(bar, state->position, LV_ANIM_OFF);
 
         lv_label_set_text(songlbl, state->song.c_str());
         lv_label_set_text(artistlbl, state->artist.c_str());
         lv_label_set_text(albumlbl, state->album.c_str());
+
+        lv_label_set_text_fmt(timelbl, "%i:%02i / %i:%02i", state->position / 60, state->position % 60, state->length / 60, state->length % 60);
+
+        if (state->playing)
+        {
+            SET_SYMBOL_40(playlbl, FA_PAUSE);
+        }
+        else
+        {
+            SET_SYMBOL_40(playlbl, FA_PLAY);
+        }
     };
 
     lv_obj_t *scr;

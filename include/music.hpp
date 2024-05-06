@@ -12,5 +12,6 @@ typedef struct
 
 void updateMusicInfo(MusicInfo_t *);
 void updateMusicState(MusicInfo_t *);
-void musicInit(void);
-MusicInfo_t * getMusicState();
+void musicInit();
+void musicPeriodic();
+MusicInfo_t *getMusicState();
