@@ -5,21 +5,19 @@
 #include "esp_pm.h"
 
 #include "system.hpp"
+#include "powermgm.hpp"
 
-#include "display.hpp"
-#include "screen.hpp"
-#include "rtc.hpp"
-#include "power.hpp"
-#include "music.hpp"
+// #include "display.hpp"
+// #include "screen.hpp"
+// #include "rtc.hpp"
+// #include "power.hpp"
+// #include "music.hpp"
 
-#ifndef DISABLE_BLE
-#include "ble.hpp"
-#endif // DISABLE_BLE
+// #ifndef DISABLE_BLE
+// #include "ble.hpp"
+// #endif // DISABLE_BLE
 
 SystemInfo sysinfo;
-
-esp_pm_config_esp32s3_t pm_config;
-esp_pm_lock_handle_t lvgl_lock;
 
 void setup()
 {
@@ -36,60 +34,60 @@ void setup()
 
   Wire.begin(IIC_SDA, IIC_SCL);
 
-  rtcInit();
-  powerInit();
+  //   rtcInit();
+  //   powerInit();
 
-#ifndef DISABLE_BLE
-  bleInit();
-#endif // DISABLE_BLE
+  // #ifndef DISABLE_BLE
+  //   bleInit();
+  // #endif // DISABLE_BLE
 
-  musicInit();
+  //   musicInit();
 
-  displayInit();
-  setBacklight(100);
-  // setBacklight(0);
+  //   displayInit();
+  //   setBacklight(100);
+  //   // setBacklight(0);
 
-  screenInit();
-
-  pm_config.max_freq_mhz = 240;
-  pm_config.min_freq_mhz = 80;
-  pm_config.light_sleep_enable = false;
-  ESP_ERROR_CHECK(esp_pm_configure(&pm_config));
+  //   screenInit();
 
   // esp_pm_lock_create(ESP_PM_NO_LIGHT_SLEEP, 0, NULL, &lvgl_lock);
+
+  powermgmInit();
 }
 
 void loop()
 {
-  rtcPeriodic();
-  powerPeriodic();
-#ifndef DISABLE_BLE
-  blePeriodic();
-#endif // DISABLE_BLE
+  powermgmLoop();
+
+  //   rtcPeriodic();
+  //   powerPeriodic();
+  // #ifndef DISABLE_BLE
+  //   blePeriodic();
+  // #endif // DISABLE_BLE
 
   // if (digitalRead(0))
   // {
   //   setBacklight(100);
 
-    musicPeriodic();
+  // musicPeriodic();
 
-    screenPeriodic();
+  // screenPeriodic();
 
-    // esp_pm_lock_acquire(lvgl_lock);
+  // esp_pm_lock_acquire(lvgl_lock);
 
-    // pm_config.max_freq_mhz = 240;
-    // pm_config.min_freq_mhz = 240;
-    // pm_config.light_sleep_enable = false;
-    // ESP_ERROR_CHECK(esp_pm_configure(&pm_config));
-    uint32_t delaytime = displayPeriodic();
+  // pm_config.max_freq_mhz = 240;
+  // pm_config.min_freq_mhz = 240;
+  // pm_config.light_sleep_enable = false;
+  // ESP_ERROR_CHECK(esp_pm_configure(&pm_config));
+  // uint32_t delaytime = displayPeriodic();
 
-    // esp_pm_lock_release(lvgl_lock);
+  // esp_pm_lock_release(lvgl_lock);
 
-    delay(delaytime);
+  // delay(delaytime);
   // }
   // else
   // {
   //   setBacklight(0);
   //   delay(50);
   // }
+  delay(1000);
 }
