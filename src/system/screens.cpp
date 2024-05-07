@@ -1,17 +1,15 @@
-// #include "screens/screens.hpp"
+#include "ArduinoLog.h"
 #include "screens/numbers.hpp"
 #include "screens/clock.hpp"
 #include "screens/music.hpp"
 
 #include "powermgm.hpp"
-// #include "screens/notifications.hpp"
 // #include "lvgl.h"
 // #include "system.hpp"
 
 ClockScreen clockscreen;
 NumbersScreen numbersscreen;
 MusicScreen musicscreen;
-// NotificationsScreen notificationscreen;
 
 lv_obj_t *scr;
 
@@ -19,8 +17,9 @@ bool screenPeriodic(EventBits_t event, void *arg)
 {
     numbersscreen.periodic();
     clockscreen.periodic();
-    // notificationscreen.periodic();
     musicscreen.periodic();
+
+    // Log.verboseln("Scroll x: %i, y: %i", lv_obj_get_scroll_x(scr), lv_obj_get_scroll_y(scr));
 
     return true;
 }
@@ -42,14 +41,13 @@ bool screenInit(EventBits_t event, void *arg)
     numbersscreen.create(scr, 0, 0);
     clockscreen.create(scr, 1, 0);
     musicscreen.create(scr, 0, 1);
-    // notificationscreen.create(scr, 0, 1);
     lv_screen_load(scr);
 
     powermgmRegisterCB(screenPeriodic, POWERMGM_LOOP, "ExampleFunc");
     return true;
 }
 
-lv_obj_t *screenCreate(uint8_t x, uint8_t y)
+lv_obj_t *screenCreate(int8_t x, int8_t y)
 {
 
     lv_obj_t *screen = lv_obj_create(scr);
@@ -64,4 +62,4 @@ lv_obj_t *screenCreate(uint8_t x, uint8_t y)
     return screen;
 }
 
-bool screensetup = powermgmRegisterCBPrio(screenInit, POWERMGM_INIT, "ExampleFunc", CALL_CB_LAST);
+bool screensetup = powermgmRegisterCBPrio(screenInit, POWERMGM_INIT, "ExampleFunc", CALL_CB_MIDDLE);

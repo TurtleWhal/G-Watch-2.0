@@ -166,4 +166,4 @@ void setBacklight(int16_t val)
     }
 }
 
-bool displaysetup = powermgmRegisterCBPrio(displayInit, POWERMGM_INIT, "ExampleFunc", CALL_CB_MIDDLE);
+bool displaysetup = powermgmRegisterCBPrio(displayInit, POWERMGM_INIT, "ExampleFunc", CALL_CB_FIRST);

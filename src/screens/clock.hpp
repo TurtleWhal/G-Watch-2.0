@@ -16,7 +16,7 @@ private:
     lv_point_precise_t secondpoints[2] = {{120, 120}, {120, 20}};
 
 public:
-    void create(lv_obj_t *screen, uint8_t x, uint8_t y)
+    void create(lv_obj_t *screen, int8_t x, int8_t y)
     {
         scr = screenCreate(x, y);
 
