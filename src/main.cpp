@@ -89,5 +89,4 @@ void loop()
   //   setBacklight(0);
   //   delay(50);
   // }
-  delay(1000);
 }

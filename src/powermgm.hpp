@@ -10,3 +10,4 @@
 void powermgmInit();
 void powermgmLoop();
 bool powermgmRegisterCB(CALLBACK_FUNC, EventBits_t, const char *);
+bool powermgmRegisterCBPrio(CALLBACK_FUNC, EventBits_t, const char *, callback_prio_t);

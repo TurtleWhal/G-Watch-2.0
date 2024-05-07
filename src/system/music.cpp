@@ -1,14 +1,17 @@
 #include "music.hpp"
+#include "powermgm.hpp"
 
 MusicInfo_t *musicState;
 bool timerTriggered = false;
 
-void musicPeriodic()
+bool musicPeriodic(EventBits_t event, void *arg)
 {
     if (timerTriggered && musicState->playing)
     {
         musicState->position++;
     }
+
+    return true;
 }
 
 void updateMusicInfo(MusicInfo_t *info)
@@ -25,7 +28,7 @@ void updateMusicState(MusicInfo_t *info)
     musicState->position = info->position;
 }
 
-void musicInit()
+bool musicInit(EventBits_t event, void *arg)
 {
     musicState = new MusicInfo_t;
 
@@ -41,9 +44,14 @@ void musicInit()
     musicState->length = 0;
     musicState->position = 0;
     musicState->playing = false;
+
+    powermgmRegisterCB(musicPeriodic, POWERMGM_LOOP, "MusicPeriodic");
+    return true;
 }
 
 MusicInfo_t *getMusicState()
 {
     return musicState;
 }
+
+bool musicsetup = powermgmRegisterCBPrio(musicInit, POWERMGM_INIT, "MusicInit", CALL_CB_LAST);

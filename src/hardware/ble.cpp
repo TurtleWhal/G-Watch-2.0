@@ -9,6 +9,7 @@
 #include <NimBLEHIDDevice.h>
 
 #include "music.hpp"
+#include "powermgm.hpp"
 
 #define BLE_TERM_CHAR "\x1e" // 0x1e is "record seperator" in ascii and is used to seperate messages
 
@@ -27,7 +28,19 @@ bool BLEtimer = false;
 void parseGB(char *);
 void BLEmsgloop();
 
-void bleInit()
+bool blePeriodic(EventBits_t event, void *arg)
+{
+    setBLEBatteryLevel(sysinfo.bat.percent);
+    if (BLEtimer)
+    {
+        BLEtimer = false;
+        BLEmsgloop();
+    }
+
+    return true;
+}
+
+bool bleInit(EventBits_t event, void *arg)
 {
     blectl_setup("Garrett's Watch");
     // setBLEBatteryLevel(100);
@@ -41,16 +54,9 @@ void bleInit()
         true);
     timerAlarmWrite(timer, BLECTL_CHUNKDELAY * 1000, true);
     timerAlarmEnable(timer);
-}
 
-void blePeriodic()
-{
-    setBLEBatteryLevel(sysinfo.bat.percent);
-    if (BLEtimer)
-    {
-        BLEtimer = false;
-        BLEmsgloop();
-    }
+    powermgmRegisterCB(blePeriodic, POWERMGM_LOOP, "blePeriodic");
+    return true;
 }
 
 void ble_setup()
@@ -239,3 +245,5 @@ void BLEmsgloop()
         // Log.verboseln(msg);
     }
 }
+
+bool blesetup = powermgmRegisterCBPrio(bleInit, POWERMGM_INIT, "BLEInit", CALL_CB_FIRST);
