@@ -2,6 +2,8 @@
 #include "screens/numbers.hpp"
 #include "screens/clock.hpp"
 #include "screens/music.hpp"
+
+#include "powermgm.hpp"
 // #include "screens/notifications.hpp"
 // #include "lvgl.h"
 // #include "system.hpp"
@@ -13,7 +15,17 @@ MusicScreen musicscreen;
 
 lv_obj_t *scr;
 
-void screenInit()
+bool screenPeriodic(EventBits_t event, void *arg)
+{
+    numbersscreen.periodic();
+    clockscreen.periodic();
+    // notificationscreen.periodic();
+    musicscreen.periodic();
+
+    return true;
+}
+
+bool screenInit(EventBits_t event, void *arg)
 {
 
     scr = lv_obj_create(nullptr);
@@ -32,14 +44,9 @@ void screenInit()
     musicscreen.create(scr, 0, 1);
     // notificationscreen.create(scr, 0, 1);
     lv_screen_load(scr);
-}
 
-void screenPeriodic()
-{
-    numbersscreen.periodic();
-    clockscreen.periodic();
-    // notificationscreen.periodic();
-    musicscreen.periodic();
+    powermgmRegisterCB(screenPeriodic, POWERMGM_LOOP, "ExampleFunc");
+    return true;
 }
 
 lv_obj_t *screenCreate(uint8_t x, uint8_t y)
@@ -56,3 +63,5 @@ lv_obj_t *screenCreate(uint8_t x, uint8_t y)
 
     return screen;
 }
+
+bool screensetup = powermgmRegisterCBPrio(screenInit, POWERMGM_INIT, "ExampleFunc", CALL_CB_LAST);

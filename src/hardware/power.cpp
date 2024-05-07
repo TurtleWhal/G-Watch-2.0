@@ -1,5 +1,7 @@
 #include "power.hpp"
 #include "system.hpp"
+#include "powermgm.hpp"
+#include "ble.hpp"
 #include <ArduinoLog.h>
 
 #define PWR_ON 5
@@ -40,35 +42,53 @@ void powerInit()
 void powerPeriodic()
 {
     voltage = ((analogRead(BAT_ADC) * 3300 * VOLT_MULT) / 4096) + 200;
-    sysinfo.bat.voltage = voltage;
 
-    // Log.verboseln("analog: %d, processed: %d", analogRead(BAT_ADC), voltage);
-
-    charging = CHARGING;
-
-    sysinfo.bat.charging = charging;
-
-    uint8_t chrgint = charging ? 1 : 0;
-
-    int8_t i = 10;
-    while (voltage <= Qcm[chrgint][i])
+    if (sysinfo.bat.voltage != voltage)
     {
-        if (i == 0)
-            break;
+        sysinfo.bat.voltage = voltage;
+
+        // Log.verboseln("analog: %d, processed: %d", analogRead(BAT_ADC), voltage);
+
+        if (charging != CHARGING)
+        {
+            if (CHARGING)
+            {
+                powermgmSendEvent(POWERMGM_PLUGGED_IN);
+            }
+            else
+            {
+                powermgmSendEvent(POWERMGM_UNPLUGGED);
+            }
+        }
+
+        charging = CHARGING;
+
+        sysinfo.bat.charging = charging;
+
+        uint8_t chrgint = charging ? 1 : 0;
+
+        int8_t i = 10;
+        while (voltage <= Qcm[chrgint][i])
+        {
+            if (i == 0)
+                break;
+            else
+                i--;
+        }
+
+        if (i < 10)
+        {
+            float vol_section = Qcm[chrgint][i + 1] - Qcm[chrgint][i];
+            float decade = i * 10.0;
+            percentage = constrain(decade + 10.0 * ((voltage - Qcm[chrgint][i]) / vol_section), 0.0, 100.0);
+            sysinfo.bat.percent = (int)percentage + 0.5;
+        }
         else
-            i--;
-    }
+        {
+            percentage = 100.0;
+            sysinfo.bat.percent = 100;
+        }
 
-    if (i < 10)
-    {
-        float vol_section = Qcm[chrgint][i + 1] - Qcm[chrgint][i];
-        float decade = i * 10.0;
-        percentage = constrain(decade + 10.0 * ((voltage - Qcm[chrgint][i]) / vol_section), 0.0, 100.0);
-        sysinfo.bat.percent = (int)percentage + 0.5;
-    }
-    else
-    {
-        percentage = 100.0;
-        sysinfo.bat.percent = 100;
+        sendBLEf("{t:\"status\", bat:%i, volt:%f, chg:%i}", percentage, voltage, chrgint);
     }
 }

@@ -5,6 +5,8 @@
 #include "display.hpp"
 #include "fonts/fonts.hpp"
 
+#include "powermgm.hpp"
+
 TFT_eSPI tft = TFT_eSPI();
 
 lv_display_t *display;
@@ -71,7 +73,13 @@ static uint32_t lvTick()
     return millis();
 }
 
-void displayInit()
+bool displayPeriodic(EventBits_t event, void *arg)
+{
+    delay(lv_task_handler());
+    return true;
+}
+
+bool displayInit(EventBits_t event, void *arg)
 {
     // Init Backlight
     pinMode(TFT_LED, OUTPUT);
@@ -138,11 +146,10 @@ void displayInit()
     //     0);                          /* Core where the task should run */
 
     // Log.verboseln("Display Init");
-}
+    setBacklight(100);
 
-uint32_t displayPeriodic()
-{
-    return lv_task_handler();
+    powermgmRegisterCB(displayPeriodic, POWERMGM_LOOP, "DisplayPeriodic");
+    return true;
 }
 
 void setBacklight(int16_t val)
@@ -158,3 +165,5 @@ void setBacklight(int16_t val)
         bgval = 100;
     }
 }
+
+bool displaysetup = powermgmRegisterCBPrio(displayInit, POWERMGM_INIT, "ExampleFunc", CALL_CB_MIDDLE);

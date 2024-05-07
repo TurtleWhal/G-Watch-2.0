@@ -3,6 +3,7 @@
 #include "ESP32Time.h"
 #include "rtc.hpp"
 #include "system.hpp"
+#include "powermgm.hpp"
 
 #ifdef LILYGO_TWATCH_2021
 #include "pcf8563.h"
@@ -11,18 +12,7 @@ PCF8563_Class pcf;
 
 ESP32Time rtc(0);
 
-void rtcInit()
-{
-#ifdef LILYGO_TWATCH_2021
-    pcf.begin();
-    RTC_Date now = pcf.getDateTime();
-    Log.verboseln("RTC: %d-%d-%d %d:%d:%d", now.year, now.month, now.day, now.hour, now.minute, now.second);
-#else
-    // rtc.setTime(56, 34, 12, 3, 12, 2008);
-#endif // LILYGO_TWATCH_2021
-}
-
-void rtcPeriodic()
+bool rtcPeriodic(EventBits_t event, void *arg)
 {
 #ifdef LILYGO_TWATCH_2021
     static uint8_t lastmin = 0;
@@ -62,6 +52,22 @@ void rtcPeriodic()
     sysinfo.date.strdate.replace("  ", " ");
 
     sysinfo.date.numdate = rtc.getTime("%D");
+
+    return true;
+}
+
+bool rtcInit(EventBits_t event, void *arg)
+{
+#ifdef LILYGO_TWATCH_2021
+    pcf.begin();
+    RTC_Date now = pcf.getDateTime();
+    Log.verboseln("RTC: %d-%d-%d %d:%d:%d", now.year, now.month, now.day, now.hour, now.minute, now.second);
+#else
+    // rtc.setTime(56, 34, 12, 3, 12, 2008);
+#endif // LILYGO_TWATCH_2021
+
+    powermgmRegisterCB(rtcPeriodic, POWERMGM_LOOP, "RTCPeriodic");
+    return true;
 }
 
 // timevalue is unix time in seconds, timezone is offset in hours
@@ -69,7 +75,9 @@ void setTime(ulong timevalue, short timezone)
 {
     rtc.setTime(timevalue + (timezone * 60 * 60));
 
-    #ifdef LILYGO_TWATCH_2021
+#ifdef LILYGO_TWATCH_2021
     pcf.syncToRtc();
-    #endif // LILYGO_TWATCH_2021
+#endif // LILYGO_TWATCH_2021
 }
+
+bool rtcsetup = powermgmRegisterCBPrio(rtcInit, POWERMGM_INIT, "RTCInit", CALL_CB_FIRST);
