@@ -50,3 +50,7 @@ bool powermgmRegisterCBPrio(CALLBACK_FUNC cb_func, EventBits_t event, const char
     }
     return (callback_register_with_prio(powermgmCallback, event, cb_func, id, prio));
 }
+
+bool powermgmSendEvent(EventBits_t event) {
+    return (callback_send(powermgmCallback, event, nullptr));
+}
