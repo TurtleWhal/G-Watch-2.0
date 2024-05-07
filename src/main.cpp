@@ -18,7 +18,11 @@
 
 SystemInfo sysinfo;
 
+#ifdef LILYGO_TWATCH_2021
+esp_pm_config_esp32_t pm_config;
+#else
 esp_pm_config_esp32s3_t pm_config;
+#endif
 esp_pm_lock_handle_t lvgl_lock;
 
 void setup()
@@ -51,10 +55,10 @@ void setup()
 
   screenInit();
 
-  pm_config.max_freq_mhz = 240;
-  pm_config.min_freq_mhz = 80;
-  pm_config.light_sleep_enable = false;
-  ESP_ERROR_CHECK(esp_pm_configure(&pm_config));
+  // pm_config.max_freq_mhz = 240;
+  // pm_config.min_freq_mhz = 80;
+  // pm_config.light_sleep_enable = false;
+  // ESP_ERROR_CHECK(esp_pm_configure(&pm_config));
 
   // esp_pm_lock_create(ESP_PM_NO_LIGHT_SLEEP, 0, NULL, &lvgl_lock);
 }
@@ -71,21 +75,21 @@ void loop()
   // {
   //   setBacklight(100);
 
-    musicPeriodic();
+  musicPeriodic();
 
-    screenPeriodic();
+  screenPeriodic();
 
-    // esp_pm_lock_acquire(lvgl_lock);
+  // esp_pm_lock_acquire(lvgl_lock);
 
-    // pm_config.max_freq_mhz = 240;
-    // pm_config.min_freq_mhz = 240;
-    // pm_config.light_sleep_enable = false;
-    // ESP_ERROR_CHECK(esp_pm_configure(&pm_config));
-    uint32_t delaytime = displayPeriodic();
+  // pm_config.max_freq_mhz = 240;
+  // pm_config.min_freq_mhz = 240;
+  // pm_config.light_sleep_enable = false;
+  // ESP_ERROR_CHECK(esp_pm_configure(&pm_config));
+  uint32_t delaytime = displayPeriodic();
 
-    // esp_pm_lock_release(lvgl_lock);
+  // esp_pm_lock_release(lvgl_lock);
 
-    delay(delaytime);
+  delay(delaytime);
   // }
   // else
   // {

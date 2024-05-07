@@ -1,4 +1,5 @@
 #include "Arduino.h"
+#include "lvgl.h"
 
 typedef struct
 {
@@ -15,3 +16,6 @@ void updateMusicState(MusicInfo_t *);
 void musicInit();
 void musicPeriodic();
 MusicInfo_t *getMusicState();
+void musicnext(lv_event_t *);
+void musicprev(lv_event_t *);
+void musicplaypause(lv_event_t *);

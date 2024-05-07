@@ -18,3 +18,6 @@ LV_FONT_DECLARE(FontAwesome_40);
 #define FA_REPEAT "\xEF\x81\x8E"
 #define FA_STEP_BACKWARD "\xEF\x81\x88"
 #define FA_STEP_FORWARD "\xEF\x81\x91"
+
+#define FA_CALENDAR "\xEF\x84\xB3"
+#define FA_STEPS "\xEF\x95\x8B"

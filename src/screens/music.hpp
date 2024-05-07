@@ -1,6 +1,7 @@
 #include "Arduino.h"
 #include "lvgl.h"
 #include "system.hpp"
+#include "system.hpp"
 #include "screens.hpp"
 #include "fonts/fonts.hpp"
 #include "../include/music.hpp"
@@ -31,6 +32,7 @@ public:
         lv_obj_align(playbutton, LV_ALIGN_CENTER, 0, 80);
         lv_obj_set_style_radius(playbutton, 35, LV_PART_MAIN);
         lv_obj_set_style_bg_color(playbutton, lv_theme_get_color_primary(scr), LV_PART_MAIN);
+        lv_obj_add_event_cb(playbutton, musicplaypause, LV_EVENT_CLICKED, NULL);
 
         playlbl = lv_label_create(playbutton);
         lv_obj_center(playlbl);
@@ -41,6 +43,7 @@ public:
         lv_obj_align(nxtbutton, LV_ALIGN_CENTER, 70, 50);
         lv_obj_set_style_radius(nxtbutton, 25, LV_PART_MAIN);
         lv_obj_set_style_bg_color(nxtbutton, lv_theme_get_color_primary(scr), LV_PART_MAIN);
+        lv_obj_add_event_cb(nxtbutton, musicnext, LV_EVENT_CLICKED, NULL);
 
         lv_obj_t *nextlbl = lv_label_create(nxtbutton);
         lv_obj_set_style_text_font(playlbl, &FontAwesome_40, 0);
@@ -52,6 +55,7 @@ public:
         lv_obj_align(prvbutton, LV_ALIGN_CENTER, -70, 50);
         lv_obj_set_style_radius(prvbutton, 25, LV_PART_MAIN);
         lv_obj_set_style_bg_color(prvbutton, lv_theme_get_color_primary(scr), LV_PART_MAIN);
+        lv_obj_add_event_cb(prvbutton, musicprev, LV_EVENT_CLICKED, NULL);
 
         lv_obj_t *prevlbl = lv_label_create(prvbutton);
         lv_label_set_text(prevlbl, LV_SYMBOL_PREV);
@@ -65,11 +69,11 @@ public:
 
         // Labels
         songlbl = lv_label_create(scr);
-        lv_obj_align(songlbl, LV_ALIGN_LEFT_MID, 0, -24);
-        lv_label_set_text(songlbl, "Safe and Sound");
         lv_obj_set_style_text_font(songlbl, &Outfit_32, 0);
         lv_label_set_long_mode(songlbl, LV_LABEL_LONG_SCROLL_CIRCULAR);
         lv_obj_set_width(songlbl, 210);
+        lv_label_set_text(songlbl, "Safe and Sound");
+        lv_obj_align(songlbl, LV_ALIGN_LEFT_MID, 0, -24);
 
         artistlbl = lv_label_create(scr);
         lv_obj_align(artistlbl, LV_ALIGN_LEFT_MID, 0, -48);
@@ -82,17 +86,18 @@ public:
         lv_obj_set_width(timelbl, 90);
 
         albumlbl = lv_label_create(scr);
-        lv_obj_align(albumlbl, LV_ALIGN_LEFT_MID, 90, 0);
-        lv_label_set_text(albumlbl, "In a tidal wave of mystery");
-        lv_obj_set_width(timelbl, 120);
         lv_label_set_long_mode(albumlbl, LV_LABEL_LONG_SCROLL);
+        lv_obj_set_width(timelbl, 120);
+        lv_label_set_text(albumlbl, "In a tidal wave of mystery");
+        lv_obj_align(albumlbl, LV_ALIGN_LEFT_MID, 90, 0);
     };
 
     void periodic()
     {
         MusicInfo_t *state = getMusicState();
 
-        lv_bar_set_value(bar, state->position, LV_ANIM_OFF);
+        lv_bar_set_range(bar, 0, state->length);
+        lv_bar_set_value(bar, state->position, LV_ANIM_ON);
 
         lv_label_set_text(songlbl, state->song.c_str());
         lv_label_set_text(artistlbl, state->artist.c_str());

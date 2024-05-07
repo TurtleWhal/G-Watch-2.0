@@ -50,7 +50,8 @@ private:
         // lv_img_set_src(arc->icon, &arc->img);
         arc->icon = lv_label_create(scr);
         lv_obj_align(arc->icon, LV_ALIGN_CENTER, x, y - (arcsize / 3));
-        lv_label_set_text(arc->icon, arc->symbol.c_str());
+        // lv_label_set_text(arc->icon, arc->symbol.c_str());
+        SET_SYMBOL_20(arc->icon, arc->symbol.c_str());
     };
 
     void scheduleCallback(InfoArc_t *arc)
@@ -126,8 +127,8 @@ public:
         lv_label_set_text(date, "Mon Jan 1");
         lv_obj_set_style_text_font(date, &Outfit_20, 0);
 
-        arcs[0].symbol = LV_SYMBOL_LIST;
-        arcs[1].symbol = LV_SYMBOL_IMAGE;
+        arcs[0].symbol = FA_CALENDAR;
+        arcs[1].symbol = FA_STEPS;
         arcs[2].symbol = LV_SYMBOL_BATTERY_FULL;
 
         createArc(&arcs[0], -58, -64);

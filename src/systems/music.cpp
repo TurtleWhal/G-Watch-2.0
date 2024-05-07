@@ -1,13 +1,20 @@
 #include "music.hpp"
+#include "ble.hpp"
 
 MusicInfo_t *musicState;
 bool timerTriggered = false;
+bool startedmoving = false;
+bool wentforward = false;
 
 void musicPeriodic()
 {
-    if (timerTriggered && musicState->playing)
+    static int32_t last = millis();
+
+    if (millis() - 1000 > last)
     {
-        musicState->position++;
+        last = millis();
+        if (musicState->playing)
+            musicState->position++;
     }
 }
 
@@ -22,7 +29,7 @@ void updateMusicInfo(MusicInfo_t *info)
 void updateMusicState(MusicInfo_t *info)
 {
     musicState->playing = info->playing;
-    musicState->position = info->position;
+    musicState->position = info->position + (info->playing ? 4 : 0); // if playing, add 4 seconds for send delay
 }
 
 void musicInit()
@@ -47,3 +54,54 @@ MusicInfo_t *getMusicState()
 {
     return musicState;
 }
+
+void musicplaypause(lv_event_t *e)
+{
+    if (getMusicState()->playing)
+    {
+        sendBLE("{t:\"music\", n:\"pause\"}", 2);
+    }
+    else
+    {
+        sendBLE("{t:\"music\", n:\"play\"}", 2);
+    }
+    musicState->playing = !musicState->playing;
+};
+
+void musicnext(lv_event_t *e)
+{
+    // uint8_t times = 1;
+    // if (startedmoving)
+    // {
+    //     if (!wentforward)
+    //         times = 3;
+
+    //     wentforward = true;
+    // }
+    // else
+    // {
+    //     startedmoving = true;
+    //     wentforward = true;
+    // }
+    sendBLE("{t:\"music\", n:\"next\"}", 1);
+    sendBLE("{t:\"music\", n:\"play\"}", 1);
+};
+
+void musicprev(lv_event_t *e)
+{
+    // uint8_t times = 1;
+    // if (startedmoving)
+    // {
+    //     if (wentforward)
+    //         times = 3;
+
+    //     wentforward = false;
+    // }
+    // else
+    // {
+    //     startedmoving = true;
+    //     wentforward = false;
+    // }
+    sendBLE("{t:\"music\", n:\"previous\"}", 1);
+    sendBLE("{t:\"music\", n:\"play\"}", 1);
+};
