@@ -1,4 +1,5 @@
 #include "music.hpp"
+#include "ble.hpp"
 #include "powermgm.hpp"
 
 MusicInfo_t *musicState;
@@ -53,5 +54,30 @@ MusicInfo_t *getMusicState()
 {
     return musicState;
 }
+
+void musicplaypause(lv_event_t *e)
+{
+    if (getMusicState()->playing)
+    {
+        sendBLE("{t:\"music\", n:\"pause\"}", 2);
+    }
+    else
+    {
+        sendBLE("{t:\"music\", n:\"play\"}", 2);
+    }
+    musicState->playing = !musicState->playing;
+};
+
+void musicnext(lv_event_t *e)
+{
+    sendBLE("{t:\"music\", n:\"next\"}", 1);
+    sendBLE("{t:\"music\", n:\"play\"}", 1);
+};
+
+void musicprev(lv_event_t *e)
+{
+    sendBLE("{t:\"music\", n:\"previous\"}", 1);
+    sendBLE("{t:\"music\", n:\"play\"}", 1);
+};
 
 bool musicsetup = powermgmRegisterCBPrio(musicInit, POWERMGM_INIT, "MusicInit", CALL_CB_LAST);
