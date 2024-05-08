@@ -5,10 +5,9 @@
 #include "screens.hpp"
 #include "powermgm.hpp"
 
-lv_obj_t *mainscr;
 lv_obj_t *notifscr;
 lv_obj_t *notifpanel;
-int8_t x = 0, y = -1;
+int8_t notifx = 0, notify = -1;
 
 lv_obj_t *createNotification()
 {
@@ -19,20 +18,19 @@ lv_obj_t *createNotification()
     return notif;
 }
 
-bool periodic(EventBits_t event, void *arg)
+bool notifperiodic(EventBits_t event, void *arg)
 {
-    if (lv_obj_get_scroll_x(mainscr) == x * TFT_WIDTH && lv_obj_get_scroll_y(mainscr) == y * TFT_HEIGHT)
-    {
-        Log.verboseln("on Notif screen");
-    }
+    // if (ON_CURRENT_SCREEN(notifx, notify))
+    // {
+    //     Log.verboseln("on Notif screen");
+    // }
 
     return true;
-};
+}
 
-bool create(EventBits_t event, void *arg)
+bool notifcreate(EventBits_t event, void *arg)
 {
-    mainscr = lv_scr_act();
-    notifscr = screenCreate(x, y);
+    notifscr = screenCreate(notifx, notify);
 
     notifpanel = lv_obj_create(notifscr);
 
@@ -50,8 +48,8 @@ bool create(EventBits_t event, void *arg)
     // createNotification();
     // createNotification();
 
-    powermgmRegisterCB(periodic, POWERMGM_LOOP, "notifscreeninit");
+    powermgmRegisterCB(notifperiodic, POWERMGM_LOOP, "notifscreeninit");
     return true;
-};
+}
 
-bool notifsetup = powermgmRegisterCBPrio(create, POWERMGM_INIT, "notifscreeninit", CALL_CB_LAST);
+bool notifsetup = powermgmRegisterCBPrio(notifcreate, POWERMGM_INIT, "notifscreeninit", CALL_CB_LAST);

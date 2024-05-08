@@ -3,13 +3,16 @@
 #include "powermgm.hpp"
 
 MusicInfo_t *musicState;
-bool timerTriggered = false;
 
 bool musicPeriodic(EventBits_t event, void *arg)
 {
-    if (timerTriggered && musicState->playing)
+    static uint32_t lastmillis;
+    if (lastmillis + 1000 < millis())
     {
-        musicState->position++;
+        if (musicState->playing)
+            musicState->position++;
+
+        lastmillis = millis();
     }
 
     return true;
@@ -21,7 +24,7 @@ void updateMusicInfo(MusicInfo_t *info)
     musicState->artist = info->artist;
     musicState->album = info->album;
     musicState->length = info->length;
-};
+}
 
 void updateMusicState(MusicInfo_t *info)
 {
@@ -39,9 +42,9 @@ bool musicInit(EventBits_t event, void *arg)
     // timerAlarmWrite(timer, 1000 * 1000, true);
     // timerAlarmEnable(timer);
 
-    musicState->song = "No Song";
-    musicState->artist = "No Artist";
-    musicState->album = "No Album";
+    musicState->song = "No Song But a lot of really long text";
+    musicState->artist = "No Artist But a lot of really long text";
+    musicState->album = "No Album But a lot of really long text";
     musicState->length = 0;
     musicState->position = 0;
     musicState->playing = false;
@@ -66,18 +69,18 @@ void musicplaypause(lv_event_t *e)
         sendBLE("{t:\"music\", n:\"play\"}", 2);
     }
     musicState->playing = !musicState->playing;
-};
+}
 
 void musicnext(lv_event_t *e)
 {
     sendBLE("{t:\"music\", n:\"next\"}", 1);
     sendBLE("{t:\"music\", n:\"play\"}", 1);
-};
+}
 
 void musicprev(lv_event_t *e)
 {
     sendBLE("{t:\"music\", n:\"previous\"}", 1);
     sendBLE("{t:\"music\", n:\"play\"}", 1);
-};
+}
 
 bool musicsetup = powermgmRegisterCBPrio(musicInit, POWERMGM_INIT, "MusicInit", CALL_CB_LAST);
