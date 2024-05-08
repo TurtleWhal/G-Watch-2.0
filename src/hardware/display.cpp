@@ -13,6 +13,7 @@ lv_display_t *display;
 lv_indev_t *indev;
 
 int16_t bgval;
+TaskHandle_t backlightHandle = NULL;
 
 CST816S touch(IIC_SDA, IIC_SCL, TP_RST, TP_INT); // sda, scl, rst, irq
 
@@ -71,6 +72,60 @@ void my_input_read(lv_indev_t *indev, lv_indev_data_t *data)
 static uint32_t lvTick()
 {
     return millis();
+}
+
+uint16_t oldBacklight = 0;
+uint32_t endtime = 0;
+uint32_t starttime = 0;
+float k = 0;
+bool adjust = false;
+
+void setBacklightGradual(int16_t val, uint32_t ms)
+{
+    int32_t tempbk;
+    oldBacklight = getBacklight();
+    tempbk = (val - oldBacklight);
+    endtime = millis() + ms;
+    starttime = millis();
+
+    k = (float)((tempbk * 1.0) / ms);
+
+    // DEBUGF("Backlight_Gradually Val:%d,ms:%d,k:%f\n", val, ms, k);
+    Log.verboseln("Backlight Gradual | Val: %d | Length: %d | Step: %f/ms", val, ms, k);
+
+    adjust = true;
+}
+
+void backlight_updata(void *params)
+{
+    while (1) // in its own thread so its fine
+    {
+        static uint32_t Millis;
+        // static uint16_t count;
+        static uint32_t duration;
+
+        if (adjust)
+        {
+            uint32_t mils = millis();
+            uint32_t time_ms = 1;
+
+            if (mils - Millis > time_ms)
+            {
+                duration = mils - starttime;
+                setBacklight((uint16_t)((k * duration) + oldBacklight));
+                // Serial.printf("K: %f duration: %d old: %d current: %d\n", _k, duration, _old_Backlight, backlight_get_value());
+
+                if (Millis > endtime)
+                {
+                    adjust = false;
+                }
+
+                Millis = mils;
+            }
+        }
+
+        delay(2);
+    }
 }
 
 bool displayPeriodic(EventBits_t event, void *arg)
@@ -146,9 +201,14 @@ bool displayInit(EventBits_t event, void *arg)
     //     0);                          /* Core where the task should run */
 
     // Log.verboseln("Display Init");
-    setBacklight(100);
+
+    xTaskCreatePinnedToCore(backlight_updata, "backlight", 1024 * 10, NULL, 2, &backlightHandle, 1);
 
     powermgmRegisterCB(displayPeriodic, POWERMGM_LOOP, "DisplayPeriodic");
+
+    // setBacklight(100);
+    setBacklightGradual(100, 5000);
+
     return true;
 }
 
@@ -165,5 +225,7 @@ void setBacklight(int16_t val)
         bgval = 100;
     }
 }
+
+int16_t getBacklight() { return bgval; }
 
 bool displaysetup = powermgmRegisterCBPrio(displayInit, POWERMGM_INIT, "ExampleFunc", CALL_CB_FIRST);

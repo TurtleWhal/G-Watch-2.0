@@ -132,7 +132,6 @@ bool numbersperiodic(EventBits_t event, void *arg)
 
 bool numberscreate(EventBits_t event, void *arg)
 {
-    Serial.println("Numbers screen");
     numberscr = screenCreate(numberx, numbery);
 
     hour = lv_label_create(numberscr);
