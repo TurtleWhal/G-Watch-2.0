@@ -55,6 +55,36 @@ typedef struct
     } BatteryInfo;
     BatteryInfo bat;
 
+    typedef struct
+    {
+        uint32_t steps;
+
+        typedef struct
+        {
+            float x;
+            float y;
+            float z;
+        } GyroInfo;
+        GyroInfo gyro;
+
+        typedef struct
+        {
+            float x;
+            float y;
+            float z;
+        } AccelInfo;
+        AccelInfo acc;
+
+    } IMUInfo;
+    IMUInfo imu;
+
+    typedef struct
+    {
+        uint32_t steps;
+
+    } HealthInfo;
+    HealthInfo health;
+
 } SystemInfo;
 
 #endif

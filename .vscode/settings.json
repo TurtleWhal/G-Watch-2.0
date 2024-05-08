@@ -15,7 +15,8 @@
         "cstdlib": "cpp",
         "system_error": "cpp",
         "typeinfo": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "*.tpp": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

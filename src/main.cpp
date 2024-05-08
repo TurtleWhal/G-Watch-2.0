@@ -28,7 +28,7 @@ void setup()
   // setCpuFrequencyMhz(240);
   // esp_pm_lock_create(ESP_PM_NO_LIGHT_SLEEP, 0, NULL, &lvgl_lock);
 
-  // Wire.begin(IIC_SDA, IIC_SCL);
+  Wire.begin(IIC_SDA, IIC_SCL);
 
 
   //  _____/\\\\\\\\\\\\________________/\\\______________/\\\_____/\\\\\\\\\_____/\\\\\\\\\\\\\\\________/\\\\\\\\\__/\\\________/\\\_

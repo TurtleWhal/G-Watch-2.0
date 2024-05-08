@@ -206,9 +206,6 @@ bool displayInit(EventBits_t event, void *arg)
 
     powermgmRegisterCB(displayPeriodic, POWERMGM_LOOP, "DisplayPeriodic");
 
-    // setBacklight(100);
-    setBacklightGradual(100, 5000);
-
     return true;
 }
 
