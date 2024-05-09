@@ -6,7 +6,9 @@ LV_FONT_DECLARE(Outfit_20);
 LV_FONT_DECLARE(Outfit_32);
 LV_FONT_DECLARE(Outfit_80_Light);
 
+LV_FONT_DECLARE(FontAwesome_14);
 LV_FONT_DECLARE(FontAwesome_20);
+LV_FONT_DECLARE(FontAwesome_32);
 LV_FONT_DECLARE(FontAwesome_40);
 
 #define SET_SYMBOL_14(obj, sym) lv_obj_set_style_text_font(obj, &FontAwesome_14, 0); lv_label_set_text(obj, sym);
@@ -21,5 +23,5 @@ LV_FONT_DECLARE(FontAwesome_40);
 #define FA_STEP_BACKWARD "\xEF\x81\x88"
 #define FA_STEP_FORWARD "\xEF\x81\x91"
 
-#define FA_CALENDAR "\xEF\x84\xB3"
+#define FA_CALENDAR "\xEF\x81\xB3"
 #define FA_STEPS "\xEF\x95\x8B"
