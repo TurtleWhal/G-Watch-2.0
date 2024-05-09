@@ -6,6 +6,7 @@
 #define POWERMGM_SLEEP_END _BV(3)
 #define POWERMGM_PLUGGED_IN _BV(4)
 #define POWERMGM_UNPLUGGED _BV(5)
+#define POWERMGM_MUSIC_UPDATE _BV(6)
 
 void powermgmInit();
 void powermgmLoop();

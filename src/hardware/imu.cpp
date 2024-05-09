@@ -58,34 +58,34 @@ bool imuPeriodic(EventBits_t event, void *arg)
 
     int16_t x = 0, y = 0, z = 0;
     bma.getAccelerometer(x, y, z);
-    Serial.print("X:");
-    Serial.print(x);
-    Serial.print(" ");
-    Serial.print("Y:");
-    Serial.print(y);
-    Serial.print(" ");
-    Serial.print("Z:");
-    Serial.print(z);
-    Serial.println();
+    // Serial.print("X:");
+    // Serial.print(x);
+    // Serial.print(" ");
+    // Serial.print("Y:");
+    // Serial.print(y);
+    // Serial.print(" ");
+    // Serial.print("Z:");
+    // Serial.print(z);
+    // Serial.println();
 
     sysinfo.health.steps = bma.getPedometerCounter();
 
 #endif
 
-    Serial.print("IMU: ");
-    Serial.print(sysinfo.imu.acc.x);
-    Serial.print(", ");
-    Serial.print(sysinfo.imu.acc.y);
-    Serial.print(", ");
-    Serial.print(sysinfo.imu.acc.z);
-    Serial.print(", ");
-    Serial.print(sysinfo.imu.gyro.x);
-    Serial.print(", ");
-    Serial.print(sysinfo.imu.gyro.y);
-    Serial.print(", ");
-    Serial.print(sysinfo.imu.gyro.z);
-    Serial.print(", ");
-    Serial.println(sysinfo.health.steps);
+    // Serial.print("IMU: ");
+    // Serial.print(sysinfo.imu.acc.x);
+    // Serial.print(", ");
+    // Serial.print(sysinfo.imu.acc.y);
+    // Serial.print(", ");
+    // Serial.print(sysinfo.imu.acc.z);
+    // Serial.print(", ");
+    // Serial.print(sysinfo.imu.gyro.x);
+    // Serial.print(", ");
+    // Serial.print(sysinfo.imu.gyro.y);
+    // Serial.print(", ");
+    // Serial.print(sysinfo.imu.gyro.z);
+    // Serial.print(", ");
+    // Serial.println(sysinfo.health.steps);
 
     return true;
 }

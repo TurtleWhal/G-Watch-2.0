@@ -10,8 +10,11 @@ bool musicPeriodic(EventBits_t event, void *arg)
     if (lastmillis + 1000 < millis())
     {
         if (musicState->playing)
+        {
+            powermgmSendEvent(POWERMGM_MUSIC_UPDATE);
             musicState->position++;
-
+        }
+        
         lastmillis = millis();
     }
 
@@ -42,12 +45,14 @@ bool musicInit(EventBits_t event, void *arg)
     // timerAlarmWrite(timer, 1000 * 1000, true);
     // timerAlarmEnable(timer);
 
-    musicState->song = "No Song But a lot of really long text";
-    musicState->artist = "No Artist But a lot of really long text";
-    musicState->album = "No Album But a lot of really long text";
+    musicState->song = "No Song";
+    musicState->artist = "No Artist";
+    musicState->album = "No Album";
     musicState->length = 0;
     musicState->position = 0;
     musicState->playing = false;
+
+    powermgmSendEvent(POWERMGM_MUSIC_UPDATE);
 
     powermgmRegisterCB(musicPeriodic, POWERMGM_LOOP, "MusicPeriodic");
     return true;
@@ -69,6 +74,8 @@ void musicplaypause(lv_event_t *e)
         sendBLE("{t:\"music\", n:\"play\"}", 2);
     }
     musicState->playing = !musicState->playing;
+
+    powermgmSendEvent(POWERMGM_MUSIC_UPDATE);
 }
 
 void musicnext(lv_event_t *e)
