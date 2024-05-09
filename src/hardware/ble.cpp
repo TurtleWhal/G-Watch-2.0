@@ -28,6 +28,16 @@ bool BLEtimer = false;
 void parseGB(char *);
 void BLEmsgloop();
 
+bool conn(EventBits_t event, void *arg) {
+    powermgmSendEvent(POWERMGM_BLE_CONNECT);
+    return true;
+}
+
+bool disconn(EventBits_t event, void *arg) {
+    powermgmSendEvent(POWERMGM_BLE_DISCONNECT);
+    return true;
+}
+
 bool blePeriodic(EventBits_t event, void *arg)
 {
     setBLEBatteryLevel(sysinfo.bat.percent);
@@ -82,6 +92,9 @@ void ble_setup()
     pAdvertising->addServiceUUID(pBatteryService->getUUID());
 
     pBatteryService->start();
+
+    gadgetbridge_register_cb(GADGETBRIDGE_CONNECT, conn, "BLEconnect");
+    gadgetbridge_register_cb(GADGETBRIDGE_DISCONNECT, disconn, "BLEdisconnect");
 }
 
 void pairBT(uint32_t passkey)

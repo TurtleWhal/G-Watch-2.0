@@ -88,7 +88,7 @@ bool musiccreate(EventBits_t event, void *arg)
     lv_obj_t *nextlbl = lv_label_create(nxtbutton);
     lv_obj_set_style_text_font(playlbl, &FontAwesome_40, 0);
     lv_obj_center(nextlbl);
-    SET_SYMBOL_20(nextlbl, FA_STEP_FORWARD);
+    SET_SYMBOL_32(nextlbl, FA_STEP_FORWARD);
 
     prvbutton = lv_btn_create(musicscr);
     lv_obj_set_size(prvbutton, 50, 50);
@@ -100,7 +100,7 @@ bool musiccreate(EventBits_t event, void *arg)
     lv_obj_t *prevlbl = lv_label_create(prvbutton);
     lv_label_set_text(prevlbl, LV_SYMBOL_PREV);
     lv_obj_center(prevlbl);
-    SET_SYMBOL_20(prevlbl, FA_STEP_BACKWARD);
+    SET_SYMBOL_32(prevlbl, FA_STEP_BACKWARD);
 
     // Slider
     bar = lv_bar_create(musicscr);

@@ -53,7 +53,7 @@ void createArc(InfoArc_t *arc, int32_t x, int32_t y)
     arc->icon = lv_label_create(numberscr);
     lv_obj_align(arc->icon, LV_ALIGN_CENTER, x, y - (arcsize / 3));
     // lv_label_set_text(arc->icon, arc->symbol.c_str());
-    SET_SYMBOL_20(arc->icon, arc->symbol.c_str());
+    SET_SYMBOL_14(arc->icon, arc->symbol.c_str());
 }
 
 void scheduleCallback(InfoArc_t *arc)
@@ -86,19 +86,19 @@ void batteryCallback(InfoArc_t *arc)
         switch ((int)(sysinfo.bat.percent / 20 + 1))
         {
         default:
-            lv_label_set_text(arc->icon, LV_SYMBOL_BATTERY_FULL);
+            SET_SYMBOL_14(arc->icon, LV_SYMBOL_BATTERY_FULL);
             break;
         case 4:
-            lv_label_set_text(arc->icon, LV_SYMBOL_BATTERY_3);
+            SET_SYMBOL_14(arc->icon, LV_SYMBOL_BATTERY_3);
             break;
         case 3:
-            lv_label_set_text(arc->icon, LV_SYMBOL_BATTERY_2);
+            SET_SYMBOL_14(arc->icon, LV_SYMBOL_BATTERY_2);
             break;
         case 2:
-            lv_label_set_text(arc->icon, LV_SYMBOL_BATTERY_1);
+            SET_SYMBOL_14(arc->icon, LV_SYMBOL_BATTERY_1);
             break;
         case 1:
-            lv_label_set_text(arc->icon, LV_SYMBOL_BATTERY_EMPTY);
+            SET_SYMBOL_14(arc->icon, LV_SYMBOL_BATTERY_EMPTY);
             break;
         }
     }

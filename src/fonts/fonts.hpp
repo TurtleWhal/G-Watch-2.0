@@ -9,7 +9,9 @@ LV_FONT_DECLARE(Outfit_80_Light);
 LV_FONT_DECLARE(FontAwesome_20);
 LV_FONT_DECLARE(FontAwesome_40);
 
+#define SET_SYMBOL_14(obj, sym) lv_obj_set_style_text_font(obj, &FontAwesome_14, 0); lv_label_set_text(obj, sym);
 #define SET_SYMBOL_20(obj, sym) lv_obj_set_style_text_font(obj, &FontAwesome_20, 0); lv_label_set_text(obj, sym);
+#define SET_SYMBOL_32(obj, sym) lv_obj_set_style_text_font(obj, &FontAwesome_32, 0); lv_label_set_text(obj, sym);
 #define SET_SYMBOL_40(obj, sym) lv_obj_set_style_text_font(obj, &FontAwesome_40, 0); lv_label_set_text(obj, sym);
 
 #define FA_PLAY "\xEF\x81\x8B"

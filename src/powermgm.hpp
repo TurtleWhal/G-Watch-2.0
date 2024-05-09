@@ -7,6 +7,8 @@
 #define POWERMGM_PLUGGED_IN _BV(4)
 #define POWERMGM_UNPLUGGED _BV(5)
 #define POWERMGM_MUSIC_UPDATE _BV(6)
+#define POWERMGM_BLE_CONNECT _BV(7)
+#define POWERMGM_BLE_DISCONNECT _BV(8)
 
 void powermgmInit();
 void powermgmLoop();

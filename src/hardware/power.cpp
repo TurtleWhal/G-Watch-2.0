@@ -20,7 +20,8 @@ float percentage = 0;
 float voltage = 0.0;
 bool charging = false;
 
-movingAvg filter(100);
+movingAvg voltFilter(100);
+movingAvg percentFilter(100);
 
 static const float Qcm[2][11] =
     {
@@ -31,15 +32,21 @@ static const float Qcm[2][11] =
         {4017, 4020, 4036, 4039, 4043, 4043, 4060, 4073, 4083, 4097, 4200}  // charge
 };
 
+bool sendPowerBLE(EventBits_t event, void *arg)
+{
+    sendBLEf("{t:\"status\", bat:%i, volt:%0.3f, chg:%i}", sysinfo.bat.percent, voltage / 1000, CHARGING ? 1 : 0);
+    return true;
+}
+
 bool powerPeriodic(EventBits_t event, void *arg)
 {
     float v = ((analogRead(BAT_ADC) * 3300 * VOLT_MULT) / 4096) + 200;
-    voltage = filter.reading(v * 1000) / 1000;
+    voltage = voltFilter.reading(v * 1000) / 1000;
 
-    // Log.verboseln("voltage: %f, filtered: %f", v, filter.reading(v * 1000) / 1000);
+    // Log.verboseln("voltage: %f, voltFiltered: %f", v, voltFilter.reading(v * 1000) / 1000);
     // Serial.print("voltage: ");
     // Serial.print(v);
-    // Serial.print(", filtered: ");
+    // Serial.print(", voltFiltered: ");
     // Serial.println(voltage);
 
     if (sysinfo.bat.voltage != voltage)
@@ -51,10 +58,16 @@ bool powerPeriodic(EventBits_t event, void *arg)
             if (CHARGING)
             {
                 powermgmSendEvent(POWERMGM_PLUGGED_IN);
+
+                percentFilter.reset();
+                voltFilter.reset();
             }
             else
             {
                 powermgmSendEvent(POWERMGM_UNPLUGGED);
+
+                percentFilter.reset();
+                voltFilter.reset();
             }
         }
 
@@ -79,10 +92,10 @@ bool powerPeriodic(EventBits_t event, void *arg)
             float decade = i * 10.0;
             percentage = constrain(decade + 10.0 * ((voltage - Qcm[chrgint][i]) / vol_section), 0.0, 100.0);
 
-            if (sysinfo.bat.percent != (int)percentage + 0.5)
+            if (sysinfo.bat.percent != percentFilter.reading((int)percentage + 0.5))
             {
-                sendBLEf("{t:\"status\", bat:%i, volt:%0.3f, chg:%i}", (int)percentage, voltage / 1000, chrgint);
-                sysinfo.bat.percent = (int)percentage + 0.5;
+                sysinfo.bat.percent = percentFilter.getAvg();
+                sendPowerBLE((EventBits_t)NULL, NULL);
             }
         }
         else
@@ -105,7 +118,10 @@ bool powerInit(EventBits_t event, void *arg)
     digitalWrite(PWR_ON, HIGH);
 #endif // LILYGO_TWATCH_2021
 
-    filter.begin();
+    voltFilter.begin();
+    percentFilter.begin();
+
+    powermgmRegisterCB(sendPowerBLE, POWERMGM_BLE_CONNECT, "PowerConnectBLE");
 
     powermgmRegisterCB(powerPeriodic, POWERMGM_LOOP, "PowerPeriodic");
     return true;
