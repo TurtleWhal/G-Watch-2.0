@@ -20,7 +20,7 @@ esp_pm_lock_handle_t lvgl_lock;
 
 static callback_t *powermgmCallback = NULL;
 
-#define SLEEP_TIMER_MS 5000
+#define SLEEP_TIMER_MS 30000
 
 long sleepTimer = 0;
 uint8_t prevBacklight = 100;

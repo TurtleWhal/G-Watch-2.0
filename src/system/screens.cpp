@@ -2,7 +2,7 @@
 
 #include "powermgm.hpp"
 #include "lvgl.h"
-// #include "system.hpp"
+#include "screens/screens.hpp"
 
 lv_obj_t *scr;
 
@@ -34,6 +34,9 @@ bool screenInit(EventBits_t event, void *arg)
 lv_obj_t *screenCreate(int8_t x, int8_t y)
 {
 
+    x += SCREEN_SCROLL_OFFSET;
+    y += SCREEN_SCROLL_OFFSET;
+
     lv_obj_t *screen = lv_obj_create(scr);
 
     lv_obj_set_size(screen, TFT_WIDTH, TFT_HEIGHT);
@@ -42,6 +45,9 @@ lv_obj_t *screenCreate(int8_t x, int8_t y)
     lv_obj_set_style_radius(screen, 0, LV_PART_MAIN);
     lv_obj_set_style_border_opa(screen, LV_OPA_TRANSP, LV_PART_MAIN);
     lv_obj_set_scroll_dir(screen, LV_DIR_NONE);
+
+    lv_obj_scroll_to_x(scr, TFT_WIDTH * SCREEN_SCROLL_OFFSET, LV_ANIM_OFF);
+    lv_obj_scroll_to_y(scr, TFT_HEIGHT * SCREEN_SCROLL_OFFSET, LV_ANIM_OFF);
 
     return screen;
 }

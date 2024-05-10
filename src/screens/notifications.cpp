@@ -7,7 +7,7 @@
 
 lv_obj_t *notifscr;
 lv_obj_t *notifpanel;
-int8_t notifx = 0, notify = -1;
+int8_t notifx = -1, notify = 0;
 
 lv_obj_t *createNotification()
 {
