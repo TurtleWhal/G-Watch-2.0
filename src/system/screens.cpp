@@ -27,7 +27,7 @@ bool screenInit(EventBits_t event, void *arg)
     lv_obj_remove_flag(scr, LV_OBJ_FLAG_SCROLL_ELASTIC);
     lv_screen_load(scr);
 
-    powermgmRegisterCB(screenPeriodic, POWERMGM_LOOP, "ExampleFunc");
+    powermgmRegisterCB(screenPeriodic, POWERMGM_LOOP_AWAKE, "ExampleFunc");
     return true;
 }
 

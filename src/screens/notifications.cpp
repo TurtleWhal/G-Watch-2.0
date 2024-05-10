@@ -48,7 +48,7 @@ bool notifcreate(EventBits_t event, void *arg)
     // createNotification();
     // createNotification();
 
-    powermgmRegisterCB(notifperiodic, POWERMGM_LOOP, "notifscreeninit");
+    powermgmRegisterCB(notifperiodic, POWERMGM_LOOP_AWAKE, "notifscreeninit");
     return true;
 }
 

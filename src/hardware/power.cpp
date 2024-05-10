@@ -20,8 +20,10 @@ float percentage = 0;
 float voltage = 0.0;
 bool charging = false;
 
-movingAvg voltFilter(100);
-movingAvg percentFilter(100);
+// movingAvg voltFilter(100);
+// movingAvg percentFilter(100);
+movingAvg voltFilter(1);
+movingAvg percentFilter(1);
 
 static const float Qcm[2][11] =
     {
@@ -34,14 +36,12 @@ static const float Qcm[2][11] =
 
 bool sendPowerBLE(EventBits_t event, void *arg)
 {
-    sendBLEf("{t:\"status\", bat:%i, volt:%0.3f, chg:%i}", sysinfo.bat.percent, voltage / 1000, CHARGING ? 1 : 0);
+    sendBLEf("{t:\"status\", bat:%i, chg:%i, volt:%f}", sysinfo.bat.percent, CHARGING ? 1 : 0, voltage / 1000);
     return true;
 }
 
-bool powerPeriodic(EventBits_t event, void *arg)
+void updatePower()
 {
-    float v = ((analogRead(BAT_ADC) * 3300 * VOLT_MULT) / 4096) + 200;
-    voltage = voltFilter.reading(v * 1000) / 1000;
 
     // Log.verboseln("voltage: %f, voltFiltered: %f", v, voltFilter.reading(v * 1000) / 1000);
     // Serial.print("voltage: ");
@@ -52,28 +52,6 @@ bool powerPeriodic(EventBits_t event, void *arg)
     if (sysinfo.bat.voltage != voltage)
     {
         sysinfo.bat.voltage = voltage;
-
-        if (charging != CHARGING)
-        {
-            if (CHARGING)
-            {
-                powermgmSendEvent(POWERMGM_PLUGGED_IN);
-
-                percentFilter.reset();
-                voltFilter.reset();
-            }
-            else
-            {
-                powermgmSendEvent(POWERMGM_UNPLUGGED);
-
-                percentFilter.reset();
-                voltFilter.reset();
-            }
-        }
-
-        charging = CHARGING;
-
-        sysinfo.bat.charging = charging;
 
         uint8_t chrgint = charging ? 1 : 0;
 
@@ -92,9 +70,11 @@ bool powerPeriodic(EventBits_t event, void *arg)
             float decade = i * 10.0;
             percentage = constrain(decade + 10.0 * ((voltage - Qcm[chrgint][i]) / vol_section), 0.0, 100.0);
 
-            if (sysinfo.bat.percent != percentFilter.reading((int)percentage + 0.5))
+            // if (sysinfo.bat.percent != percentFilter.reading((int)percentage + 0.5))
+            if (sysinfo.bat.percent != (int)percentage + 0.5)
             {
-                sysinfo.bat.percent = percentFilter.getAvg();
+                // sysinfo.bat.percent = percentFilter.getAvg();
+                sysinfo.bat.percent = (int)percentage + 0.5;
                 sendPowerBLE((EventBits_t)NULL, NULL);
             }
         }
@@ -103,6 +83,38 @@ bool powerPeriodic(EventBits_t event, void *arg)
             percentage = 100.0;
             sysinfo.bat.percent = 100;
         }
+    }
+}
+
+bool powerPeriodic(EventBits_t event, void *arg)
+{
+    static uint32_t last = 0;
+
+    float v = ((analogRead(BAT_ADC) * 3300 * VOLT_MULT) / 4096) + 200;
+    // voltage = voltFilter.reading(v * 1000) / 1000;
+    voltage = v;
+
+    if (charging != CHARGING)
+    {
+        if (CHARGING)
+        {
+            powermgmSendEvent(POWERMGM_PLUGGED_IN);
+        }
+        else
+        {
+            powermgmSendEvent(POWERMGM_UNPLUGGED);
+        }
+
+        charging = CHARGING;
+        sysinfo.bat.charging = charging;
+        
+        updatePower();
+    }
+
+    if (last + 10000 < millis())
+    {
+        updatePower();
+        last = millis();
     }
 
     return true;

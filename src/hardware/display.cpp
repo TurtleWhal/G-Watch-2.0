@@ -51,6 +51,8 @@ void my_input_read(lv_indev_t *indev, lv_indev_data_t *data)
         last_x = touch.data.x;
         last_y = touch.data.y;
         data->state = LV_INDEV_STATE_PR;
+
+        powermgmTickle();
     }
     else
     {
@@ -204,7 +206,7 @@ bool displayInit(EventBits_t event, void *arg)
 
     xTaskCreatePinnedToCore(backlight_updata, "backlight", 1024 * 10, NULL, 2, &backlightHandle, 1);
 
-    powermgmRegisterCB(displayPeriodic, POWERMGM_LOOP, "DisplayPeriodic");
+    powermgmRegisterCB(displayPeriodic, POWERMGM_LOOP_AWAKE, "DisplayPeriodic");
 
     return true;
 }

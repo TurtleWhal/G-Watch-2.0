@@ -28,12 +28,16 @@ bool BLEtimer = false;
 void parseGB(char *);
 void BLEmsgloop();
 
-bool conn(EventBits_t event, void *arg) {
+bool conn(EventBits_t event, void *arg)
+{
+    Serial.println("BLE connected");
     powermgmSendEvent(POWERMGM_BLE_CONNECT);
     return true;
 }
 
-bool disconn(EventBits_t event, void *arg) {
+bool disconn(EventBits_t event, void *arg)
+{
+    Serial.println("BLE disconnected");
     powermgmSendEvent(POWERMGM_BLE_DISCONNECT);
     return true;
 }
@@ -181,6 +185,7 @@ void parseGB(char *message)
     if (strcmp(notifType, "is_gps_active") == 0)
     {
         sendBLE("{t:\"gps_power\", status: false}");
+        conn((EventBits_t)NULL, NULL);
     }
     else if (strcmp(notifType, "reboot") == 0)
     {

@@ -133,7 +133,7 @@ bool musiccreate(EventBits_t event, void *arg)
 
     musicUpdate((EventBits_t)NULL, NULL);
 
-    powermgmRegisterCB(musicperiodic, POWERMGM_LOOP, "MusicScrPeriodic");
+    powermgmRegisterCB(musicperiodic, POWERMGM_LOOP_AWAKE, "MusicScrPeriodic");
     powermgmRegisterCB(musicUpdate, POWERMGM_MUSIC_UPDATE, "MusicScrUpdate");
     return true;
 }

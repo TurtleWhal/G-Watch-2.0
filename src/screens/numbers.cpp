@@ -162,7 +162,7 @@ bool numberscreate(EventBits_t event, void *arg)
     createArc(&arcs[1], -85, 0);
     createArc(&arcs[2], -58, 64);
 
-    powermgmRegisterCB(numbersperiodic, POWERMGM_LOOP, "numbersscreenperiodic");
+    powermgmRegisterCB(numbersperiodic, POWERMGM_LOOP_AWAKE, "numbersscreenperiodic");
 
     return true;
 }
