@@ -10,48 +10,48 @@ typedef struct
     typedef struct
     {
         // 24 hour hour
-        uint8_t hour;
+        uint8_t hour = 12;
         // 12 hour hour
-        uint8_t hour12;
-        uint8_t minute;
-        uint8_t second;
+        uint8_t hour12 = 12;
+        uint8_t minute = 0;
+        uint8_t second = 0;
         // Milliseconds
-        unsigned long millis;
+        unsigned long millis = 0;
     } TimeInfo;
     TimeInfo time;
 
     typedef struct
     {
         // Formatted Mon Jan 1
-        String strdate;
+        String strdate = "Mon Jan 1";
         // Formatted M/DD/YY
-        String numdate;
+        String numdate = "1/1/70";
 
-        uint8_t month;
+        uint8_t month = 1;
         // day of the month
-        uint8_t day;
-        uint8_t year;
+        uint8_t day = 1;
+        uint8_t year = 1970;
 
         // Day of Week (0-6)
-        uint8_t dow;
+        uint8_t dow = 0;
         // Day of Year (1-365 || 366)
-        uint8_t doy;
+        uint8_t doy = 1;
 
         // Jan, Feb, Mar...
-        String monthname;
+        String monthname = "Jan";
         // Sun, Mon, Tue...
-        String dayname;
+        String dayname = "Sun";
     } DateInfo;
     DateInfo date;
 
     typedef struct
     {
         // Battery Percentage
-        uint8_t percent;
+        uint8_t percent = 0;
         // Battery Voltage in mV
-        float voltage;
+        float voltage = 0.0;
         // is charging
-        bool charging;
+        bool charging = false;
     } BatteryInfo;
     BatteryInfo bat;
 
@@ -61,17 +61,17 @@ typedef struct
 
         typedef struct
         {
-            float x;
-            float y;
-            float z;
+            float x = 0.0;
+            float y = 0.0;
+            float z = 0.0;
         } GyroInfo;
         GyroInfo gyro;
 
         typedef struct
         {
-            float x;
-            float y;
-            float z;
+            float x = 0.0;
+            float y = 0.0;
+            float z = 0.0;
         } AccelInfo;
         AccelInfo acc;
 
@@ -80,7 +80,8 @@ typedef struct
 
     typedef struct
     {
-        uint32_t steps;
+        uint32_t steps = 0;
+        uint32_t goal = 10000;
 
     } HealthInfo;
     HealthInfo health;
