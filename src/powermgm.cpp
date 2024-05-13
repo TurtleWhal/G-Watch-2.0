@@ -7,6 +7,7 @@
 
 #include "powermgm.hpp"
 #include "display.hpp"
+#include "motor.hpp"
 
 extern CST816S touch;
 
@@ -113,6 +114,8 @@ void powermgmInit()
     // gpio_isr_handler_add((gpio_num_t)0, powermgmTickle, NULL);
     // attachInterrupt(TP_INT, powermgmTickle, RISING);
     // attachInterrupt(0, powermgmTickle, RISING);
+
+    motorVibrate(1, 1000);
 
     setBacklightGradual(100, 1000);
     // setBacklight(100);

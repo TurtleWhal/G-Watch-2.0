@@ -1,3 +1,5 @@
 #include "Arduino.h"
 
-void motorVibrate(uint8_t, uint32_t);
+#define HAPTIC_NOTIFICATION 2, 50
+
+void motorVibrate(uint32_t, uint32_t);

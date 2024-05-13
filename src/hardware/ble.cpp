@@ -8,6 +8,7 @@
 #include "ble/blectl.h"
 #include <NimBLEHIDDevice.h>
 
+#include "motor.hpp"
 #include "music.hpp"
 #include "powermgm.hpp"
 
@@ -212,6 +213,10 @@ void parseGB(char *message)
         musicState.playing = ((received["state"].as<String>() == "play") ? true : false);
 
         updateMusicState(&musicState);
+    }
+    else if (strcmp(notifType, "notify") == 0)
+    {
+        motorVibrate(HAPTIC_NOTIFICATION);
     }
 }
 

@@ -2,24 +2,32 @@
 #include "motor.hpp"
 #include "Arduino.h"
 
-int64_t timer;
 bool vibrating;
+uint32_t count;
+uint32_t interval_ms;
 
 bool motorPeriodic(EventBits_t event, void *arg)
 {
     static uint32_t lastms;
-    if (vibrating)
-    {
-        timer -= millis() - lastms;
-        lastms = millis();
 
-        if (timer < 0)
+    if (millis() - lastms > interval_ms && vibrating)
+    {
+        digitalWrite(MOTOR_PIN1, count % 2);
+#ifdef WAVESHARE_ESP32_LCD
+        digitalWrite(MOTOR_PIN2, count % 2);
+#endif
+
+        if (!--count)
         {
             vibrating = false;
-
-            analogWrite(MOTOR_PIN1, 0);
-            analogWrite(MOTOR_PIN2, 0);
+            digitalWrite(MOTOR_PIN1, LOW);
+#ifdef WAVESHARE_ESP32_LCD
+            digitalWrite(MOTOR_PIN2, LOW);
+#endif
+            count = 0;
+            interval_ms = 0xFFFFFFFF;
         }
+        lastms = millis();
     }
     return true;
 }
@@ -28,23 +36,23 @@ bool motorInit(EventBits_t event, void *arg)
 {
 
     pinMode(MOTOR_PIN1, OUTPUT);
+#ifdef WAVESHARE_ESP32_LCD
     pinMode(MOTOR_PIN2, OUTPUT);
+#endif
 
     powermgmRegisterCB(motorPeriodic, POWERMGM_LOOP, "MotorPeriodic");
 
-    motorVibrate(50, 500);
+    // motorVibrate(1, 500);
 
     return true;
 }
 
 // timevalue is unix time in seconds, timezone is offset in hours
-void motorVibrate(uint8_t intensity, uint32_t ms)
+void motorVibrate(uint32_t cnt, uint32_t interval)
 {
-    analogWrite(MOTOR_PIN1, intensity * 2.55);
-    analogWrite(MOTOR_PIN2, intensity * 2.55);
-
+    count = (cnt + 1) * 2;
+    interval_ms = interval;
     vibrating = true;
-    timer = ms;
 }
 
 bool motorsetup = powermgmRegisterCBPrio(motorInit, POWERMGM_INIT, "MotorInit", CALL_CB_FIRST);
