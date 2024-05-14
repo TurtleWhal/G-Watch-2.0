@@ -21,13 +21,6 @@ void setup()
 
   esp_log_level_set("gpio", ESP_LOG_NONE);
 
-  // pm_config.max_freq_mhz = 240;
-  // pm_config.min_freq_mhz = 80;
-  // pm_config.light_sleep_enable = true;
-  // ESP_ERROR_CHECK(esp_pm_configure(&pm_config));
-  // setCpuFrequencyMhz(240);
-  // esp_pm_lock_create(ESP_PM_NO_LIGHT_SLEEP, 0, NULL, &lvgl_lock);
-
   Wire.begin(IIC_SDA, IIC_SCL);
 
 
@@ -71,14 +64,4 @@ void setup()
 void loop()
 {
   powermgmLoop();
-
-  // esp_pm_lock_acquire(lvgl_lock);
-
-  // pm_config.max_freq_mhz = 240;
-  // pm_config.min_freq_mhz = 240;
-  // pm_config.light_sleep_enable = false;
-  // ESP_ERROR_CHECK(esp_pm_configure(&pm_config));
-  // uint32_t delaytime = displayPeriodic();
-
-  // esp_pm_lock_release(lvgl_lock);
 }

@@ -30,7 +30,7 @@ typedef struct
         uint8_t month = 1;
         // day of the month
         uint8_t day = 1;
-        uint8_t year = 1970;
+        uint16_t year = 1970;
 
         // Day of Week (0-6)
         uint8_t dow = 0;

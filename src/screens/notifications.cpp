@@ -6,13 +6,13 @@
 #include "powermgm.hpp"
 #include "motor.hpp"
 
-lv_obj_t *notifscr;
+lv_obj_t *notifsscr;
 lv_obj_t *notifpanel;
 int8_t notifx = -1, notify = 0;
 
 lv_obj_t *createNotification()
 {
-    lv_obj_t *notif = lv_obj_create(notifscr);
+    lv_obj_t *notif = lv_obj_create(notifsscr);
     lv_obj_set_size(notif, 180, 40);
     lv_obj_set_style_radius(notif, 25, LV_PART_MAIN);
 
@@ -23,7 +23,7 @@ void click(lv_event_t *e) {
     motorVibrate(HAPTIC_NOTIFICATION);
 }
 
-bool notifperiodic(EventBits_t event, void *arg)
+bool notifsperiodic(EventBits_t event, void *arg)
 {
     // if (ON_CURRENT_SCREEN(notifx, notify))
     // {
@@ -33,11 +33,11 @@ bool notifperiodic(EventBits_t event, void *arg)
     return true;
 }
 
-bool notifcreate(EventBits_t event, void *arg)
+bool notifsscreate(EventBits_t event, void *arg)
 {
-    notifscr = screenCreate(notifx, notify);
+    notifsscr = screenCreate(notifx, notify);
 
-    // notifpanel = lv_obj_create(notifscr);
+    // notifpanel = lv_obj_create(notifsscr);
 
     // lv_obj_set_size(notifpanel, 200, 180);
     // lv_obj_set_align(notifpanel, LV_ALIGN_CENTER);
@@ -53,7 +53,7 @@ bool notifcreate(EventBits_t event, void *arg)
     // createNotification();
     // createNotification();
 
-    lv_obj_t *btn = lv_button_create(notifscr);
+    lv_obj_t *btn = lv_button_create(notifsscr);
     lv_obj_set_size(btn, 180, 40);
     lv_obj_set_style_radius(btn, 25, LV_PART_MAIN);
     lv_obj_center(btn);
@@ -63,8 +63,8 @@ bool notifcreate(EventBits_t event, void *arg)
 
     lv_obj_add_event_cb(btn, click, LV_EVENT_PRESSED, NULL);
 
-    powermgmRegisterCB(notifperiodic, POWERMGM_LOOP_AWAKE, "notifscreeninit");
+    powermgmRegisterCB(notifsperiodic, POWERMGM_LOOP_AWAKE, "notifsscreeninit");
     return true;
 }
 
-bool notifsetup = powermgmRegisterCBPrio(notifcreate, POWERMGM_INIT, "notifscreeninit", CALL_CB_LAST);
+bool notifssetup = powermgmRegisterCBPrio(notifsscreate, POWERMGM_INIT, "notifsscreeninit", CALL_CB_LAST);

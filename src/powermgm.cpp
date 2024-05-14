@@ -115,7 +115,7 @@ void powermgmInit()
     // attachInterrupt(TP_INT, powermgmTickle, RISING);
     // attachInterrupt(0, powermgmTickle, RISING);
 
-    motorVibrate(1, 1000);
+    // motorVibrate(1, 400);
 
     setBacklightGradual(100, 1000);
     // setBacklight(100);

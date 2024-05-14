@@ -11,6 +11,7 @@
 #include "motor.hpp"
 #include "music.hpp"
 #include "powermgm.hpp"
+#include "notification.hpp"
 
 #define BLE_TERM_CHAR "\x1e" // 0x1e is "record seperator" in ascii and is used to seperate messages
 
@@ -216,7 +217,21 @@ void parseGB(char *message)
     }
     else if (strcmp(notifType, "notify") == 0)
     {
+        powermgmTickle();
+        
         motorVibrate(HAPTIC_NOTIFICATION);
+
+        Notification_t notif;
+
+        if (received["title"].as<String>() != "")
+            notif.title = received["title"].as<String>();
+        else
+            notif.title = received["subject"].as<String>();
+
+        notif.body = received["body"].as<String>();
+        notif.sender = received["sender"].as<String>();
+
+        showNotification(&notif);
     }
 }
 
