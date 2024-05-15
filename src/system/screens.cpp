@@ -4,7 +4,7 @@
 #include "lvgl.h"
 #include "screens/screens.hpp"
 
-#define SCROLLBAR_WIDTH 90
+#define SCROLLBAR_WIDTH 30
 #define SCROLLBAR_START (360 - SCROLLBAR_WIDTH / 2)
 
 lv_obj_t *scr;
@@ -77,12 +77,17 @@ void addGestureCB(lv_obj_t *obj, lv_dir_t dir, lv_event_cb_t cb)
 
 lv_obj_t *createCurvedScrollbar(lv_obj_t *scr)
 {
+    lv_obj_set_scrollbar_mode(scr, LV_SCROLLBAR_MODE_OFF);
+
     lv_obj_t *bar = lv_arc_create(scr);
     lv_obj_set_size(bar, 230, 230);
     lv_obj_center(bar);
 
-    lv_obj_set_style_arc_color(bar, lv_color_hex(0x888888), LV_PART_MAIN);
-    lv_obj_set_style_arc_color(bar, lv_color_hex(0xeeeeee), LV_PART_INDICATOR);
+    lv_obj_add_flag(bar, LV_OBJ_FLAG_FLOATING);
+
+    lv_obj_set_style_arc_color(bar, lv_color_hex(0xaaaaaa), LV_PART_MAIN);
+    lv_obj_set_style_arc_opa(bar, 100, LV_PART_MAIN);
+    lv_obj_set_style_arc_color(bar, lv_color_hex(0xaaaaaa), LV_PART_INDICATOR);
 
     lv_obj_set_style_arc_width(bar, 5, LV_PART_MAIN);
     lv_obj_set_style_arc_width(bar, 5, LV_PART_INDICATOR);
@@ -92,13 +97,15 @@ lv_obj_t *createCurvedScrollbar(lv_obj_t *scr)
 
     lv_arc_set_bg_angles(bar, SCROLLBAR_START, SCROLLBAR_START + SCROLLBAR_WIDTH);
 
-    lv_arc_set_range(bar, 0, lv_obj_get_self_height(scr) + TFT_HEIGHT);
+    int height = lv_obj_get_scroll_top(scr) + lv_obj_get_scroll_bottom(scr) + TFT_HEIGHT;
 
-    // lv_arc_set_rotation(bar, 270);
+    double mod = (SCROLLBAR_WIDTH + 0.0) / (height + 0.0);
 
-    // lv_arc_set_angles(bar, SCROLLBAR_START + lv_obj_get_scroll_y(bar), SCROLLBAR_START + lv_obj_get_scroll_y(bar) + TFT_HEIGHT);
-    // lv_arc_set_angles(bar, lv_obj_get_scroll_y(bar), lv_obj_get_scroll_y(bar) + TFT_HEIGHT);
-    // lv_arc_set_angles(bar, -20, 20);
+    int start = SCROLLBAR_START + (lv_obj_get_scroll_y(scr) * mod);
+    int end = SCROLLBAR_START + ((lv_obj_get_scroll_y(scr) + TFT_HEIGHT) * mod);
+
+    lv_arc_set_range(bar, 0, height);
+    lv_arc_set_angles(bar, constrain(start, SCROLLBAR_START, SCROLLBAR_START + SCROLLBAR_WIDTH), constrain(end, SCROLLBAR_START, SCROLLBAR_START + SCROLLBAR_WIDTH));
 
     return bar;
 }
@@ -108,18 +115,15 @@ void curvedScrollbarCB(lv_event_t *e)
     lv_obj_t *scr = (lv_obj_t *)lv_event_get_target(e);
     lv_obj_t *bar = (lv_obj_t *)lv_event_get_user_data(e);
 
-    double mod = 90 / (lv_obj_get_self_height(scr) + TFT_HEIGHT);
-    // double mod = 0.1875;
+    int height = lv_obj_get_scroll_top(scr) + lv_obj_get_scroll_bottom(scr) + TFT_HEIGHT;
 
-    Log.verbose("Scroll: %i, Height: %i, Mod: ", lv_obj_get_scroll_y(scr), lv_obj_get_self_height(scr) + TFT_HEIGHT);
-    Serial.println(90 / (lv_obj_get_height(scr) + TFT_HEIGHT));
+    double mod = (SCROLLBAR_WIDTH + 0.0) / (height + 0.0);
 
-    lv_arc_set_range(bar, 0, lv_obj_get_self_height(scr) + TFT_HEIGHT);
-    lv_arc_set_angles(bar, SCROLLBAR_START + (lv_obj_get_scroll_y(scr) * mod), SCROLLBAR_START + (lv_obj_get_scroll_y(scr) + TFT_HEIGHT) * mod);
-    // lv_arc_set_angles(bar, SCROLLBAR_START + 10, SCROLLBAR_START + 20);
-    // lv_arc_set_value(bar, lv_obj_get_scroll_y(scr));
+    int start = SCROLLBAR_START + (lv_obj_get_scroll_y(scr) * mod);
+    int end = SCROLLBAR_START + ((lv_obj_get_scroll_y(scr) + TFT_HEIGHT) * mod);
 
-    lv_obj_set_y(bar, lv_obj_get_scroll_y(scr));
+    lv_arc_set_range(bar, 0, height);
+    lv_arc_set_angles(bar, constrain(start, SCROLLBAR_START, SCROLLBAR_START + SCROLLBAR_WIDTH), constrain(end, SCROLLBAR_START, SCROLLBAR_START + SCROLLBAR_WIDTH));
 }
 
 bool screensetup = powermgmRegisterCBPrio(screenInit, POWERMGM_INIT, "ScreenInit", CALL_CB_MIDDLE);
