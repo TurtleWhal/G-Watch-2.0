@@ -85,9 +85,9 @@ lv_obj_t *createCurvedScrollbar(lv_obj_t *scr)
 
     lv_obj_add_flag(bar, LV_OBJ_FLAG_FLOATING);
 
-    lv_obj_set_style_arc_color(bar, lv_color_hex(0xaaaaaa), LV_PART_MAIN);
-    lv_obj_set_style_arc_opa(bar, 100, LV_PART_MAIN);
-    lv_obj_set_style_arc_color(bar, lv_color_hex(0xaaaaaa), LV_PART_INDICATOR);
+    lv_obj_set_style_arc_color(bar, lv_color_hex(0xbbbbbb), LV_PART_MAIN);
+    lv_obj_set_style_arc_opa(bar, LV_OPA_40, LV_PART_MAIN);
+    lv_obj_set_style_arc_color(bar, lv_color_hex(0xbbbbbb), LV_PART_INDICATOR);
 
     lv_obj_set_style_arc_width(bar, 5, LV_PART_MAIN);
     lv_obj_set_style_arc_width(bar, 5, LV_PART_INDICATOR);
@@ -97,15 +97,10 @@ lv_obj_t *createCurvedScrollbar(lv_obj_t *scr)
 
     lv_arc_set_bg_angles(bar, SCROLLBAR_START, SCROLLBAR_START + SCROLLBAR_WIDTH);
 
-    int height = lv_obj_get_scroll_top(scr) + lv_obj_get_scroll_bottom(scr) + TFT_HEIGHT;
+    lv_obj_scroll_to_x(scr, 0, LV_ANIM_OFF);
 
-    double mod = (SCROLLBAR_WIDTH + 0.0) / (height + 0.0);
-
-    int start = SCROLLBAR_START + (lv_obj_get_scroll_y(scr) * mod);
-    int end = SCROLLBAR_START + ((lv_obj_get_scroll_y(scr) + TFT_HEIGHT) * mod);
-
-    lv_arc_set_range(bar, 0, height);
-    lv_arc_set_angles(bar, constrain(start, SCROLLBAR_START, SCROLLBAR_START + SCROLLBAR_WIDTH), constrain(end, SCROLLBAR_START, SCROLLBAR_START + SCROLLBAR_WIDTH));
+    lv_obj_add_event_cb(scr, curvedScrollbarCB, LV_EVENT_SCROLL, bar);
+    // lv_obj_send_event(scr, LV_EVENT_SCROLL, bar);
 
     return bar;
 }
@@ -117,6 +112,16 @@ void curvedScrollbarCB(lv_event_t *e)
 
     int height = lv_obj_get_scroll_top(scr) + lv_obj_get_scroll_bottom(scr) + TFT_HEIGHT;
 
+    Log.verboseln("Scrollbar Height: %i, Scroll Y: %i", height, lv_obj_get_scroll_y(scr));
+
+    if (height <= TFT_HEIGHT)
+    {
+        lv_obj_add_flag(bar, LV_OBJ_FLAG_HIDDEN);
+        return;
+    }
+
+    lv_obj_remove_flag(bar, LV_OBJ_FLAG_HIDDEN);
+
     double mod = (SCROLLBAR_WIDTH + 0.0) / (height + 0.0);
 
     int start = SCROLLBAR_START + (lv_obj_get_scroll_y(scr) * mod);
@@ -124,6 +129,15 @@ void curvedScrollbarCB(lv_event_t *e)
 
     lv_arc_set_range(bar, 0, height);
     lv_arc_set_angles(bar, constrain(start, SCROLLBAR_START, SCROLLBAR_START + SCROLLBAR_WIDTH), constrain(end, SCROLLBAR_START, SCROLLBAR_START + SCROLLBAR_WIDTH));
+
+    // if (lv_obj_is_scrolling(scr))
+    // {
+    //     lv_obj_set_style_arc_opa(bar, LV_OPA_40, LV_PART_MAIN);
+    //     lv_obj_set_style_arc_opa(bar, LV_OPA_100, LV_PART_INDICATOR);
+    // } else {
+    //     lv_obj_set_style_arc_opa(bar, LV_OPA_40, LV_PART_MAIN);
+    //     lv_obj_set_style_arc_opa(bar, LV_OPA_60, LV_PART_INDICATOR);
+    // }
 }
 
 bool screensetup = powermgmRegisterCBPrio(screenInit, POWERMGM_INIT, "ScreenInit", CALL_CB_MIDDLE);
