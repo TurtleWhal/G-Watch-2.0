@@ -30,25 +30,38 @@ void createSetting(Setting_t *data)
     lv_obj_t *setting = lv_obj_create(settingsscr);
     lv_obj_set_size(setting, 180, 40);
     lv_obj_set_style_radius(setting, 20, LV_PART_MAIN);
+    lv_obj_set_scroll_dir(setting, LV_DIR_NONE);
 
     lv_obj_t *title = lv_label_create(setting);
     lv_label_set_text(title, data->title.c_str());
+
+    lv_obj_align(title, LV_ALIGN_LEFT_MID, 0, 0);
 
     switch (data->type)
     {
     case SETTING_TYPE_SWITCH:
     {
         lv_obj_t *switchobj = lv_switch_create(setting);
+        lv_obj_align(switchobj, LV_ALIGN_RIGHT_MID, 10, 0);
+
         break;
     }
     case SETTING_TYPE_TEXT:
     {
         lv_obj_t *text = lv_textarea_create(setting);
+        lv_obj_set_size(text, 100, 30);
+        lv_obj_align(text, LV_ALIGN_RIGHT_MID, 10, 0);
+        lv_obj_set_style_radius(text, 15, LV_PART_MAIN);
+        lv_obj_set_scroll_dir(text, LV_DIR_HOR);
         break;
     }
     case SETTING_TYPE_NUMBER:
     {
         lv_obj_t *number = lv_textarea_create(setting);
+        lv_obj_set_size(number, 100, 30);
+        lv_obj_align(number, LV_ALIGN_RIGHT_MID, 10, 0);
+        lv_obj_set_style_radius(number, 15, LV_PART_MAIN);
+        lv_obj_set_scroll_dir(number, LV_DIR_HOR);
         break;
     }
     }
@@ -69,6 +82,8 @@ bool settingsscreate(EventBits_t event, void *arg)
     settingsscr = screenCreate(settingsx, settingsy);
 
     lv_obj_set_flex_flow(settingsscr, LV_FLEX_FLOW_COLUMN);
+
+    lv_obj_set_flex_align(settingsscr, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
 
     Setting_t setting1;
     setting1.title = "Switch";
