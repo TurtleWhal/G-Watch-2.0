@@ -3,6 +3,7 @@
 #include "powermgm.hpp"
 #include "lvgl.h"
 #include "screens/screens.hpp"
+#include "fonts/fonts.hpp"
 
 #define SCROLLBAR_WIDTH 30
 #define SCROLLBAR_START (360 - SCROLLBAR_WIDTH / 2)
@@ -138,6 +139,106 @@ void curvedScrollbarCB(lv_event_t *e)
     //     lv_obj_set_style_arc_opa(bar, LV_OPA_40, LV_PART_MAIN);
     //     lv_obj_set_style_arc_opa(bar, LV_OPA_60, LV_PART_INDICATOR);
     // }
+}
+
+void createKeyboard(lv_obj_t *scr, lv_obj_t *dest)
+{
+    lv_obj_t *kb = lv_obj_create(scr);
+    lv_obj_t *text;
+
+    lv_obj_set_style_bg_opa(kb, LV_OPA_80, LV_PART_MAIN);
+    lv_obj_set_size(kb, 240, 240);
+    lv_obj_add_flag(kb, LV_OBJ_FLAG_FLOATING);
+    lv_obj_set_style_border_opa(kb, LV_OPA_0, LV_PART_MAIN);
+    lv_obj_align(kb, LV_ALIGN_CENTER, 0, 0);
+
+    lv_obj_t *arc = lv_arc_create(kb);
+    lv_arc_set_bg_angles(arc, 20, 160);
+    lv_obj_set_size(arc, 220, 220);
+    lv_obj_center(arc);
+    lv_arc_set_range(arc, 0, 26);
+    lv_arc_set_value(arc, 0);
+    lv_arc_set_mode(arc, LV_ARC_MODE_REVERSE);
+
+    lv_obj_t *nxt = lv_button_create(kb);
+    lv_obj_t *prv = lv_button_create(kb);
+
+    lv_obj_set_size(nxt, 40, 40);
+    lv_obj_set_size(prv, 40, 40);
+    lv_obj_set_style_radius(prv, 20, LV_PART_MAIN);
+    lv_obj_set_style_radius(nxt, 20, LV_PART_MAIN);
+
+    lv_obj_align(prv, LV_ALIGN_CENTER, -45, 40);
+    lv_obj_align(nxt, LV_ALIGN_CENTER, 45, 40);
+
+    lv_obj_t *nxtlbl = lv_label_create(nxt);
+    lv_obj_t *curlbl = lv_label_create(kb);
+    lv_obj_t *prvlbl = lv_label_create(prv);
+
+    lv_obj_center(nxtlbl);
+    lv_obj_align(curlbl, LV_ALIGN_CENTER, 0, 50);
+    lv_obj_center(prvlbl);
+
+    lv_obj_set_style_text_font(nxtlbl, &Outfit_20, 0);
+    lv_obj_set_style_text_font(curlbl, &Outfit_32, 0);
+    lv_obj_set_style_text_font(prvlbl, &Outfit_20, 0);
+
+    lv_label_set_text(nxtlbl, "B");
+    lv_label_set_text(curlbl, "A");
+    lv_label_set_text(prvlbl, "Z");
+
+    lv_obj_t *accept = lv_button_create(kb);
+    lv_obj_t *apply = lv_button_create(kb);
+    lv_obj_t *back = lv_button_create(kb);
+    lv_obj_t *del = lv_button_create(kb);
+
+    lv_obj_set_size(accept, 50, 50);
+    lv_obj_set_size(apply, 50, 50);
+    lv_obj_set_size(back, 40, 40);
+    lv_obj_set_size(del, 40, 40);
+
+    lv_obj_set_style_radius(accept, 25, LV_PART_MAIN);
+    lv_obj_set_style_radius(apply, 25, LV_PART_MAIN);
+    lv_obj_set_style_radius(back, 20, LV_PART_MAIN);
+    lv_obj_set_style_radius(del, 20, LV_PART_MAIN);
+
+    lv_obj_align(accept, LV_ALIGN_CENTER, 80, -10);
+    lv_obj_align(apply, LV_ALIGN_CENTER, -80, -10);
+    lv_obj_align(back, LV_ALIGN_CENTER, -65, -65);
+    lv_obj_align(del, LV_ALIGN_CENTER, 65, -65);
+
+    lv_obj_t *acceptlbl = lv_label_create(accept);
+    lv_obj_t *applylbl = lv_label_create(apply);
+    lv_obj_t *backlbl = lv_label_create(back);
+    lv_obj_t *dellbl = lv_label_create(del);
+
+    lv_obj_center(acceptlbl);
+    lv_obj_center(applylbl);
+    lv_obj_center(backlbl);
+    lv_obj_center(dellbl);
+
+    SET_SYMBOL_20(acceptlbl, LV_SYMBOL_UP);
+    SET_SYMBOL_20(applylbl, LV_SYMBOL_OK);
+    SET_SYMBOL_20(backlbl, LV_SYMBOL_CLOSE);
+    SET_SYMBOL_20(dellbl, LV_SYMBOL_BACKSPACE);
+
+    lv_obj_add_event_cb(accept, [](lv_event_t *e)
+                        { lv_textarea_set_text((lv_obj_t *)e->user_data[0], (char *)e->user_data[1]); lv_obj_delete((lv_obj_t *)e->user_data[2]); }, LV_EVENT_CLICKED, (void *){dest, lv_textarea_get_text(text), kb});
+    lv_obj_add_event_cb(apply, [](lv_event_t *e)
+                        { lv_textarea_add_char((lv_obj_t *)e->user_data[0], (char)e->user_data[1]); }, LV_EVENT_CLICKED, (void *){text, lv_label_get_letter_on(curlbl, 0, false)});
+    lv_obj_add_event_cb(back, [](lv_event_t *e)
+                        { lv_obj_delete((lv_obj_t *)e->user_data); }, LV_EVENT_CLICKED, kb);
+    lv_obj_add_event_cb(del, [](lv_event_t *e)
+                        { lv_textarea_delete_char((lv_obj_t *)e->user_data); }, LV_EVENT_CLICKED, text);
+
+    text = lv_textarea_create(kb);
+    lv_obj_align(text, LV_ALIGN_CENTER, 0, -15);
+    lv_obj_set_style_radius(text, 15, LV_PART_MAIN);
+    lv_obj_set_style_bg_color(text, lv_color_black(), LV_PART_MAIN);
+    lv_obj_set_size(text, 100, 30);
+    lv_obj_set_style_text_font(text, &Outfit_20, 0);
+    lv_textarea_set_one_line(text, true);
+    // lv_obj_send_event(text, LV_EVENT_CLICKED, NULL);
 }
 
 bool screensetup = powermgmRegisterCBPrio(screenInit, POWERMGM_INIT, "ScreenInit", CALL_CB_MIDDLE);

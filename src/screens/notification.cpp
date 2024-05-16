@@ -52,11 +52,6 @@ bool notifcreate(EventBits_t event, void *arg)
     lv_obj_set_width(body, 160);
     lv_label_set_text(body, "Notification Body");
 
-    Notification_t temp;
-    temp.title = "Test Notification Title";
-    temp.body = "Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body Test Notification Body";
-    showNotification(&temp);
-
     powermgmRegisterCB(notifperiodic, POWERMGM_LOOP_AWAKE, "notifscreeninit");
     return true;
 }

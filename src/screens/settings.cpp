@@ -101,6 +101,8 @@ bool settingsscreate(EventBits_t event, void *arg)
     createSetting(&setting2);
     createSetting(&setting3);
 
+    createKeyboard(settingsscr);
+
     preferences.begin("Settings", false);
 
     powermgmRegisterCB(settingsperiodic, POWERMGM_LOOP_AWAKE, "settingsscreeninit");

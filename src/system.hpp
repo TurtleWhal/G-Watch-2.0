@@ -88,6 +88,6 @@ typedef struct
 
 } SystemInfo;
 
-#endif
+#endif // SYSINFO
 
 extern SystemInfo sysinfo;
