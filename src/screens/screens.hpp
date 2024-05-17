@@ -12,6 +12,7 @@
 
 lv_obj_t *screenCreate(int8_t, int8_t);
 void setScreen(lv_obj_t *, lv_screen_load_anim_t = LV_SCR_LOAD_ANIM_FADE_ON);
+void setScroll(lv_dir_t);
 void addGestureCB(lv_obj_t *, lv_dir_t, lv_event_cb_t);
 void curvedScrollbarCB(lv_event_t *);
 lv_obj_t *createCurvedScrollbar(lv_obj_t *);

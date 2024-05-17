@@ -10,6 +10,7 @@
 #define POWERMGM_MUSIC_UPDATE _BV(7)
 #define POWERMGM_BLE_CONNECT _BV(8)
 #define POWERMGM_BLE_DISCONNECT _BV(9)
+#define POWERMGM_SCREEN_CHANGE _BV(10)
 
 void powermgmInit();
 void powermgmLoop();

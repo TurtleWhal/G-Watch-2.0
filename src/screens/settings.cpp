@@ -71,11 +71,22 @@ void createSetting(Setting_t *data)
     }
 }
 
+bool settingsLoad(EventBits_t event, void *arg)
+{
+
+    if (ON_CURRENT_SCREEN(settingsx, settingsy))
+    {
+        setScroll(LV_DIR_HOR);
+    }
+
+    return true;
+}
+
 bool settingsperiodic(EventBits_t event, void *arg)
 {
-    // if (ON_CURRENT_SCREEN(notifx, notify))
+    // if (ON_CURRENT_SCREEN(settingsx, settingsy))
     // {
-    //     Log.verboseln("on Notif screen");
+    //     Log.verboseln("on Settings screen");
     // }
 
     return true;
@@ -104,10 +115,18 @@ bool settingsscreate(EventBits_t event, void *arg)
     createSetting(&setting1);
     createSetting(&setting2);
     createSetting(&setting3);
+    createSetting(&setting1);
+    createSetting(&setting2);
+    createSetting(&setting1);
+    createSetting(&setting1);
+    createSetting(&setting1);
+    createSetting(&setting1);
+    createSetting(&setting1);
 
     preferences.begin("Settings", false);
 
     powermgmRegisterCB(settingsperiodic, POWERMGM_LOOP_AWAKE, "settingsscreeninit");
+    powermgmRegisterCB(settingsLoad, POWERMGM_SCREEN_CHANGE, "settingsscreenload");
     return true;
 }
 

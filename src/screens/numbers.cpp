@@ -124,6 +124,17 @@ void batteryCallback(uint8_t arcid)
     }
 }
 
+bool numbersLoad(EventBits_t event, void *arg)
+{
+
+    if (ON_CURRENT_SCREEN(numberx, numbery))
+    {
+        setScroll(LV_DIR_ALL);
+    }
+
+    return true;
+}
+
 bool numbersperiodic(EventBits_t event, void *arg)
 {
     if (ON_CURRENT_SCREEN(numberx, numbery))
@@ -199,6 +210,7 @@ bool numberscreate(EventBits_t event, void *arg)
     createArc(1, -58, 64, LV_SYMBOL_BATTERY_FULL, batteryCallback);
 
     powermgmRegisterCB(numbersperiodic, POWERMGM_LOOP_AWAKE, "numbersscreenperiodic");
+    powermgmRegisterCB(numbersLoad, POWERMGM_SCREEN_CHANGE, "numbersscreenload");
 
     return true;
 }

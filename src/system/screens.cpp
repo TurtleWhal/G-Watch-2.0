@@ -29,6 +29,10 @@ bool screenInit(EventBits_t event, void *arg)
     lv_obj_set_scrollbar_mode(scr, LV_SCROLLBAR_MODE_OFF);
 
     lv_obj_remove_flag(scr, LV_OBJ_FLAG_SCROLL_ELASTIC);
+
+    lv_obj_add_event_cb(scr, [](lv_event_t *e)
+                        { powermgmSendEvent(POWERMGM_SCREEN_CHANGE); }, LV_EVENT_SCROLL_END, NULL);
+
     lv_screen_load(scr);
 
     powermgmRegisterCB(screenPeriodic, POWERMGM_LOOP_AWAKE, "ScreenPeriodic");
@@ -62,6 +66,11 @@ void setScreen(lv_obj_t *screen, lv_screen_load_anim_t anim)
         screen = scr;
 
     lv_screen_load_anim(screen, anim, 100, 0, 0);
+}
+
+void setScroll(lv_dir_t dir)
+{
+    lv_obj_set_scroll_dir(scr, dir);
 }
 
 lv_dir_t gestdir;
@@ -173,10 +182,10 @@ void createKeyboard(lv_obj_t *scr, lv_obj_t *dest, char *accepted)
     lv_obj_t *nxt = lv_button_create(kb);
     lv_obj_t *prv = lv_button_create(kb);
 
-    lv_obj_set_size(nxt, 40, 40);
-    lv_obj_set_size(prv, 40, 40);
-    lv_obj_set_style_radius(prv, 20, LV_PART_MAIN);
-    lv_obj_set_style_radius(nxt, 20, LV_PART_MAIN);
+    lv_obj_set_size(nxt, 50, 50);
+    lv_obj_set_size(prv, 50, 50);
+    lv_obj_set_style_radius(prv, 25, LV_PART_MAIN);
+    lv_obj_set_style_radius(nxt, 25, LV_PART_MAIN);
 
     lv_obj_align(prv, LV_ALIGN_CENTER, -45, 40);
     lv_obj_align(nxt, LV_ALIGN_CENTER, 45, 40);
@@ -189,9 +198,9 @@ void createKeyboard(lv_obj_t *scr, lv_obj_t *dest, char *accepted)
     lv_obj_align(curlbl, LV_ALIGN_CENTER, 0, 50);
     lv_obj_center(prvlbl);
 
-    lv_obj_set_style_text_font(nxtlbl, &Outfit_20, 0);
+    lv_obj_set_style_text_font(nxtlbl, &Outfit_32, 0);
     lv_obj_set_style_text_font(curlbl, &Outfit_32, 0);
-    lv_obj_set_style_text_font(prvlbl, &Outfit_20, 0);
+    lv_obj_set_style_text_font(prvlbl, &Outfit_32, 0);
 
     lv_label_set_text_fmt(nxtlbl, "%c", chars[charIdx + 1 % charLength]);
     lv_label_set_text_fmt(curlbl, "%c", chars[charIdx]);
