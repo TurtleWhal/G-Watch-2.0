@@ -141,8 +141,16 @@ void curvedScrollbarCB(lv_event_t *e)
     // }
 }
 
-void createKeyboard(lv_obj_t *scr, lv_obj_t *dest)
+char *chars = KEYBOARD_CHARS_ALL;
+uint8_t charLength = strlen(chars);
+uint8_t charIdx = 1;
+
+void createKeyboard(lv_obj_t *scr, lv_obj_t *dest, char *accepted)
 {
+    chars = accepted;
+    charLength = strlen(accepted);
+    charIdx = 1;
+
     lv_obj_t *kb = lv_obj_create(scr);
     lv_obj_t *text;
 
@@ -150,15 +158,17 @@ void createKeyboard(lv_obj_t *scr, lv_obj_t *dest)
     lv_obj_set_size(kb, 240, 240);
     lv_obj_add_flag(kb, LV_OBJ_FLAG_FLOATING);
     lv_obj_set_style_border_opa(kb, LV_OPA_0, LV_PART_MAIN);
-    lv_obj_align(kb, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_center(kb);
+    lv_obj_set_scroll_dir(kb, LV_DIR_NONE);
 
     lv_obj_t *arc = lv_arc_create(kb);
     lv_arc_set_bg_angles(arc, 20, 160);
     lv_obj_set_size(arc, 220, 220);
     lv_obj_center(arc);
-    lv_arc_set_range(arc, 0, 26);
+    lv_arc_set_range(arc, 0, charLength);
     lv_arc_set_value(arc, 0);
     lv_arc_set_mode(arc, LV_ARC_MODE_REVERSE);
+    lv_obj_remove_flag(arc, LV_OBJ_FLAG_ADV_HITTEST);
 
     lv_obj_t *nxt = lv_button_create(kb);
     lv_obj_t *prv = lv_button_create(kb);
@@ -183,9 +193,9 @@ void createKeyboard(lv_obj_t *scr, lv_obj_t *dest)
     lv_obj_set_style_text_font(curlbl, &Outfit_32, 0);
     lv_obj_set_style_text_font(prvlbl, &Outfit_20, 0);
 
-    lv_label_set_text(nxtlbl, "B");
-    lv_label_set_text(curlbl, "A");
-    lv_label_set_text(prvlbl, "Z");
+    lv_label_set_text_fmt(nxtlbl, "%c", chars[charIdx + 1 % charLength]);
+    lv_label_set_text_fmt(curlbl, "%c", chars[charIdx]);
+    lv_label_set_text_fmt(prvlbl, "%c", chars[charIdx - 1 % charLength]);
 
     lv_obj_t *accept = lv_button_create(kb);
     lv_obj_t *apply = lv_button_create(kb);
@@ -222,15 +232,6 @@ void createKeyboard(lv_obj_t *scr, lv_obj_t *dest)
     SET_SYMBOL_20(backlbl, LV_SYMBOL_CLOSE);
     SET_SYMBOL_20(dellbl, LV_SYMBOL_BACKSPACE);
 
-    lv_obj_add_event_cb(accept, [](lv_event_t *e)
-                        { lv_textarea_set_text((lv_obj_t *)e->user_data[0], (char *)e->user_data[1]); lv_obj_delete((lv_obj_t *)e->user_data[2]); }, LV_EVENT_CLICKED, (void *){dest, lv_textarea_get_text(text), kb});
-    lv_obj_add_event_cb(apply, [](lv_event_t *e)
-                        { lv_textarea_add_char((lv_obj_t *)e->user_data[0], (char)e->user_data[1]); }, LV_EVENT_CLICKED, (void *){text, lv_label_get_letter_on(curlbl, 0, false)});
-    lv_obj_add_event_cb(back, [](lv_event_t *e)
-                        { lv_obj_delete((lv_obj_t *)e->user_data); }, LV_EVENT_CLICKED, kb);
-    lv_obj_add_event_cb(del, [](lv_event_t *e)
-                        { lv_textarea_delete_char((lv_obj_t *)e->user_data); }, LV_EVENT_CLICKED, text);
-
     text = lv_textarea_create(kb);
     lv_obj_align(text, LV_ALIGN_CENTER, 0, -15);
     lv_obj_set_style_radius(text, 15, LV_PART_MAIN);
@@ -238,7 +239,66 @@ void createKeyboard(lv_obj_t *scr, lv_obj_t *dest)
     lv_obj_set_size(text, 100, 30);
     lv_obj_set_style_text_font(text, &Outfit_20, 0);
     lv_textarea_set_one_line(text, true);
-    // lv_obj_send_event(text, LV_EVENT_CLICKED, NULL);
+    lv_textarea_set_text(text, lv_textarea_get_text(dest));
+
+    // attach callbacks
+
+    text->user_data = curlbl;
+    dest->user_data = text;
+
+    lv_obj_add_event_cb(apply, [](lv_event_t *e)
+                        {
+                            lv_textarea_set_text((lv_obj_t *)e->user_data, lv_textarea_get_text((lv_obj_t *)((lv_obj_t *)e->user_data)->user_data));
+                            lv_obj_delete(lv_obj_get_parent((lv_obj_t *)((lv_obj_t *)e->user_data)->user_data)); }, LV_EVENT_CLICKED, dest);
+
+    lv_obj_add_event_cb(accept, [](lv_event_t *e)
+                        { lv_textarea_add_char((lv_obj_t *)e->user_data, lv_label_get_text((lv_obj_t *)((lv_obj_t *)e->user_data)->user_data)[0]); }, LV_EVENT_CLICKED, text);
+
+    lv_obj_add_event_cb(back, [](lv_event_t *e)
+                        { lv_obj_delete((lv_obj_t *)e->user_data); }, LV_EVENT_CLICKED, kb);
+
+    lv_obj_add_event_cb(del, [](lv_event_t *e)
+                        { lv_textarea_delete_char((lv_obj_t *)e->user_data); }, LV_EVENT_CLICKED, text);
+
+    nxtlbl->user_data = prvlbl;
+    prvlbl->user_data = curlbl;
+    curlbl->user_data = arc;
+
+    lv_obj_add_event_cb(nxt, [](lv_event_t *e)
+                        {
+                            charIdx++;
+                            charIdx %= charLength;
+
+                            lv_label_set_text_fmt((lv_obj_t *)e->user_data, "%c", chars[(charIdx + 1) % charLength]);
+                            lv_label_set_text_fmt((lv_obj_t *)((lv_obj_t *)e->user_data)->user_data, "%c", chars[(charIdx - 1) % charLength]);
+                            lv_label_set_text_fmt((lv_obj_t *)((lv_obj_t *)((lv_obj_t *)e->user_data)->user_data)->user_data, "%c", chars[charIdx]);
+
+                            lv_arc_set_value((lv_obj_t *)((lv_obj_t *)((lv_obj_t *)((lv_obj_t *)e->user_data)->user_data)->user_data)->user_data, charIdx); }, LV_EVENT_CLICKED, nxtlbl);
+
+    lv_obj_add_event_cb(prv, [](lv_event_t *e)
+                        {
+                            charIdx--;
+                            charIdx %= charLength;
+
+                            lv_label_set_text_fmt((lv_obj_t *)e->user_data, "%c", chars[(charIdx + 1) % charLength]);
+                            lv_label_set_text_fmt((lv_obj_t *)((lv_obj_t *)e->user_data)->user_data, "%c", chars[(charIdx - 1) % charLength]);
+                            lv_label_set_text_fmt((lv_obj_t *)((lv_obj_t *)((lv_obj_t *)e->user_data)->user_data)->user_data, "%c", chars[charIdx]);
+
+                            lv_arc_set_value((lv_obj_t *)((lv_obj_t *)((lv_obj_t *)((lv_obj_t *)e->user_data)->user_data)->user_data)->user_data, charIdx); }, LV_EVENT_CLICKED, nxtlbl);
+
+    lv_obj_add_event_cb(arc, [](lv_event_t *e)
+                        {
+                            charIdx = lv_arc_get_value((lv_obj_t *)e->original_target) % charLength;
+
+                            lv_label_set_text_fmt((lv_obj_t *)e->user_data, "%c", chars[(charIdx + 1) % charLength]);
+                            lv_label_set_text_fmt((lv_obj_t *)((lv_obj_t *)e->user_data)->user_data, "%c", chars[(charIdx - 1) % charLength]);
+                            lv_label_set_text_fmt((lv_obj_t *)((lv_obj_t *)((lv_obj_t *)e->user_data)->user_data)->user_data, "%c", chars[charIdx]); }, LV_EVENT_VALUE_CHANGED, nxtlbl);
+}
+
+void attachKeyboard(lv_obj_t *textarea, char *accepted)
+{
+    lv_obj_add_event_cb(textarea, [](lv_event_t *e)
+                        { createKeyboard(lv_obj_get_screen(lv_event_get_target_obj(e)), lv_event_get_target_obj(e), (char *)e->user_data); }, LV_EVENT_CLICKED, accepted);
 }
 
 bool screensetup = powermgmRegisterCBPrio(screenInit, POWERMGM_INIT, "ScreenInit", CALL_CB_MIDDLE);

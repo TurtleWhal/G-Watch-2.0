@@ -53,6 +53,8 @@ void createSetting(Setting_t *data)
         lv_obj_align(text, LV_ALIGN_RIGHT_MID, 10, 0);
         lv_obj_set_style_radius(text, 15, LV_PART_MAIN);
         lv_obj_set_scroll_dir(text, LV_DIR_HOR);
+
+        attachKeyboard(text, KEYBOARD_CHARS_ALL);
         break;
     }
     case SETTING_TYPE_NUMBER:
@@ -62,6 +64,8 @@ void createSetting(Setting_t *data)
         lv_obj_align(number, LV_ALIGN_RIGHT_MID, 10, 0);
         lv_obj_set_style_radius(number, 15, LV_PART_MAIN);
         lv_obj_set_scroll_dir(number, LV_DIR_HOR);
+
+        attachKeyboard(number, KEYBOARD_CHARS_NUMBERS);
         break;
     }
     }
@@ -100,8 +104,6 @@ bool settingsscreate(EventBits_t event, void *arg)
     createSetting(&setting1);
     createSetting(&setting2);
     createSetting(&setting3);
-
-    createKeyboard(settingsscr);
 
     preferences.begin("Settings", false);
 
