@@ -4,6 +4,7 @@
 #include "lvgl.h"
 #include "screens/screens.hpp"
 #include "fonts/fonts.hpp"
+#include "symbols.h"
 
 #define SCROLLBAR_WIDTH 30
 #define SCROLLBAR_START (360 - SCROLLBAR_WIDTH / 2)

@@ -4,6 +4,7 @@
 #include "system.hpp"
 #include "screens.hpp"
 #include "fonts/fonts.hpp"
+#include "symbols.h"
 
 void nullCallback(uint8_t arcid) {}
 

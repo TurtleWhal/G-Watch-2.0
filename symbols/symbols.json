@@ -1,0 +1,102 @@
+{
+    "symbols": [
+        {
+            "name": "play",
+            "hex": "f04b",
+            "sizes": [
+                40
+            ]
+        },
+        {
+            "name": "pause",
+            "hex": "f04c",
+            "sizes": [
+                40
+            ]
+        },
+        {
+            "name": "step forward",
+            "hex": "f051",
+            "sizes": [
+                32
+            ]
+        },
+        {
+            "name": "step backward",
+            "hex": "f048",
+            "sizes": [
+                32
+            ]
+        },
+        {
+            "name": "chevron up",
+            "hex": "f077",
+            "sizes": [
+                20
+            ]
+        },
+        {
+            "name": "ok",
+            "hex": "f00c",
+            "sizes": [
+                20
+            ]
+        },
+        {
+            "name": "close",
+            "hex": "f00d",
+            "sizes": [
+                20
+            ]
+        },
+        {
+            "name": "backspace",
+            "hex": "f55a",
+            "sizes": [
+                20
+            ]
+        },
+        {
+            "name": "battery full",
+            "hex": "f240",
+            "sizes": [
+                14
+            ]
+        },
+        {
+            "name": "battery 3",
+            "hex": "f241",
+            "sizes": [
+                14
+            ]
+        },
+        {
+            "name": "battery 2",
+            "hex": "f242",
+            "sizes": [
+                14
+            ]
+        },
+        {
+            "name": "battery 1",
+            "hex": "f243",
+            "sizes": [
+                14
+            ]
+        },
+        {
+            "name": "battery empty",
+            "hex": "f244",
+            "sizes": [
+                14
+            ]
+        },
+        {
+            "name": "steps",
+            "hex": "f54b",
+            "sizes": [
+                14
+            ]
+        }
+    ]
+}

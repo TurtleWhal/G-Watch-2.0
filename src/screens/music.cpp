@@ -4,6 +4,7 @@
 #include "system.hpp"
 #include "screens.hpp"
 #include "fonts/fonts.hpp"
+#include "symbols.h"
 #include "../include/music.hpp"
 
 lv_obj_t *musicscr;
@@ -86,7 +87,6 @@ bool musiccreate(EventBits_t event, void *arg)
     lv_obj_add_event_cb(nxtbutton, musicnext, LV_EVENT_CLICKED, NULL);
 
     lv_obj_t *nextlbl = lv_label_create(nxtbutton);
-    lv_obj_set_style_text_font(playlbl, &FontAwesome_40, 0);
     lv_obj_center(nextlbl);
     SET_SYMBOL_32(nextlbl, FA_STEP_FORWARD);
 
