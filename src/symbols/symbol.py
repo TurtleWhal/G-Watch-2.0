@@ -5,6 +5,24 @@ import shutil
 import subprocess
 import json
 
+def hex_to_utf8(hex_value):
+    # Convert hex string to integer
+    decimal_value = int(hex_value, 16)
+
+    # Determine the number of bytes needed based on the Unicode code point
+    if decimal_value <= 0x7F:
+        utf8_bytes = bytes([decimal_value])
+    elif decimal_value <= 0x7FF:
+        utf8_bytes = bytes([0xC0 | (decimal_value >> 6), 0x80 | (decimal_value & 0x3F)])
+    elif decimal_value <= 0xFFFF:
+        utf8_bytes = bytes([0xE0 | (decimal_value >> 12), 0x80 | ((decimal_value >> 6) & 0x3F), 0x80 | (decimal_value & 0x3F)])
+    elif decimal_value <= 0x10FFFF:
+        utf8_bytes = bytes([0xF0 | (decimal_value >> 18), 0x80 | ((decimal_value >> 12) & 0x3F), 0x80 | ((decimal_value >> 6) & 0x3F), 0x80 | (decimal_value & 0x3F)])
+    else:
+        raise ValueError("Invalid Unicode code point")
+
+    return "\"" + str(utf8_bytes)[2:-1].upper().replace("X", "x") + "\""
+
 print("Checking if npm is installed")
 if subprocess.check_call(["npm", "-v"]) != 0: print("npm is not installed, please install it at https://nodejs.org/en/download/package-manager"); exit(1)
 
@@ -12,7 +30,6 @@ print("Checking if lv_font_conv is installed")
 if subprocess.check_call(["npm", "list", "-g", "grep", "lv_font_conv"]) != 0: print("Please install lv_font_conv at https://github.com/lvgl/lv_font_conv?tab=readme-ov-file#install-the-script"); exit(1)
 
 symbols = json.load(open("symbols.json"))
-hfile = open("symbols.h", "r+")
 
 defines = []
 
@@ -20,12 +37,14 @@ sizes = []
 for x in range(1000):
     sizes.append([])
 
-def font_awesome_unicode_to_utf8(font_awesome_unicode):
-    return "\"\\u" + font_awesome_unicode + "\""
+longest = 0
+for symbol in symbols['symbols']:
+    if len(symbol["name"]) > longest:
+        longest = len(symbol["name"])
 
 for symbol in symbols["symbols"]: 
     # hfile.write(f"#define {symbol['name'].replace('-', '_').replace(' ', '_').upper()} {font_awesome_unicode_to_utf8(symbol['hex'])}\n")
-    defines.append(f"#define FA_{symbol['name'].replace('-', '_').replace(' ', '_').upper()} {font_awesome_unicode_to_utf8(symbol['hex'])} // Sizes: {symbol['sizes']}\n")
+    defines.append(f"#define FA_{(symbol['name'].replace('-', '_').replace(' ', '_').upper().ljust(longest, ' '))} {hex_to_utf8(symbol['hex'])} // U+{symbol['hex'].upper()}, Sizes: {symbol['sizes']}\n")
     
     for size in symbol["sizes"]:
         sizes[size].append(symbol["hex"])
@@ -53,19 +72,12 @@ for size in sizes:
             range += "0x" + hex + ", "
         range = range[:-2]
         
-        subprocess.run(["lv_font_conv", "--size", str(sizes.index(size)), "--bpp", "2", "--format", "lvgl", "--font", os.path.abspath("FontAwesome5.woff"), "--range", range, "--output", os.path.abspath("generated") + "/FontAwesome_" + str(sizes.index(size)) + ".c", ])
+        subprocess.run(["lv_font_conv", "--size", str(sizes.index(size)), "--bpp", str(symbols['bpp']), "--format", "lvgl", "--font", os.path.abspath("FontAwesome5.woff"), "--range", range, "--output", os.path.abspath("generated") + "/FontAwesome_" + str(sizes.index(size)) + ".c", ])
 
 fontfiles.sort()
 
-original = hfile.read()
-
-with hfile as f:
-    data = f.read()
-    f.seek(0)
-    f.write(re.sub(r"<string>ABC</string>(\s+)<string>(.*)</string>", r"<xyz>ABC</xyz>\1<xyz>\2</xyz>", data))
-    f.truncate()
-
-hfile = open("symbols.h", "r+")
+hfile = open("symbols.hpp", "r+")
+hfile.truncate(0) # Clear the file
 
 hfile.write("#include \"lvgl.h\"\n\n")
 

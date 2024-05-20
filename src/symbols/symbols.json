@@ -1,4 +1,5 @@
 {
+    "bpp": 3,
     "symbols": [
         {
             "name": "play",
@@ -54,6 +55,13 @@
             "hex": "f55a",
             "sizes": [
                 20
+            ]
+        },
+        {
+            "name": "charge",
+            "hex": "f0e7",
+            "sizes": [
+                14
             ]
         },
         {

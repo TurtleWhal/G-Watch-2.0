@@ -4,7 +4,7 @@
 #include "system.hpp"
 #include "screens.hpp"
 #include "fonts/fonts.hpp"
-#include "symbols.h"
+#include "symbols/symbols.hpp"
 
 void nullCallback(uint8_t arcid) {}
 
@@ -99,26 +99,26 @@ void batteryCallback(uint8_t arcid)
 
         if (sysinfo.bat.charging)
         {
-            lv_label_set_text(arc->icon, LV_SYMBOL_CHARGE);
+            SET_SYMBOL_14(arc->icon, FA_CHARGE);
         }
         else
         {
             switch ((int)(sysinfo.bat.percent / 20 + 1))
             {
             default:
-                SET_SYMBOL_14(arc->icon, LV_SYMBOL_BATTERY_FULL);
+                SET_SYMBOL_14(arc->icon, FA_BATTERY_FULL);
                 break;
             case 4:
-                SET_SYMBOL_14(arc->icon, LV_SYMBOL_BATTERY_3);
+                SET_SYMBOL_14(arc->icon, FA_BATTERY_3);
                 break;
             case 3:
-                SET_SYMBOL_14(arc->icon, LV_SYMBOL_BATTERY_2);
+                SET_SYMBOL_14(arc->icon, FA_BATTERY_2);
                 break;
             case 2:
-                SET_SYMBOL_14(arc->icon, LV_SYMBOL_BATTERY_1);
+                SET_SYMBOL_14(arc->icon, FA_BATTERY_1);
                 break;
             case 1:
-                SET_SYMBOL_14(arc->icon, LV_SYMBOL_BATTERY_EMPTY);
+                SET_SYMBOL_14(arc->icon, FA_BATTERY_EMPTY);
                 break;
             }
         }
@@ -208,7 +208,7 @@ bool numberscreate(EventBits_t event, void *arg)
     // createArc(&arcs[2], -58, 64);
 
     createArc(0, -85, 00, FA_STEPS, stepsCallback);
-    createArc(1, -58, 64, LV_SYMBOL_BATTERY_FULL, batteryCallback);
+    createArc(1, -58, 64, FA_BATTERY_FULL, batteryCallback);
 
     powermgmRegisterCB(numbersperiodic, POWERMGM_LOOP_AWAKE, "numbersscreenperiodic");
     powermgmRegisterCB(numbersLoad, POWERMGM_SCREEN_CHANGE, "numbersscreenload");

@@ -4,8 +4,8 @@
 #include "system.hpp"
 #include "screens.hpp"
 #include "fonts/fonts.hpp"
-#include "symbols.h"
-#include "../include/music.hpp"
+#include "symbols/symbols.hpp"
+#include "music.hpp"
 
 lv_obj_t *musicscr;
 
