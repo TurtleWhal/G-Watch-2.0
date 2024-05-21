@@ -1,5 +1,5 @@
 {
-    "bpp": 4,
+    "symbol-bpp": 4,
     "symbols": [
         {"name": "play",            "hex": "f04b", "sizes": [40]},
         {"name": "pause",           "hex": "f04c", "sizes": [40]},

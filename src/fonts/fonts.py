@@ -97,7 +97,7 @@ for size in sizes:
             range += "0x" + hex + ", "
         range = range[:-2]
         
-        subprocess.run(["lv_font_conv", "--size", str(sizes.index(size)), "--bpp", str(symbols['bpp']), "--format", "lvgl", "--font", os.path.abspath("FontAwesome5.woff"), "--range", range, "--output", os.path.abspath("generated") + "/FontAwesome_" + str(sizes.index(size)) + ".c",  "--no-compress"])
+        subprocess.run(["lv_font_conv", "--size", str(sizes.index(size)), "--bpp", str(symbols['symbol-bpp']), "--format", "lvgl", "--font", os.path.abspath("FontAwesome5.woff"), "--range", range, "--output", os.path.abspath("generated") + "/FontAwesome_" + str(sizes.index(size)) + ".c",  "--no-compress"])
 
 # Create Font Files
 for font in symbols["fonts"]:
