@@ -16,7 +16,8 @@
         "system_error": "cpp",
         "typeinfo": "cpp",
         "cmath": "cpp",
-        "*.tpp": "cpp"
+        "*.tpp": "cpp",
+        "random": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

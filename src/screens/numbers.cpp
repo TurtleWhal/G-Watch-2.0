@@ -1,10 +1,13 @@
+#pragma GCC diagnostic ignored "-Wwrite-strings"
+
 #include "Arduino.h"
 #include "lvgl.h"
 #include "powermgm.hpp"
 #include "system.hpp"
 #include "screens.hpp"
 #include "fonts/fonts.hpp"
-#include "symbols/symbols.hpp"
+
+#define RADIAL_COORDS(angle, radius) cos(DEG_TO_RAD *angle) * radius, sin(DEG_TO_RAD *angle) * radius
 
 void nullCallback(uint8_t arcid) {}
 
@@ -27,6 +30,10 @@ lv_obj_t *date;
 
 InfoArc_t arcs[3];
 uint8_t arcsize = 55;
+
+lv_obj_t *infobar;
+lv_obj_t *infoicons[10];
+uint8_t infoiconcount = 0;
 
 int8_t numberx = 0, numbery = 0;
 
@@ -79,7 +86,7 @@ void scheduleCallback(uint8_t arcid)
 void stepsCallback(uint8_t arcid)
 {
     InfoArc_t *arc = &arcs[arcid];
-    static uint32_t laststeps = 0;
+    static uint32_t laststeps = -1;
     if (laststeps != sysinfo.health.steps)
     {
         lv_arc_set_value(arc->arc, sysinfo.health.steps);
@@ -123,6 +130,16 @@ void batteryCallback(uint8_t arcid)
             }
         }
     }
+}
+
+void createInfoIcon(char *symbol)
+{
+    // lv_obj_t *icon = lv_label_create(infobar);
+    lv_obj_t *icon = lv_label_create(numberscr);
+    SET_SYMBOL_14(icon, symbol);
+
+    infoicons[infoiconcount] = icon;
+    infoiconcount++;
 }
 
 bool numbersLoad(EventBits_t event, void *arg)
@@ -170,6 +187,17 @@ bool numbersperiodic(EventBits_t event, void *arg)
         arcs[0].updateCB(0);
         arcs[1].updateCB(1);
         arcs[2].updateCB(2);
+
+        static uint8_t lasticon = 0;
+        if (lasticon != infoiconcount)
+        {
+            for (uint8_t i = 0; i < infoiconcount; i++)
+            {
+                uint8_t spacing = 12;
+                lv_obj_align(infoicons[i], LV_ALIGN_CENTER, RADIAL_COORDS((((90 - spacing) + ((infoiconcount * spacing) / 2)) - (i * spacing)), 110));
+            }
+            lasticon = infoiconcount;
+        }
     }
 
     return true;
@@ -188,8 +216,8 @@ bool numberscreate(EventBits_t event, void *arg)
     lv_obj_align(hour, LV_ALIGN_CENTER, 30, -65);
     lv_obj_align(minute, LV_ALIGN_CENTER, 30, 5);
 
-    lv_obj_set_style_text_font(hour, &Outfit_80_Light, 0);
-    lv_obj_set_style_text_font(minute, &Outfit_80_Light, 0);
+    lv_obj_set_style_text_font(hour, &OutfitLight_80, 0);
+    lv_obj_set_style_text_font(minute, &OutfitLight_80, 0);
 
     lv_obj_set_style_text_color(hour, lv_color_lighten(lv_theme_get_color_primary(numberscr), 100), 0);
     lv_obj_set_style_text_color(minute, lv_color_lighten(lv_theme_get_color_primary(numberscr), 200), 0);
@@ -199,16 +227,21 @@ bool numberscreate(EventBits_t event, void *arg)
     lv_label_set_text(date, "Mon Jan 1");
     lv_obj_set_style_text_font(date, &Outfit_20, 0);
 
-    // arcs[0].symbol = FA_CALENDAR;
-    // arcs[1].symbol = FA_STEPS;
-    // arcs[2].symbol = LV_SYMBOL_BATTERY_FULL;
+    createArc(0, RADIAL_COORDS(210, 80), FA_STEPS, stepsCallback);
+    createArc(1, RADIAL_COORDS(150, 80), FA_BATTERY_FULL, batteryCallback);
 
-    // createArc(&arcs[0], -58, -64);
-    // createArc(&arcs[1], -85, 0);
-    // createArc(&arcs[2], -58, 64);
+    // infobar = lv_obj_create(numberscr);
+    // lv_obj_set_style_bg_opa(infobar, LV_OPA_TRANSP, LV_PART_MAIN);
+    // lv_obj_set_style_border_opa(infobar, LV_OPA_TRANSP, LV_PART_MAIN);
+    // lv_obj_align(infobar, LV_ALIGN_CENTER, 0, 100);
+    // lv_obj_set_size(infobar, TFT_WIDTH, 16);
+    // lv_obj_set_flex_flow(infobar, LV_FLEX_FLOW_ROW);
+    // lv_obj_set_flex_align(infobar, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-    createArc(0, -85, 00, FA_STEPS, stepsCallback);
-    createArc(1, -58, 64, FA_BATTERY_FULL, batteryCallback);
+    createInfoIcon(FA_USB);
+    createInfoIcon(FA_BLUETOOTH);
+    createInfoIcon(FA_WIFI);
+    createInfoIcon(FA_POINT);
 
     powermgmRegisterCB(numbersperiodic, POWERMGM_LOOP_AWAKE, "numbersscreenperiodic");
     powermgmRegisterCB(numbersLoad, POWERMGM_SCREEN_CHANGE, "numbersscreenload");

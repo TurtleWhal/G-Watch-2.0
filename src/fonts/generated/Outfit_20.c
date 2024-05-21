@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Size: 20 px
  * Bpp: 4
- * Opts: --bpp 4 --size 20 --no-compress --font Outfit-Regular.ttf --range 32-127 --format lvgl -o Outfit_20.c
+ * Opts: --size 20 --bpp 4 --format lvgl --font /Users/gj0987888/Documents/GitHub/G-Watch-2.0/src/fonts/files/Outfit.ttf --output /Users/gj0987888/Documents/GitHub/G-Watch-2.0/src/fonts/generated/Outfit_20.c --no-compress --range 0x20-0x7F
  ******************************************************************************/
 
 #ifdef LV_LVGL_H_INCLUDE_SIMPLE
@@ -183,7 +183,7 @@ static LV_ATTRIBUTE_LARGE_CONST const uint8_t glyph_bitmap[] = {
     /* U+0033 "3" */
     0xb, 0xff, 0xff, 0xff, 0xfb, 0x8, 0xbb, 0xbb,
     0xcf, 0xf6, 0x0, 0x0, 0x0, 0xcf, 0x60, 0x0,
-    0x0, 0xc, 0xf7, 0x0, 0x0, 0x0, 0xcf, 0x80,
+    0x0, 0xc, 0xf7, 0x0, 0x0, 0x0, 0xcf, 0x70,
     0x0, 0x0, 0x8, 0xff, 0xfb, 0x20, 0x0, 0x4,
     0x44, 0xaf, 0xe1, 0x0, 0x0, 0x0, 0x8, 0xf8,
     0x0, 0x0, 0x0, 0x2, 0xfc, 0x0, 0x0, 0x0,
@@ -1534,12 +1534,9 @@ static const lv_font_fmt_txt_kern_classes_t kern_classes =
  *  ALL CUSTOM DATA
  *--------------------*/
 
-#if LVGL_VERSION_MAJOR == 8
+#if LV_VERSION_CHECK(8, 0, 0)
 /*Store all the custom data of the font*/
 static  lv_font_fmt_txt_glyph_cache_t cache;
-#endif
-
-#if LVGL_VERSION_MAJOR >= 8
 static const lv_font_fmt_txt_dsc_t font_dsc = {
 #else
 static lv_font_fmt_txt_dsc_t font_dsc = {
@@ -1553,11 +1550,10 @@ static lv_font_fmt_txt_dsc_t font_dsc = {
     .bpp = 4,
     .kern_classes = 1,
     .bitmap_format = 0,
-#if LVGL_VERSION_MAJOR == 8
+#if LV_VERSION_CHECK(8, 0, 0)
     .cache = &cache
 #endif
 };
-
 
 
 /*-----------------
@@ -1565,7 +1561,7 @@ static lv_font_fmt_txt_dsc_t font_dsc = {
  *----------------*/
 
 /*Initialize a public general font descriptor*/
-#if LVGL_VERSION_MAJOR >= 8
+#if LV_VERSION_CHECK(8, 0, 0)
 const lv_font_t Outfit_20 = {
 #else
 lv_font_t Outfit_20 = {
@@ -1581,11 +1577,7 @@ lv_font_t Outfit_20 = {
     .underline_position = -2,
     .underline_thickness = 1,
 #endif
-    .dsc = &font_dsc,          /*The custom font data. Will be accessed by `get_glyph_bitmap/dsc` */
-#if LV_VERSION_CHECK(8, 2, 0) || LVGL_VERSION_MAJOR >= 9
-    .fallback = NULL,
-#endif
-    .user_data = NULL,
+    .dsc = &font_dsc           /*The custom font data. Will be accessed by `get_glyph_bitmap/dsc` */
 };
 
 

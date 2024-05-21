@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Size: 8 px
  * Bpp: 4
- * Opts: --bpp 4 --size 8 --no-compress --font Outfit-Regular.ttf --range 32-127 --format lvgl -o Outfit_8.c
+ * Opts: --size 8 --bpp 4 --format lvgl --font /Users/gj0987888/Documents/GitHub/G-Watch-2.0/src/fonts/files/Outfit.ttf --output /Users/gj0987888/Documents/GitHub/G-Watch-2.0/src/fonts/generated/Outfit_8.c --no-compress --range 0x20-0x7F
  ******************************************************************************/
 
 #ifdef LV_LVGL_H_INCLUDE_SIMPLE
@@ -32,7 +32,7 @@ static LV_ATTRIBUTE_LARGE_CONST const uint8_t glyph_bitmap[] = {
 
     /* U+0023 "#" */
     0x4, 0x59, 0x0, 0x63, 0x90, 0x3d, 0x9d, 0x75,
-    0xd9, 0xd4, 0x9, 0x27, 0x0, 0x94, 0x50,
+    0xd9, 0xd4, 0xa, 0x27, 0x0, 0x94, 0x50,
 
     /* U+0024 "$" */
     0x0, 0x60, 0x0, 0xae, 0xa0, 0x38, 0x81, 0x0,
@@ -208,7 +208,7 @@ static LV_ATTRIBUTE_LARGE_CONST const uint8_t glyph_bitmap[] = {
     0x0, 0xb0,
 
     /* U+004F "O" */
-    0x6, 0xcc, 0x90, 0x3a, 0x0, 0x59, 0x93, 0x0,
+    0x6, 0xcc, 0x90, 0x4a, 0x0, 0x59, 0x93, 0x0,
     0xc, 0x93, 0x0, 0xc, 0x3a, 0x0, 0x59, 0x6,
     0xcb, 0x90,
 
@@ -296,7 +296,7 @@ static LV_ATTRIBUTE_LARGE_CONST const uint8_t glyph_bitmap[] = {
 
     /* U+0064 "d" */
     0x0, 0x9, 0x20, 0x0, 0x92, 0x2c, 0xbd, 0x2a,
-    0x20, 0xb2, 0xa2, 0xa, 0x22, 0xcb, 0xd2,
+    0x20, 0xb2, 0xa2, 0xb, 0x22, 0xcb, 0xd2,
 
     /* U+0065 "e" */
     0x2b, 0xb8, 0xa, 0xa9, 0xb0, 0xa1, 0x1, 0x2,
@@ -944,12 +944,9 @@ static const lv_font_fmt_txt_kern_classes_t kern_classes =
  *  ALL CUSTOM DATA
  *--------------------*/
 
-#if LVGL_VERSION_MAJOR == 8
+#if LV_VERSION_CHECK(8, 0, 0)
 /*Store all the custom data of the font*/
 static  lv_font_fmt_txt_glyph_cache_t cache;
-#endif
-
-#if LVGL_VERSION_MAJOR >= 8
 static const lv_font_fmt_txt_dsc_t font_dsc = {
 #else
 static lv_font_fmt_txt_dsc_t font_dsc = {
@@ -963,11 +960,10 @@ static lv_font_fmt_txt_dsc_t font_dsc = {
     .bpp = 4,
     .kern_classes = 1,
     .bitmap_format = 0,
-#if LVGL_VERSION_MAJOR == 8
+#if LV_VERSION_CHECK(8, 0, 0)
     .cache = &cache
 #endif
 };
-
 
 
 /*-----------------
@@ -975,7 +971,7 @@ static lv_font_fmt_txt_dsc_t font_dsc = {
  *----------------*/
 
 /*Initialize a public general font descriptor*/
-#if LVGL_VERSION_MAJOR >= 8
+#if LV_VERSION_CHECK(8, 0, 0)
 const lv_font_t Outfit_8 = {
 #else
 lv_font_t Outfit_8 = {
@@ -991,11 +987,7 @@ lv_font_t Outfit_8 = {
     .underline_position = -1,
     .underline_thickness = 0,
 #endif
-    .dsc = &font_dsc,          /*The custom font data. Will be accessed by `get_glyph_bitmap/dsc` */
-#if LV_VERSION_CHECK(8, 2, 0) || LVGL_VERSION_MAJOR >= 9
-    .fallback = NULL,
-#endif
-    .user_data = NULL,
+    .dsc = &font_dsc           /*The custom font data. Will be accessed by `get_glyph_bitmap/dsc` */
 };
 
 
