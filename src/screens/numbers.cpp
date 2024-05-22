@@ -31,7 +31,6 @@ lv_obj_t *date;
 InfoArc_t arcs[3];
 uint8_t arcsize = 55;
 
-lv_obj_t *infobar;
 lv_obj_t *infoicons[10];
 uint8_t infoiconcount = 0;
 
@@ -66,11 +65,10 @@ void createArc(uint8_t arcid, int32_t x, int32_t y, char *symbol, void (*updateC
     // lv_img_set_src(arc->icon, &arc->img);
     arc->icon = lv_label_create(numberscr);
     lv_obj_align(arc->icon, LV_ALIGN_CENTER, x, y - (arcsize / 3));
-    // lv_label_set_text(arc->icon, arc->symbol.c_str());
+    
     arc->symbol = symbol;
     SET_SYMBOL_14(arc->icon, arc->symbol.c_str());
 
-    // updateCBs[arcid] = updateCB;
     arc->updateCB = updateCB;
 }
 
@@ -134,7 +132,6 @@ void batteryCallback(uint8_t arcid)
 
 void createInfoIcon(char *symbol)
 {
-    // lv_obj_t *icon = lv_label_create(infobar);
     lv_obj_t *icon = lv_label_create(numberscr);
     SET_SYMBOL_14(icon, symbol);
 
@@ -175,14 +172,6 @@ bool numbersperiodic(EventBits_t event, void *arg)
             lv_label_set_text(date, colored.c_str());
             lastmin = sysinfo.time.minute;
         }
-
-        // scheduleCallback(&arcs[0]);
-        // stepsCallback(&arcs[1]);
-        // batteryCallback(&arcs[2]);
-
-        // updateCBs[0](&arcs[0]);
-        // updateCBs[1](&arcs[1]);
-        // updateCBs[2](&arcs[2]);
 
         arcs[0].updateCB(0);
         arcs[1].updateCB(1);
@@ -229,14 +218,6 @@ bool numberscreate(EventBits_t event, void *arg)
 
     createArc(0, RADIAL_COORDS(210, 80), FA_STEPS, stepsCallback);
     createArc(1, RADIAL_COORDS(150, 80), FA_BATTERY_FULL, batteryCallback);
-
-    // infobar = lv_obj_create(numberscr);
-    // lv_obj_set_style_bg_opa(infobar, LV_OPA_TRANSP, LV_PART_MAIN);
-    // lv_obj_set_style_border_opa(infobar, LV_OPA_TRANSP, LV_PART_MAIN);
-    // lv_obj_align(infobar, LV_ALIGN_CENTER, 0, 100);
-    // lv_obj_set_size(infobar, TFT_WIDTH, 16);
-    // lv_obj_set_flex_flow(infobar, LV_FLEX_FLOW_ROW);
-    // lv_obj_set_flex_align(infobar, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
     createInfoIcon(FA_USB);
     createInfoIcon(FA_BLUETOOTH);
