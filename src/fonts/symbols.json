@@ -25,6 +25,6 @@
     ],
     "fonts": [
         {"font":"Outfit.ttf", "size": [8, 16, 20, 32], "range":"default", "symbols":"", "bpp":4},
-        {"font":"Outfit-Light.ttf", "size": [80], "range":"", "symbols":"0123456789:", "bpp":4}
+        {"font":"Outfit-Light.ttf", "size": [80], "range":"", "symbols":"0123456789:", "bpp":8}
     ]
 }

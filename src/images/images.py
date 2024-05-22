@@ -21,6 +21,6 @@ hfile.truncate(0)
 hfile.write("#include \"lvgl.h\"\n\n")
 
 for file in os.listdir("files"):
-    print(file)
+    print("Converting Image: " + file)
     hfile.write("LV_IMAGE_DECLARE(" + file.split(".")[0] + ");\n")
     subprocess.call(["python3", "lv_img_conv.py", "--ofmt", "C", "--cf", "RGB565A8", "-o", "generated/", "--compress", "NONE", os.path.abspath("files/" + file)])
