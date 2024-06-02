@@ -213,21 +213,30 @@ void parseGB(char *message)
     }
     else if (strcmp(notifType, "notify") == 0)
     {
-        powermgmTickle();
+        // powermgmTickle();
 
-        motorVibrate(HAPTIC_NOTIFICATION);
+        // motorVibrate(HAPTIC_NOTIFICATION);
 
-        Notification_t notif;
+        // Notification_t notif;
 
-        if (received["title"].as<String>() != "")
-            notif.title = received["title"].as<String>();
-        else
-            notif.title = received["subject"].as<String>();
+        // if (received["title"].as<String>() != "")
+        //     notif.title = received["title"].as<String>();
+        // else
+        //     notif.title = received["subject"].as<String>();
 
-        notif.body = received["body"].as<String>();
-        notif.sender = received["sender"].as<String>();
+        // notif.body = received["body"].as<String>();
+        // notif.sender = received["sender"].as<String>();
 
-        showNotification(&notif);
+        // showNotification(&notif);
+
+        handleNotification(
+            received["title"].as<String>(),
+            received["subject"].as<String>(),
+            received["body"].as<String>(),
+            received["sender"].as<String>(),
+            received["tel"].as<String>(),
+            received["src"].as<String>(),
+            received["id"].as<int>());
     }
 }
 

@@ -136,6 +136,12 @@ bool displayPeriodic(EventBits_t event, void *arg)
     return true;
 }
 
+bool displayWakeup(EventBits_t event, void *arg)
+{
+    lv_task_handler();
+    return true;
+}
+
 bool displayInit(EventBits_t event, void *arg)
 {
     // Init Backlight
@@ -206,6 +212,7 @@ bool displayInit(EventBits_t event, void *arg)
 
     xTaskCreatePinnedToCore(backlight_updata, "backlight", 1024 * 10, NULL, 2, &backlightHandle, 1);
 
+    powermgmRegisterCB(displayWakeup, POWERMGM_WAKEUP, "DisplayWakeup");
     powermgmRegisterCB(displayPeriodic, POWERMGM_LOOP_AWAKE, "DisplayPeriodic");
 
     return true;
