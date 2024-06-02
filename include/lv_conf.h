@@ -47,7 +47,7 @@
 
 #if LV_USE_STDLIB_MALLOC == LV_STDLIB_BUILTIN
     /*Size of the memory available for `lv_malloc()` in bytes (>= 2kB)*/
-    #define LV_MEM_SIZE (58 * 1024U)          /*[bytes]*/
+    #define LV_MEM_SIZE (80 * 1024U)          /*[bytes]*/
 
     /*Size of the memory expand for `lv_malloc()` in bytes*/
     #define LV_MEM_POOL_EXPAND_SIZE 0
@@ -112,7 +112,7 @@
     /* Set the number of draw unit.
      * > 1 requires an operating system enabled in `LV_USE_OS`
      * > 1 means multiply threads will render the screen in parallel */
-    #define LV_DRAW_SW_DRAW_UNIT_CNT    8
+    #define LV_DRAW_SW_DRAW_UNIT_CNT    16
 
     /* Use Arm-2D to accelerate the sw render */
     #define LV_USE_DRAW_ARM2D_SYNC      0
@@ -253,7 +253,7 @@
  *If LV_USE_LOG is enabled an error message will be printed on failure*/
 #define LV_USE_ASSERT_NULL          1   /*Check if the parameter is NULL. (Very fast, recommended)*/
 #define LV_USE_ASSERT_MALLOC        1   /*Checks is the memory is successfully allocated or no. (Very fast, recommended)*/
-#define LV_USE_ASSERT_STYLE         0   /*Check if the styles are properly initialized. (Very fast, recommended)*/
+#define LV_USE_ASSERT_STYLE         1   /*Check if the styles are properly initialized. (Very fast, recommended)*/
 #define LV_USE_ASSERT_MEM_INTEGRITY 0   /*Check the integrity of `lv_mem` after critical operations. (Slow)*/
 #define LV_USE_ASSERT_OBJ           0   /*Check the object's type and existence (e.g. not deleted). (Slow)*/
 

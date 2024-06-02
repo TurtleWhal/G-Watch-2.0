@@ -286,7 +286,10 @@ bool timercreate(EventBits_t event, void *arg)
     lv_obj_set_style_border_opa(alarms, LV_OPA_TRANSP, LV_PART_MAIN);
 
     lv_obj_t *lbl3 = lv_label_create(alarms);
-    lv_label_set_text(lbl3, "Alarms");
+    lv_label_set_text(lbl3, "Alarms\nComing\nSoon");
+    lv_obj_set_style_text_font(lbl3, &Outfit_32, LV_PART_MAIN);
+    lv_obj_set_align(lbl3, LV_ALIGN_CENTER);
+    lv_obj_set_style_text_align(lbl3, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
 
     powermgmRegisterCB(timerLoad, POWERMGM_SCREEN_CHANGE, "TimerLoad");
     powermgmRegisterCB(timerperiodic, POWERMGM_LOOP, "timerscreeninit");
