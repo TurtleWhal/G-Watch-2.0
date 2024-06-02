@@ -21,7 +21,7 @@ def hex_to_utf8(hex_value):
     else:
         raise ValueError("Invalid Unicode code point")
 
-    return "\"" + str(utf8_bytes)[2:-1].upper().replace("X", "x") + "\""
+    return '"' + str(utf8_bytes)[2:-1].upper().replace("X", "x") + "\""
 # End of function
 
 
@@ -110,10 +110,10 @@ for font in symbols["fonts"]:
 
         args = ["lv_font_conv", "--size", str(size), "--bpp", str(font["bpp"]), "--format", "lvgl", "--font", os.path.abspath("files/" + font["font"]), "--output", os.path.abspath("generated") + "/" + dest, "--no-compress"]
         
-        if font["range"] != "":
+        if font["range"]:
             args.append("--range")
             args.append(font["range"].replace("default", "0x20-0x7F"))
-        if font["symbols"] != "":
+        if font["symbols"]:
             args.append("--symbols")
             args.append(font["symbols"])
 
@@ -132,10 +132,9 @@ hfile.truncate(0) # Clear the file
 
 hfile.write("#include \"lvgl.h\"\n\n")
 
-for define in fontdefines:
-    hfile.write(f"LV_FONT_DECLARE(" + define + ");\n")
+hfile.write('\n'.join(f"LV_FONT_DECLARE({define});" for define in fontdefines))
 
-hfile.write("\n")
+hfile.write("\n\n")
 
 for fontfile in fontfiles:
     hfile.write(f"LV_FONT_DECLARE(" + fontfile[:-2] + ");\n")

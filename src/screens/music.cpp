@@ -22,6 +22,15 @@ lv_obj_t *timelbl;
 
 int8_t musicx = 0, musicy = 1;
 
+bool musicLoad(EventBits_t event, void *arg)
+{
+    if (ON_CURRENT_SCREEN(musicx, musicy))
+    {
+        setScroll(LV_DIR_VER);
+    }
+    return true;
+}
+
 bool musicUpdate(EventBits_t event, void *arg)
 {
 
@@ -132,6 +141,7 @@ bool musiccreate(EventBits_t event, void *arg)
 
     musicUpdate((EventBits_t)NULL, NULL);
 
+    powermgmRegisterCB(musicLoad, POWERMGM_SCREEN_CHANGE, "MusicLoad");
     powermgmRegisterCB(musicperiodic, POWERMGM_LOOP_AWAKE, "MusicScrPeriodic");
     powermgmRegisterCB(musicUpdate, POWERMGM_MUSIC_UPDATE, "MusicScrUpdate");
     return true;

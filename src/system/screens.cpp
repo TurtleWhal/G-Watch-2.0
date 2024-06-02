@@ -65,7 +65,7 @@ void setScreen(lv_obj_t *screen, lv_screen_load_anim_t anim)
     if (screen == nullptr)
         screen = scr;
 
-    lv_screen_load_anim(screen, anim, 100, 0, 0);
+    lv_screen_load_anim(screen, anim, 150, 0, 0);
 }
 
 void setScroll(lv_dir_t dir)
@@ -107,10 +107,11 @@ lv_obj_t *createCurvedScrollbar(lv_obj_t *scr)
 
     lv_arc_set_bg_angles(bar, SCROLLBAR_START, SCROLLBAR_START + SCROLLBAR_WIDTH);
 
-    lv_obj_scroll_to_x(scr, 0, LV_ANIM_OFF);
-
     lv_obj_add_event_cb(scr, curvedScrollbarCB, LV_EVENT_SCROLL, bar);
-    // lv_obj_send_event(scr, LV_EVENT_SCROLL, bar);
+    lv_obj_send_event(scr, LV_EVENT_SCROLL, bar);
+
+    // lv_obj_scroll_to_y(scr, 1, LV_ANIM_OFF);
+    // lv_obj_scroll_to_y(scr, 0, LV_ANIM_OFF);
 
     return bar;
 }
@@ -120,7 +121,7 @@ void curvedScrollbarCB(lv_event_t *e)
     lv_obj_t *scr = (lv_obj_t *)lv_event_get_target(e);
     lv_obj_t *bar = (lv_obj_t *)lv_event_get_user_data(e);
 
-    int height = lv_obj_get_scroll_top(scr) + lv_obj_get_scroll_bottom(scr) + TFT_HEIGHT;
+    int height = lv_obj_get_scroll_top(scr) + lv_obj_get_scroll_bottom(scr) + TFT_HEIGHT - 2;
 
     Log.verboseln("Scrollbar Height: %i, Scroll Y: %i", height, lv_obj_get_scroll_y(scr));
 

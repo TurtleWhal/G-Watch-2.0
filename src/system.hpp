@@ -86,6 +86,24 @@ typedef struct
     } HealthInfo;
     HealthInfo health;
 
+    typedef struct
+    {
+        bool connected = false;
+    } BLEInfo;
+    BLEInfo ble;
+
+    typedef struct
+    {
+        bool connected = false;
+    } WifiInfo;
+    WifiInfo wifi;
+
+    typedef struct
+    {
+        bool connected;
+    } USBInfo;
+    USBInfo usb;
+
 } SystemInfo;
 
 #endif // SYSINFO

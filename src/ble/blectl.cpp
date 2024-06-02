@@ -43,6 +43,7 @@ class ServerCallbacks : public NimBLEServerCallbacks
         Log.verboseln("BLE authwait");
         blectl_send_event_cb(BLECTL_AUTHWAIT, (void *)"authwait");
         Log.verboseln("Client address: %s", NimBLEAddress(desc->peer_ota_addr).toString().c_str());
+        conn();
     };
 
     void onDisconnect(NimBLEServer *pServer)
@@ -51,6 +52,7 @@ class ServerCallbacks : public NimBLEServerCallbacks
         blectl_set_event(BLECTL_DISCONNECT);
         blectl_clear_event(BLECTL_CONNECT | BLECTL_AUTHWAIT);
         blectl_send_event_cb(BLECTL_DISCONNECT, (void *)"disconnected");
+        disconn();
         // powermgm_resume_from_ISR();
 
         if (blectl_get_advertising())

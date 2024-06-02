@@ -30,18 +30,18 @@ bool BLEtimer = false;
 void parseGB(char *);
 void BLEmsgloop();
 
-bool conn(EventBits_t event, void *arg)
+void conn()
 {
     Serial.println("BLE connected");
+    sysinfo.ble.connected = true;
     powermgmSendEvent(POWERMGM_BLE_CONNECT);
-    return true;
 }
 
-bool disconn(EventBits_t event, void *arg)
+void disconn()
 {
     Serial.println("BLE disconnected");
+    sysinfo.ble.connected = false;
     powermgmSendEvent(POWERMGM_BLE_DISCONNECT);
-    return true;
 }
 
 bool blePeriodic(EventBits_t event, void *arg)
@@ -98,9 +98,6 @@ void ble_setup()
     pAdvertising->addServiceUUID(pBatteryService->getUUID());
 
     pBatteryService->start();
-
-    gadgetbridge_register_cb(GADGETBRIDGE_CONNECT, conn, "BLEconnect");
-    gadgetbridge_register_cb(GADGETBRIDGE_DISCONNECT, disconn, "BLEdisconnect");
 }
 
 void pairBT(uint32_t passkey)
@@ -187,7 +184,6 @@ void parseGB(char *message)
     if (strcmp(notifType, "is_gps_active") == 0)
     {
         sendBLE("{t:\"gps_power\", status: false}");
-        conn((EventBits_t)NULL, NULL);
     }
     else if (strcmp(notifType, "reboot") == 0)
     {
@@ -218,7 +214,7 @@ void parseGB(char *message)
     else if (strcmp(notifType, "notify") == 0)
     {
         powermgmTickle();
-        
+
         motorVibrate(HAPTIC_NOTIFICATION);
 
         Notification_t notif;

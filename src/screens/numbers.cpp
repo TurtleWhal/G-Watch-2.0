@@ -1,13 +1,16 @@
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 
 #include "Arduino.h"
+#include "ArduinoLog.h"
 #include "lvgl.h"
 #include "powermgm.hpp"
 #include "system.hpp"
 #include "screens.hpp"
 #include "fonts/fonts.hpp"
 
-#define RADIAL_COORDS(angle, radius) cos(DEG_TO_RAD *angle) * radius, sin(DEG_TO_RAD *angle) * radius
+#define RADIAL_COORDS(angle, radius) (cos((DEG_TO_RAD) * (angle)) * (radius)), (sin((DEG_TO_RAD) * (angle)) * (radius))
+#define ICON_SPACING 12
+#define ICON_COUNT 10
 
 void nullCallback(uint8_t arcid) {}
 
@@ -31,8 +34,8 @@ lv_obj_t *date;
 InfoArc_t arcs[3];
 uint8_t arcsize = 55;
 
-lv_obj_t *infoicons[10];
-uint8_t infoiconcount = 0;
+lv_obj_t *infoicons[ICON_COUNT] = {nullptr};
+bool iconschanged = false;
 
 int8_t numberx = 0, numbery = 0;
 
@@ -65,7 +68,7 @@ void createArc(uint8_t arcid, int32_t x, int32_t y, char *symbol, void (*updateC
     // lv_img_set_src(arc->icon, &arc->img);
     arc->icon = lv_label_create(numberscr);
     lv_obj_align(arc->icon, LV_ALIGN_CENTER, x, y - (arcsize / 3));
-    
+
     arc->symbol = symbol;
     SET_SYMBOL_14(arc->icon, arc->symbol.c_str());
 
@@ -130,13 +133,32 @@ void batteryCallback(uint8_t arcid)
     }
 }
 
-void createInfoIcon(char *symbol)
+void createInfoIcon(char *symbol, uint8_t index = UINT8_MAX)
 {
+    if (index == UINT8_MAX)
+    {
+        for (int8_t i = 0; i < ICON_COUNT; i++)
+        {
+            if (infoicons[i] == nullptr)
+            {
+                index = i;
+                break;
+            }
+        }
+    }
+
+    if (index == UINT8_MAX)
+        index = 0;
+
+    if (index >= ICON_COUNT)
+        return;
+
     lv_obj_t *icon = lv_label_create(numberscr);
     SET_SYMBOL_14(icon, symbol);
 
-    infoicons[infoiconcount] = icon;
-    infoiconcount++;
+    infoicons[index] = icon;
+
+    iconschanged = true;
 }
 
 bool numbersLoad(EventBits_t event, void *arg)
@@ -173,19 +195,54 @@ bool numbersperiodic(EventBits_t event, void *arg)
             lastmin = sysinfo.time.minute;
         }
 
+        static uint8_t lastsec;
+        if (lastsec != sysinfo.time.second)
+        {
+            if (sysinfo.ble.connected)
+                lv_obj_remove_flag(infoicons[0], LV_OBJ_FLAG_HIDDEN);
+            else
+                lv_obj_add_flag(infoicons[0], LV_OBJ_FLAG_HIDDEN);
+
+            if (sysinfo.wifi.connected)
+                lv_obj_remove_flag(infoicons[1], LV_OBJ_FLAG_HIDDEN);
+            else
+                lv_obj_add_flag(infoicons[1], LV_OBJ_FLAG_HIDDEN);
+
+            iconschanged = true;
+            lastsec = sysinfo.time.second;
+        }
+
         arcs[0].updateCB(0);
         arcs[1].updateCB(1);
         arcs[2].updateCB(2);
 
-        static uint8_t lasticon = 0;
-        if (lasticon != infoiconcount)
+        if (iconschanged)
         {
-            for (uint8_t i = 0; i < infoiconcount; i++)
-            {
-                uint8_t spacing = 12;
-                lv_obj_align(infoicons[i], LV_ALIGN_CENTER, RADIAL_COORDS((((90 - spacing) + ((infoiconcount * spacing) / 2)) - (i * spacing)), 110));
-            }
-            lasticon = infoiconcount;
+            uint8_t infoiconcount = 0;
+            for (uint8_t i = 0; i < ICON_COUNT; i++)
+                if (infoicons[i] != nullptr && lv_obj_has_flag(infoicons[i], LV_OBJ_FLAG_HIDDEN) == false)
+                    infoiconcount++;
+
+            uint8_t idx = 0;
+            for (uint8_t i = 0; i < ICON_COUNT; i++)
+                if (infoicons[i] != nullptr && lv_obj_has_flag(infoicons[i], LV_OBJ_FLAG_HIDDEN) == false)
+                {
+                    // lv_obj_align(infoicons[i], LV_ALIGN_CENTER,
+                    //              RADIAL_COORDS((((90) + ((infoiconcount / 2) * ICON_SPACING)) - (idx * ICON_SPACING)),
+                    //                            (110)));
+                    // lv_obj_align(infoicons[i], LV_ALIGN_CENTER,
+                    //              RADIAL_COORDS(((90 + (((double)infoiconcount / 2) * ICON_SPACING)) - (idx * ICON_SPACING)),
+                    //                            (110)));
+                    lv_obj_align(infoicons[i], LV_ALIGN_CENTER,
+                                 RADIAL_COORDS(((90 + ((double)((infoiconcount - 1) * ICON_SPACING) / 2)) - (idx * ICON_SPACING)),
+                                               (110)));
+
+                    // Serial.println((90 + ((double)(infoiconcount*ICON_SPACING) / 2)));
+
+                    idx++;
+                }
+
+            iconschanged = false;
         }
     }
 
@@ -219,10 +276,10 @@ bool numberscreate(EventBits_t event, void *arg)
     createArc(0, RADIAL_COORDS(210, 80), FA_STEPS, stepsCallback);
     createArc(1, RADIAL_COORDS(150, 80), FA_BATTERY_FULL, batteryCallback);
 
-    createInfoIcon(FA_USB);
-    createInfoIcon(FA_BLUETOOTH);
-    createInfoIcon(FA_WIFI);
-    createInfoIcon(FA_POINT);
+    createInfoIcon(FA_BLUETOOTH, 0);
+    createInfoIcon(FA_WIFI, 1);
+    // createInfoIcon(FA_USB);
+    // createInfoIcon(FA_POINT);
 
     powermgmRegisterCB(numbersperiodic, POWERMGM_LOOP_AWAKE, "numbersscreenperiodic");
     powermgmRegisterCB(numbersLoad, POWERMGM_SCREEN_CHANGE, "numbersscreenload");
