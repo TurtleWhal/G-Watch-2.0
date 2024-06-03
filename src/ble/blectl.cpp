@@ -101,8 +101,6 @@ class ServerCallbacks : public NimBLEServerCallbacks
         snprintf(pin, sizeof(pin), "%06d", pass_key);
         Log.verboseln("BLECTL confirm PIN: %s", pin);
 
-        pairBT(UINT32_MAX);
-
         // powermgm_resume_from_ISR();
 
         return (false);
@@ -118,6 +116,9 @@ class ServerCallbacks : public NimBLEServerCallbacks
                 blectl_clear_event(BLECTL_PIN_AUTH);
                 blectl_send_event_cb(BLECTL_PAIRING_ABORT, (void *)"abort");
                 NimBLEDevice::getServer()->disconnect(desc->conn_handle);
+
+                pairBT(UINT32_MAX);
+
                 return;
             }
             if (blectl_get_event(BLECTL_AUTHWAIT | BLECTL_CONNECT))
@@ -127,6 +128,9 @@ class ServerCallbacks : public NimBLEServerCallbacks
                 blectl_set_event(BLECTL_DISCONNECT);
                 blectl_send_event_cb(BLECTL_DISCONNECT, (void *)"disconnected");
                 NimBLEDevice::getServer()->disconnect(desc->conn_handle);
+
+                pairBT(UINT32_MAX);
+
                 return;
             }
         }
@@ -137,6 +141,9 @@ class ServerCallbacks : public NimBLEServerCallbacks
                 Log.verboseln("BLECTL pairing successful");
                 blectl_clear_event(BLECTL_PIN_AUTH);
                 blectl_send_event_cb(BLECTL_PAIRING_SUCCESS, (void *)"success");
+
+                pairBT(UINT32_MAX);
+
                 return;
             }
             if (blectl_get_event(BLECTL_AUTHWAIT))
@@ -145,7 +152,6 @@ class ServerCallbacks : public NimBLEServerCallbacks
                 blectl_clear_event(BLECTL_AUTHWAIT | BLECTL_DISCONNECT);
                 blectl_set_event(BLECTL_CONNECT);
                 blectl_send_event_cb(BLECTL_CONNECT, (void *)"connected");
-                // OnBTConnect();
                 return;
             }
         }
@@ -169,7 +175,7 @@ void blectl_setup(String device_name)
     Storage.getBytes("BTname", BTnamechar, 17);
     snprintf( deviceName, sizeof( deviceName ), "%s", BTnamechar);
     NimBLEDevice::init( deviceName );*/
-    NimBLEDevice::init(((String)"Espruino " + device_name).c_str());
+    NimBLEDevice::init(((String) "Espruino " + device_name).c_str());
     /*
      * set power level
      */

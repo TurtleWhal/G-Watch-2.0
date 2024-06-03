@@ -10,6 +10,7 @@
 
 #include "motor.hpp"
 #include "music.hpp"
+#include "screens/screens.hpp"
 #include "powermgm.hpp"
 #include "notification.hpp"
 
@@ -102,13 +103,28 @@ void ble_setup()
 
 void pairBT(uint32_t passkey)
 {
+    static lv_obj_t *pairscr;
     if (passkey != UINT32_MAX)
     {
         Log.verboseln("Pairing with passkey: %d", passkey);
+
+        pairscr = lv_obj_create(NULL);
+        lv_obj_t *pairlbl = lv_label_create(pairscr);
+        lv_label_set_text_fmt(pairlbl, "Bluetooth Pairing code: \n%i", passkey);
+        lv_obj_align(pairlbl, LV_ALIGN_CENTER, 0, 0);
+
+        setScreen(pairscr, LV_SCR_LOAD_ANIM_FADE_IN);
+
+        powermgmTickle();
+
+        motorVibrate(HAPTIC_NOTIFICATION);
     }
     else
     {
         Log.verboseln("Paired BLE");
+
+        setScreen(nullptr, LV_SCR_LOAD_ANIM_FADE_OUT);
+        lv_obj_delete_delayed(pairscr, 2000);
     }
 }
 

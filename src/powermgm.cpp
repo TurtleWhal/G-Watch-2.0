@@ -115,7 +115,7 @@ void powermgmInit()
     // attachInterrupt(TP_INT, powermgmTickle, RISING);
     // attachInterrupt(0, powermgmTickle, RISING);
 
-    motorVibrate(HAPTIC_BUTTON);
+    motorVibrate(3, 100);
 
     setBacklightGradual(100, 1000);
     // setBacklight(100);

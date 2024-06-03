@@ -10,7 +10,11 @@
 #include "lvgl.h"
 #include "TFT_eSPI.h"
 
+#include "ArrayList.h"
+
 SystemInfo sysinfo;
+
+ArrayList<int> nums(ArrayList<int>::FIXED);
 
 void setup()
 {
@@ -22,7 +26,6 @@ void setup()
   esp_log_level_set("gpio", ESP_LOG_NONE);
 
   Wire.begin(IIC_SDA, IIC_SCL);
-
 
   //  _____/\\\\\\\\\\\\________________/\\\______________/\\\_____/\\\\\\\\\_____/\\\\\\\\\\\\\\\________/\\\\\\\\\__/\\\________/\\\_
   //   ___/\\\//////////________________\/\\\_____________\/\\\___/\\\\\\\\\\\\\__\///////\\\/////______/\\\////////__\/\\\_______\/\\\_
@@ -49,16 +52,29 @@ void setup()
   Log.verboseln("Ascii art made using: https://patorjk.com/software/taag/#p=display&f=Slant%20Relief&t=G-WATCH");
   Log.verboseln("Project made by: Garrett Jordan (https://github.com/TurtleWhal/G-Watch, https://garrettjordan.xyz/projects/#watch)");
   Log.verboseln("");
-  #ifdef WAVESHARE_ESP32_LCD
+#ifdef WAVESHARE_ESP32_LCD
   Log.verboseln("Hardware: Waveshare ESP32-S3 LCD");
-  #elif LILYGO_TWATCH_2021
+#elif LILYGO_TWATCH_2021
   Log.verboseln("Hardware: LilyGo T-Watch 2021");
-  #endif
+#endif
   Log.verboseln("Device running ESP-IDF: %s, LVGL: %d.%d.%d, TFT_eSPI: %s", esp_get_idf_version(), lv_version_major(), lv_version_minor(), lv_version_patch(), TFT_ESPI_VERSION);
   Log.verboseln("Build Date: %s", __DATE__);
   Log.verboseln("");
 
   powermgmInit();
+
+  nums.add(1);
+  nums.add(2);
+  nums.add(3);
+  nums.add(5);
+  nums.add(7);
+  nums.add(11);
+  nums.add(13);
+  nums.add(17);
+  nums.add(19);
+
+  nums.forEach([](int i)
+               { Serial.println(i); });
 }
 
 void loop()

@@ -47,7 +47,11 @@
 
 #if LV_USE_STDLIB_MALLOC == LV_STDLIB_BUILTIN
     /*Size of the memory available for `lv_malloc()` in bytes (>= 2kB)*/
-    #define LV_MEM_SIZE (72 * 1024U)          /*[bytes]*/
+    #ifdef WAVESHARE_ESP32_LCD
+        #define LV_MEM_SIZE (72 * 1024U)          /*[bytes]*/
+    #else
+        #define LV_MEM_SIZE (58 * 1024U)          /*[bytes]*/
+    #endif
 
     /*Size of the memory expand for `lv_malloc()` in bytes*/
     #define LV_MEM_POOL_EXPAND_SIZE 0
@@ -112,7 +116,11 @@
     /* Set the number of draw unit.
      * > 1 requires an operating system enabled in `LV_USE_OS`
      * > 1 means multiply threads will render the screen in parallel */
-    #define LV_DRAW_SW_DRAW_UNIT_CNT    16
+    #ifdef WAVESHARE_ESP32_LCD
+        #define LV_DRAW_SW_DRAW_UNIT_CNT    12
+    #else
+        #define LV_DRAW_SW_DRAW_UNIT_CNT    6
+    #endif
 
     /* Use Arm-2D to accelerate the sw render */
     #define LV_USE_DRAW_ARM2D_SYNC      0

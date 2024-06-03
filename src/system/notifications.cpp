@@ -12,6 +12,8 @@ void storeNotification(Notification_t *notif)
     // Log.verboseln("storing notification with Name: %s, Body: %s, Sender: %s, Tel: %s, Time: %d", notif->title.c_str(), notif->body.c_str(), notif->sender.c_str(), String(notif->tel_number).c_str(), notif->time);
 
     notifs.add(notif);
+
+    forEachNotification([](Notification_t *notif) { Serial.println(notif->title); });
 }
 
 void forEachNotification(void (*func)(Notification_t *))
@@ -49,33 +51,6 @@ void handleNotification(String title, String subject, String body, String sender
         notif->icon = FA_EMAIL;
     else
         notif->icon = FA_BELL;
-
-    // switch (src)
-    // {
-    // case "discord":
-    //     notif->icon = FA_DISCORD;
-    //     break;
-
-    // case "youtube":
-    //     notif->icon = FA_YOUTUBE;
-    //     break;
-
-    // case "sms", "messages":
-    //     notif->icon = FA_SMS;
-    //     break;
-
-    // case "gmail":
-    //     notif->icon = FA_EMAIL;
-    //     break;
-
-    // case "gadgetbridge":
-    //     notif->icon = FA_GADGETBRIDGE;
-    //     break;
-
-    // default:
-    //     notif->icon = FA_BELL;
-    //     break;
-    // }
 
     showNotification(notif);
 }
