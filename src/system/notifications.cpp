@@ -3,22 +3,60 @@
 #include "motor.hpp"
 #include "powermgm.hpp"
 #include "fonts/fonts.hpp"
-#include <ArrayList.h>
 
-ArrayList<Notification_t *> notifs(ArrayList<Notification_t *>::FIXED);
+Notification_t *notifs[10];
+
+void pushNotification(Notification_t *notif, uint8_t index = 0)
+{
+    for (uint8_t i = 9; i > index; i--)
+    {
+        notifs[i] = notifs[i - 1];
+    }
+
+    notifs[index] = notif;
+}
+
+Notification_t *popNotification(uint8_t index = UINT8_MAX)
+{
+    if (index == UINT8_MAX)
+    {
+        for (uint8_t i = 0; i < 9; i++)
+        {
+            if (notifs[i] == nullptr)
+            {
+                index = i;
+                break;
+            }
+        }
+    }
+
+    Notification_t *out = notifs[index];
+
+    for (uint8_t i = index; i < 9; i++)
+    {
+        notifs[i] = notifs[i + 1];
+    }
+
+    return out;
+}
 
 void storeNotification(Notification_t *notif)
 {
     // Log.verboseln("storing notification with Name: %s, Body: %s, Sender: %s, Tel: %s, Time: %d", notif->title.c_str(), notif->body.c_str(), notif->sender.c_str(), String(notif->tel_number).c_str(), notif->time);
 
-    notifs.add(notif);
+    pushNotification(notif);
 
-    forEachNotification([](Notification_t *notif) { Serial.println(notif->title); });
+    forEachNotification([](Notification_t *n)
+                        { Serial.println(n->title); });
 }
 
 void forEachNotification(void (*func)(Notification_t *))
 {
-    notifs.forEach(func);
+    for (uint8_t i = 0; i < 10; i++)
+    {
+        if (notifs[i] != nullptr)
+            func(notifs[i]);
+    }
 }
 
 void handleNotification(String title, String subject, String body, String sender, String tel, String src, int id)
@@ -26,7 +64,7 @@ void handleNotification(String title, String subject, String body, String sender
     powermgmTickle();
     motorVibrate(HAPTIC_NOTIFICATION);
 
-    Log.verboseln("Recieved Notification, Title: %s, Subject: %s, Body: %s, Sender: %s, Tel: %s, Src: %s, Id: %d", title, subject, body, sender, tel, src, id);
+    Log.verboseln("Recieved Notification, Title: %s, Subject: %s, Body: %s, Sender: %s, Tel: %s, Src: %s, Id: %d", title.c_str(), subject.c_str(), body.c_str(), sender.c_str(), tel.c_str(), src.c_str(), id);
 
     Notification_t *notif = new Notification_t();
     notif->title = (title != "") ? title : "Notification";

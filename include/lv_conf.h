@@ -117,7 +117,7 @@
      * > 1 requires an operating system enabled in `LV_USE_OS`
      * > 1 means multiply threads will render the screen in parallel */
     #ifdef WAVESHARE_ESP32_LCD
-        #define LV_DRAW_SW_DRAW_UNIT_CNT    12
+        #define LV_DRAW_SW_DRAW_UNIT_CNT    6
     #else
         #define LV_DRAW_SW_DRAW_UNIT_CNT    6
     #endif

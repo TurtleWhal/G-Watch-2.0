@@ -35,7 +35,7 @@ int8_t timerx = 1, timery = 0;
 
 void writeTimerTime(uint32_t millis)
 {
-    Log.verboseln("Writing Timertime: %d", millis);
+    // Log.verboseln("Writing Timertime: %d", millis);
     lv_roller_set_selected(sSroller, (millis / 1000) % 10, LV_ANIM_ON);
     lv_roller_set_selected(Ssroller, ((millis / 1000) % 60) / 10, LV_ANIM_ON);
     lv_roller_set_selected(mMroller, (millis / 60000) % 10, LV_ANIM_ON);
@@ -53,7 +53,7 @@ void setTimerTime(lv_event_t *e)
     timermillis += lv_roller_get_selected(Mmroller) * 600000;
     timermillis += lv_roller_get_selected(hHroller) * 3600000;
     timermillis += lv_roller_get_selected(Hhroller) * 36000000;
-    Log.verboseln("Timertime: %d", timermillis);
+    // Log.verboseln("Timertime: %d", timermillis);
 }
 
 bool timerLoad(EventBits_t event, void *arg)

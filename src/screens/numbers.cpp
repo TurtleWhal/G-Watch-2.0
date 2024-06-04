@@ -176,7 +176,7 @@ bool numbersperiodic(EventBits_t event, void *arg)
 {
     if (ON_CURRENT_SCREEN(numberx, numbery))
     {
-        static uint8_t lastmin;
+        static uint8_t lastmin = -1;
         if (lastmin != sysinfo.time.minute)
         {
             lv_label_set_text_fmt(minute, "%02i", sysinfo.time.minute);
@@ -195,7 +195,7 @@ bool numbersperiodic(EventBits_t event, void *arg)
             lastmin = sysinfo.time.minute;
         }
 
-        static uint8_t lastsec;
+        static uint8_t lastsec = -1;
         if (lastsec != sysinfo.time.second)
         {
             if (sysinfo.ble.connected)

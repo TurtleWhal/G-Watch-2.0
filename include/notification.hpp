@@ -1,5 +1,4 @@
 #include "Arduino.h"
-#include "ArrayList.h"
 
 typedef struct
 {

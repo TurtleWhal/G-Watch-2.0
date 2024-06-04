@@ -21,6 +21,9 @@ bool notifshowing = false;
 
 void showNotification(Notification_t *data)
 {
+    if (notifshowing)
+        storeNotification(&notif);
+
     Log.verboseln("showing notification with Name: %s, Body: %s, Sender: %s, Tel: %s, Time: %d", data->title.c_str(), data->body.c_str(), data->sender.c_str(), String(data->tel_number).c_str(), data->time);
 
     SET_SYMBOL_40(icon, data->icon.c_str());
@@ -65,7 +68,7 @@ bool notifcreate(EventBits_t event, void *arg)
     notifscr = lv_obj_create(nullptr);
     lv_obj_set_scroll_dir(notifscr, LV_DIR_VER);
     lv_obj_set_flex_flow(notifscr, LV_FLEX_FLOW_COLUMN);
-    lv_obj_set_flex_align(notifscr, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);  
+    lv_obj_set_flex_align(notifscr, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     addGestureCB(notifscr, LV_DIR_RIGHT, [](lv_event_t *e)
                  { notifshowing = false; setScreen(nullptr); });
 

@@ -23,37 +23,43 @@ static callback_t *powermgmCallback = NULL;
 
 #define SLEEP_TIMER_MS 30000
 
+#define TIRED_TIMER_RATIO 0.4
+#define TIRED_BL_RATIO 0.4
+
 long sleepTimer = 0;
 uint8_t prevBacklight = 100;
 bool sleeping = false;
+bool tired = false;
 
 void powermgmSleep()
 {
-    prevBacklight = getBacklight();
-    setBacklightGradual(0, 3000);
+    setBacklightGradual(0, 1000);
     // setBacklight(0);
 
     powermgmSendEvent(POWERMGM_SLEEP);
 
     sleeping = true;
 
-    // pm_config.max_freq_mhz = 240;
-    // pm_config.min_freq_mhz = 80;
-    // pm_config.light_sleep_enable = true;
-    // ESP_ERROR_CHECK(esp_pm_configure(&pm_config));
+    pm_config.max_freq_mhz = 80;
+    pm_config.min_freq_mhz = 80;
+    pm_config.light_sleep_enable = true;
+    esp_pm_configure(&pm_config);
 }
 
 void powermgmWakeup()
 {
-    // pm_config.max_freq_mhz = 240;
-    // pm_config.min_freq_mhz = 80;
-    // pm_config.light_sleep_enable = false;
-    // ESP_ERROR_CHECK(esp_pm_configure(&pm_config));
+    pm_config.max_freq_mhz = 240;
+    pm_config.min_freq_mhz = 80;
+    pm_config.light_sleep_enable = true;
+    esp_pm_configure(&pm_config);
 
     sleepTimer = millis();
-    sleeping = false;
 
-    powermgmSendEvent(POWERMGM_WAKEUP);
+    if (sleeping)
+        powermgmSendEvent(POWERMGM_WAKEUP);
+
+    sleeping = false;
+    tired = false;
 
     setBacklightGradual(prevBacklight, 150);
     // setBacklight(prevBacklight);
@@ -65,40 +71,42 @@ void powermgmTickle()
         powermgmWakeup();
     else
     {
+        tired = false;
+
+        powermgmWakeup();
         sleepTimer = millis();
     }
 }
 
 void powermgmLoop()
 {
-
     if (!sleeping)
     {
-
-        if (sleepTimer + SLEEP_TIMER_MS < millis())
+        if (!tired)
+        {
+            if (millis() - sleepTimer > SLEEP_TIMER_MS * TIRED_TIMER_RATIO)
+            {
+                tired = true;
+                prevBacklight = getBacklight();
+                setBacklightGradual(prevBacklight * TIRED_BL_RATIO, 500);
+            }
+        }
+        else if (sleepTimer + SLEEP_TIMER_MS < millis())
         {
             powermgmSleep();
         }
 
-        // esp_pm_lock_acquire(lvgl_lock);
-
-        callback_send(powermgmCallback, POWERMGM_LOOP, nullptr);
         callback_send(powermgmCallback, POWERMGM_LOOP_AWAKE, nullptr);
-
-        // esp_pm_lock_release(lvgl_lock);
     }
     else
     {
-        // esp_pm_lock_acquire(lvgl_lock);
-
-        callback_send(powermgmCallback, POWERMGM_LOOP, nullptr);
-
-        // esp_pm_lock_release(lvgl_lock);
         delay(50);
 
         if (touch.available())
             powermgmTickle();
     }
+
+    callback_send(powermgmCallback, POWERMGM_LOOP, nullptr);
 }
 
 void powermgmInit()
@@ -123,10 +131,10 @@ void powermgmInit()
     pm_config.max_freq_mhz = 240;
     pm_config.min_freq_mhz = 80;
     pm_config.light_sleep_enable = true;
-    // ESP_ERROR_CHECK(esp_pm_configure(&pm_config));
     esp_pm_configure(&pm_config);
+    // ESP_ERROR_CHECK(esp_pm_configure(&pm_config));
 
-    esp_pm_lock_create(ESP_PM_NO_LIGHT_SLEEP, 0, NULL, &lvgl_lock);
+    // esp_pm_lock_create(ESP_PM_NO_LIGHT_SLEEP, 0, NULL, &lvgl_lock);
 }
 
 bool powermgmRegisterCB(CALLBACK_FUNC cb_func, EventBits_t event, const char *id)

@@ -45,7 +45,6 @@ void my_input_read(lv_indev_t *indev, lv_indev_data_t *data)
 
     if (touch.available())
     {
-
         Log.verboseln("Screen Touched at: %d, %d", touch.data.x, touch.data.y);
 
         last_x = touch.data.x;
@@ -213,7 +212,7 @@ bool displayInit(EventBits_t event, void *arg)
     xTaskCreatePinnedToCore(backlight_updata, "backlight", 1024 * 10, NULL, 2, &backlightHandle, 1);
 
     powermgmRegisterCB(displayWakeup, POWERMGM_WAKEUP, "DisplayWakeup");
-    powermgmRegisterCB(displayPeriodic, POWERMGM_LOOP_AWAKE, "DisplayPeriodic");
+    powermgmRegisterCBPrio(displayPeriodic, POWERMGM_LOOP_AWAKE, "DisplayPeriodic", CALL_CB_FIRST);
 
     return true;
 }

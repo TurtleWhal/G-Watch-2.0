@@ -10,11 +10,7 @@
 #include "lvgl.h"
 #include "TFT_eSPI.h"
 
-#include "ArrayList.h"
-
 SystemInfo sysinfo;
-
-ArrayList<int> nums(ArrayList<int>::FIXED);
 
 void setup()
 {
@@ -62,19 +58,6 @@ void setup()
   Log.verboseln("");
 
   powermgmInit();
-
-  nums.add(1);
-  nums.add(2);
-  nums.add(3);
-  nums.add(5);
-  nums.add(7);
-  nums.add(11);
-  nums.add(13);
-  nums.add(17);
-  nums.add(19);
-
-  nums.forEach([](int i)
-               { Serial.println(i); });
 }
 
 void loop()

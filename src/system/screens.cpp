@@ -4,6 +4,7 @@
 #include "lvgl.h"
 #include "screens/screens.hpp"
 #include "fonts/fonts.hpp"
+#include "images/images.hpp"
 
 #define SCROLLBAR_WIDTH 30
 #define SCROLLBAR_START (360 - SCROLLBAR_WIDTH / 2)
@@ -32,6 +33,15 @@ bool screenInit(EventBits_t event, void *arg)
 
     lv_obj_add_event_cb(scr, [](lv_event_t *e)
                         { powermgmSendEvent(POWERMGM_SCREEN_CHANGE); }, LV_EVENT_SCROLL_END, NULL);
+
+    // lv_obj_t *overlay = lv_image_create(lv_layer_sys());
+    // SET_IMG(overlay, IMG_OVERLAY);
+    // lv_obj_center(overlay);
+
+    // lv_obj_add_event_cb(scr, [](lv_event_t *e)
+    //                     { lv_obj_set_style_opa((lv_obj_t *)e->user_data, LV_OPA_COVER, LV_PART_MAIN); }, LV_EVENT_SCROLL_BEGIN, overlay);
+    // lv_obj_add_event_cb(scr, [](lv_event_t *e)
+    //                     { lv_obj_set_style_opa((lv_obj_t *)e->user_data, LV_OPA_TRANSP, LV_PART_MAIN); }, LV_EVENT_SCROLL_END, overlay);
 
     lv_screen_load(scr);
 
@@ -97,7 +107,7 @@ lv_obj_t *createCurvedScrollbar(lv_obj_t *scr)
 
     lv_obj_set_style_arc_color(bar, lv_color_hex(0xbbbbbb), LV_PART_MAIN);
     lv_obj_set_style_arc_opa(bar, LV_OPA_40, LV_PART_MAIN);
-    lv_obj_set_style_arc_color(bar, lv_color_hex(0xbbbbbb), LV_PART_INDICATOR);
+    lv_obj_set_style_arc_color(bar, lv_color_hex(0xffffff), LV_PART_INDICATOR);
 
     lv_obj_set_style_arc_width(bar, 5, LV_PART_MAIN);
     lv_obj_set_style_arc_width(bar, 5, LV_PART_INDICATOR);

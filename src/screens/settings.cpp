@@ -97,8 +97,13 @@ bool settingsscreate(EventBits_t event, void *arg)
     settingsscr = screenCreate(settingsx, settingsy);
 
     lv_obj_set_flex_flow(settingsscr, LV_FLEX_FLOW_COLUMN);
+    lv_obj_set_flex_align(settingsscr, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-    lv_obj_set_flex_align(settingsscr, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
+    lv_obj_t *s1 = lv_obj_create(settingsscr);
+    lv_obj_set_size(s1, 0, 30);
+
+    lv_obj_set_scroll_dir(settingsscr, LV_DIR_VER);
+    createCurvedScrollbar(settingsscr);
 
     Setting_t setting1;
     setting1.title = "Switch";
@@ -122,6 +127,9 @@ bool settingsscreate(EventBits_t event, void *arg)
     createSetting(&setting1);
     createSetting(&setting1);
     createSetting(&setting1);
+
+    lv_obj_t *s2 = lv_obj_create(settingsscr);
+    lv_obj_set_size(s2, 0, 20);
 
     preferences.begin("Settings", false);
 

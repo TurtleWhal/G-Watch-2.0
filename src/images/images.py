@@ -2,6 +2,10 @@
 
 import subprocess
 import os
+import shutil
+
+def copy_and_rename(src_path, dest_path, new_name):
+    shutil.copy(src_path, f"{dest_path}/{new_name}")
 
 # Clear generated folder
 folder = os.path.abspath("generated")
@@ -19,8 +23,14 @@ for filename in os.listdir(folder):
 hfile = open("images.hpp", "w")
 hfile.truncate(0)
 hfile.write("#include \"lvgl.h\"\n\n")
+hfile.write("#define SET_IMG(obj, img) lv_image_set_src(obj, &img);\n\n")
 
 for file in os.listdir("files"):
     print("Converting Image: " + file)
-    hfile.write("LV_IMAGE_DECLARE(" + file.split(".")[0] + ");\n")
-    subprocess.call(["python3", "lv_img_conv.py", "--ofmt", "C", "--cf", "RGB565A8", "-o", "generated/", "--compress", "NONE", os.path.abspath("files/" + file)])
+
+    copy_and_rename("files/" + file, "generated", "IMG_" + file.split(".")[0].upper() + ".png")
+
+    hfile.write("LV_IMAGE_DECLARE(IMG_" + file.split(".")[0].upper() + ");\n")
+    subprocess.call(["python3", "lv_img_conv.py", "--ofmt", "C", "--cf", "RGB565A8", "-o", "generated/", "--compress", "NONE", os.path.abspath("generated/IMG_" + file.split(".")[0].upper() + ".png")])
+    
+    os.remove("generated/IMG_" + file.split(".")[0].upper() + ".png")
