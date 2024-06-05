@@ -4,7 +4,7 @@
 #include "powermgm.hpp"
 #include "fonts/fonts.hpp"
 
-Notification_t *notifs[10];
+Notification_t *notifs[10] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
 void pushNotification(Notification_t *notif, uint8_t index = 0)
 {
@@ -55,7 +55,8 @@ void forEachNotification(void (*func)(Notification_t *))
     for (uint8_t i = 0; i < 10; i++)
     {
         if (notifs[i] != nullptr)
-            func(notifs[i]);
+            Serial.println(notifs[i]->title);
+        // func(notifs[i]);
     }
 }
 

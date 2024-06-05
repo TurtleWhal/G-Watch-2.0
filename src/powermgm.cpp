@@ -31,51 +31,48 @@ uint8_t prevBacklight = 100;
 bool sleeping = false;
 bool tired = false;
 
+void setSpeed(int mhz)
+{
+    pm_config.max_freq_mhz = 80;
+    pm_config.min_freq_mhz = mhz;
+    pm_config.light_sleep_enable = true;
+    esp_pm_configure(&pm_config);
+}
+
 void powermgmSleep()
 {
     setBacklightGradual(0, 1000);
-    // setBacklight(0);
 
     powermgmSendEvent(POWERMGM_SLEEP);
 
     sleeping = true;
 
-    pm_config.max_freq_mhz = 80;
-    pm_config.min_freq_mhz = 80;
-    pm_config.light_sleep_enable = true;
-    esp_pm_configure(&pm_config);
+    setSpeed(80);
 }
 
 void powermgmWakeup()
 {
-    pm_config.max_freq_mhz = 240;
-    pm_config.min_freq_mhz = 80;
-    pm_config.light_sleep_enable = true;
-    esp_pm_configure(&pm_config);
+    setSpeed(240);
 
     sleepTimer = millis();
 
     if (sleeping)
+    {
+        sleeping = false;
         powermgmSendEvent(POWERMGM_WAKEUP);
+        setBacklightGradual(prevBacklight, 150);
+    }
 
-    sleeping = false;
-    tired = false;
-
-    setBacklightGradual(prevBacklight, 150);
-    // setBacklight(prevBacklight);
+    if (tired)
+    {
+        tired = false;
+        setBacklightGradual(prevBacklight, 150);
+    }
 }
 
 void powermgmTickle()
 {
-    if (sleeping)
-        powermgmWakeup();
-    else
-    {
-        tired = false;
-
-        powermgmWakeup();
-        sleepTimer = millis();
-    }
+    powermgmWakeup();
 }
 
 void powermgmLoop()
@@ -86,6 +83,7 @@ void powermgmLoop()
         {
             if (millis() - sleepTimer > SLEEP_TIMER_MS * TIRED_TIMER_RATIO)
             {
+                setSpeed(80);
                 tired = true;
                 prevBacklight = getBacklight();
                 setBacklightGradual(prevBacklight * TIRED_BL_RATIO, 500);
@@ -126,7 +124,6 @@ void powermgmInit()
     motorVibrate(3, 100);
 
     setBacklightGradual(100, 1000);
-    // setBacklight(100);
 
     pm_config.max_freq_mhz = 240;
     pm_config.min_freq_mhz = 80;
