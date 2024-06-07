@@ -67,7 +67,7 @@ void createArc(uint8_t arcid, int32_t x, int32_t y, char *symbol, void (*updateC
     // lv_obj_align(arc->icon, LV_ALIGN_CENTER, x, y - 22);
     // lv_img_set_src(arc->icon, &arc->img);
     arc->icon = lv_label_create(numberscr);
-    lv_obj_align(arc->icon, LV_ALIGN_CENTER, x, y - (arcsize / 3));
+    lv_obj_align(arc->icon, LV_ALIGN_CENTER, x, y - (arcsize / 2.5));
 
     arc->symbol = symbol;
     SET_SYMBOL_14(arc->icon, arc->symbol.c_str());
@@ -90,6 +90,7 @@ void stepsCallback(uint8_t arcid)
     static uint32_t laststeps = -1;
     if (laststeps != sysinfo.health.steps)
     {
+        lv_arc_set_range(arc->arc, 0, sysinfo.health.goal);
         lv_arc_set_value(arc->arc, sysinfo.health.steps);
         lv_label_set_text_fmt(arc->lbl, "%i", sysinfo.health.steps);
         laststeps = sysinfo.health.steps;

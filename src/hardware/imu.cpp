@@ -90,6 +90,13 @@ bool imuPeriodic(EventBits_t event, void *arg)
     return true;
 }
 
+bool sensorIRQ = false;
+
+void setFlag()
+{
+    sensorIRQ = true;
+}
+
 bool imuInit(EventBits_t event, void *arg)
 {
 #ifdef WAVESHARE_ESP32_LCD
@@ -180,17 +187,52 @@ bool imuInit(EventBits_t event, void *arg)
 
 #ifdef LILYGO_TWATCH_2021
 
-    pinMode(IMU_INT1, INPUT);
+    // pinMode(IMU_INT1, INPUT);
+    // attachInterrupt(IMU_INT2, setFlag, RISING);
 
-    if (!bma.begin(Wire, BMA423_SLAVE_ADDRESS, IIC_SDA, IIC_SCL))
+    if (!bma.begin(Wire, 0x18, IIC_SDA, IIC_SCL))
     {
         Serial.println("Failed to find BMA423 - check your wiring!");
+        return true;
     }
 
+    Serial.println("Init BMA423 Sensor success!");
+
+    // Default 4G, 200HZ
     bma.configAccelerometer();
+
+    // Enable acceleration sensor
     bma.enableAccelerometer();
 
+    // Enable pedometer steps
     bma.enablePedometer();
+
+    // Emptying the pedometer steps
+    // bma.resetPedometer();
+
+    // Enable sensor features
+    // bma.enableFeature(SensorBMA423::FEATURE_STEP_CNTR |
+    //                       SensorBMA423::FEATURE_ANY_MOTION |
+    //                       SensorBMA423::FEATURE_ACTIVITY |
+    //                       SensorBMA423::FEATURE_TILT |
+    //                       SensorBMA423::FEATURE_WAKEUP,
+    //                   true);
+    bma.enableFeature(SensorBMA423::FEATURE_STEP_CNTR |
+                          SensorBMA423::FEATURE_TILT,
+                      true);
+
+    // Pedometer interrupt enable
+    bma.enablePedometerIRQ();
+    // Tilt interrupt enable
+    bma.enableTiltIRQ();
+    // DoubleTap interrupt enable
+    // bma.enableWakeupIRQ();
+    // Any  motion / no motion interrupt enable
+    // bma.enableAnyNoMotionIRQ();
+    // Activity interruption enable
+    // bma.enableActivityIRQ();
+    // Chip interrupt function enable
+    bma.configInterrupt();
 #endif
 
     powermgmRegisterCB(imuPeriodic, POWERMGM_LOOP, "IMUPeriodic");

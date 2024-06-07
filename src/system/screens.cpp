@@ -133,7 +133,7 @@ void curvedScrollbarCB(lv_event_t *e)
 
     int height = lv_obj_get_scroll_top(scr) + lv_obj_get_scroll_bottom(scr) + TFT_HEIGHT - 2;
 
-    Log.verboseln("Scrollbar Height: %i, Scroll Y: %i", height, lv_obj_get_scroll_y(scr));
+    // Log.verboseln("Scrollbar Height: %i, Scroll Y: %i", height, lv_obj_get_scroll_y(scr));
 
     if (height <= TFT_HEIGHT)
     {

@@ -46,6 +46,7 @@ void powermgmSleep()
     powermgmSendEvent(POWERMGM_SLEEP);
 
     sleeping = true;
+    tired = false;
 
     setSpeed(80);
 }

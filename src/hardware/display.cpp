@@ -42,10 +42,14 @@ void my_input_read(lv_indev_t *indev, lv_indev_data_t *data)
 {
     static uint16_t last_x = 0;
     static uint16_t last_y = 0;
+    static bool touching = false;
 
     if (touch.available())
     {
-        Log.verboseln("Screen Touched at: %d, %d", touch.data.x, touch.data.y);
+        if (!touching)
+            Log.verboseln("Screen Touched at: %d, %d", touch.data.x, touch.data.y);
+
+        touching = true;
 
         last_x = touch.data.x;
         last_y = touch.data.y;
@@ -55,6 +59,7 @@ void my_input_read(lv_indev_t *indev, lv_indev_data_t *data)
     }
     else
     {
+        touching = false;
         data->state = LV_INDEV_STATE_REL;
     }
     data->point.x = last_x;

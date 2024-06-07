@@ -59,7 +59,8 @@ bool blePeriodic(EventBits_t event, void *arg)
 
 bool bleInit(EventBits_t event, void *arg)
 {
-    blectl_setup("Garrett's Watch");
+    // blectl_setup("Garrett's Watch");
+    blectl_setup(sysinfo.ble.name + " G-Watch");
     // setBLEBatteryLevel(100);
 
     // BTmsgloop 50ms timer

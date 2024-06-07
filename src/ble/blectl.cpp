@@ -175,7 +175,8 @@ void blectl_setup(String device_name)
     Storage.getBytes("BTname", BTnamechar, 17);
     snprintf( deviceName, sizeof( deviceName ), "%s", BTnamechar);
     NimBLEDevice::init( deviceName );*/
-    NimBLEDevice::init(((String) "Espruino " + device_name).c_str());
+    // NimBLEDevice::init(((String) "Espruino " + device_name).c_str());
+    NimBLEDevice::init(((String) device_name).c_str());
     /*
      * set power level
      */

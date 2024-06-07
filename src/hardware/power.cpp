@@ -118,20 +118,20 @@ bool powerPeriodic(EventBits_t event, void *arg)
                 storage.putBool("discharging", true);
         }
 
-        storage.putUInt("discharge_points", 0);
-        storage.putUInt("charge_points", 0);
+        storage.putUInt("d_points", 0);
+        storage.putUInt("c_points", 0);
 
         int i = 0;
-        while (storage.isKey(("discharge_data_" + String(i)).c_str()))
+        while (storage.isKey(("d_data_" + String(i)).c_str()))
         {
-            storage.remove(("discharge_data_" + String(i)).c_str());
+            storage.remove(("d_data_" + String(i)).c_str());
             i++;
         }
 
         i = 0;
-        while (storage.isKey(("charge_data_" + String(i)).c_str()))
+        while (storage.isKey(("c_data_" + String(i)).c_str()))
         {
-            storage.remove(("charge_data_" + String(i)).c_str());
+            storage.remove(("c_data_" + String(i)).c_str());
             i++;
         }
 
@@ -151,24 +151,25 @@ bool powerPeriodic(EventBits_t event, void *arg)
             if (storage.getBool("discharging"))
             {
                 int points = 0;
-                while (storage.isKey(("discharge_data_" + String(points)).c_str()))
+                while (storage.isKey(("d_data_" + String(points)).c_str()))
                     points++;
 
                 for (int i = 0; i < 10; i++)
-                    storage.putFloat(("qcmd" + String(i)).c_str(), storage.getFloat(("discharge_data_" + String((points / 10) * i)).c_str()));
+                    storage.putFloat(("qcmd" + String(i)).c_str(), storage.getFloat(("d_data_" + String((points / 10) * i)).c_str()));
             }
 
             esp_deep_sleep(5 * 60 * 1000 * 1000); // 5 minutes
+            updatePower();
         }
 
         if (storage.getBool("charging"))
         {
             int points = 0;
-            while (storage.isKey(("charge_data_" + String(points)).c_str()))
+            while (storage.isKey(("c_data_" + String(points)).c_str()))
                 points++;
 
             for (int i = 0; i < 10; i++)
-                storage.putFloat(("qcmc" + String(i)).c_str(), storage.getFloat(("charge_data_" + String((points / 10) * i)).c_str()));
+                storage.putFloat(("qcmc" + String(i)).c_str(), storage.getFloat(("c_data_" + String((points / 10) * i)).c_str()));
         }
 
         static int lastmin = -1;
@@ -177,18 +178,18 @@ bool powerPeriodic(EventBits_t event, void *arg)
         {
             if (storage.getBool("discharging"))
             {
-                String name = "discharge_data_" + String(storage.getUInt("discharge_points"));
+                String name = "d_data_" + String(storage.getUInt("d_points"));
                 storage.putFloat(name.c_str(), voltage);
 
-                storage.putUInt("discharge_points", storage.getUInt("discharge_points") + 1);
+                storage.putUInt("d_points", storage.getUInt("d_points") + 1);
             }
 
             if (storage.getBool("charging"))
             {
-                String name = "charge_data_" + String(storage.getUInt("charge_points"));
+                String name = "c_data_" + String(storage.getUInt("c_points"));
                 storage.putFloat(name.c_str(), voltage);
 
-                storage.putUInt("charge_points", storage.getUInt("charge_points") + 1);
+                storage.putUInt("c_points", storage.getUInt("c_points") + 1);
             }
         }
     }

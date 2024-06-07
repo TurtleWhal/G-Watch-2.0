@@ -89,6 +89,8 @@ typedef struct
     typedef struct
     {
         bool connected = false;
+        String name = "New G-Watch";
+        
     } BLEInfo;
     BLEInfo ble;
 

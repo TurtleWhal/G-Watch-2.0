@@ -1,3 +1,5 @@
+#pragma GCC diagnostic ignored "-Wwrite-strings"
+
 #include "lvgl.h"
 
 #define SCREEN_SCROLL_OFFSET 1
