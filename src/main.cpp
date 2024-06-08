@@ -19,7 +19,7 @@ void setup()
   Serial.begin(115200);
   Log.begin(LOG_LEVEL_VERBOSE, &Serial);
 
-  esp_log_level_set("gpio", ESP_LOG_NONE);
+  esp_log_level_set("gpio", ESP_LOG_WARN);
 
   Wire.begin(IIC_SDA, IIC_SCL);
 

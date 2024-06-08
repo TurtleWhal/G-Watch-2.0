@@ -43,6 +43,26 @@ bool sendPowerBLE(EventBits_t event, void *arg)
     return true;
 }
 
+void checkPower()
+{
+    if (voltage < 2800)
+    {
+        Serial.printf("Sleeping, Voltage: %f\n", voltage);
+
+        if (storage.getBool("discharging"))
+        {
+            int points = 0;
+            while (storage.isKey(("d_data_" + String(points)).c_str()))
+                points++;
+
+            for (int i = 0; i < 10; i++)
+                storage.putFloat(("qcmd" + String(i)).c_str(), storage.getFloat(("d_data_" + String((points / 10) * i)).c_str()));
+        }
+
+        esp_deep_sleep(5 * 60 * 1000 * 1000); // 5 minutes
+    }
+}
+
 void updatePower()
 {
 
@@ -146,21 +166,7 @@ bool powerPeriodic(EventBits_t event, void *arg)
         updatePower();
         last = millis();
 
-        while (voltage < 2800)
-        {
-            if (storage.getBool("discharging"))
-            {
-                int points = 0;
-                while (storage.isKey(("d_data_" + String(points)).c_str()))
-                    points++;
-
-                for (int i = 0; i < 10; i++)
-                    storage.putFloat(("qcmd" + String(i)).c_str(), storage.getFloat(("d_data_" + String((points / 10) * i)).c_str()));
-            }
-
-            esp_deep_sleep(5 * 60 * 1000 * 1000); // 5 minutes
-            updatePower();
-        }
+        checkPower();
 
         if (storage.getBool("charging"))
         {

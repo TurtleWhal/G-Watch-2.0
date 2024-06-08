@@ -106,6 +106,8 @@ typedef struct
     } USBInfo;
     USBInfo usb;
 
+    bool donotdisturb = false;
+
 } SystemInfo;
 
 #endif // SYSINFO

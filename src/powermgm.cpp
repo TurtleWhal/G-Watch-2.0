@@ -8,6 +8,7 @@
 #include "powermgm.hpp"
 #include "display.hpp"
 #include "motor.hpp"
+#include "system.hpp"
 
 extern CST816S touch;
 
@@ -33,8 +34,8 @@ bool tired = false;
 
 void setSpeed(int mhz)
 {
-    pm_config.max_freq_mhz = 80;
-    pm_config.min_freq_mhz = mhz;
+    pm_config.max_freq_mhz = mhz;
+    pm_config.min_freq_mhz = 80;
     pm_config.light_sleep_enable = true;
     esp_pm_configure(&pm_config);
 }
@@ -53,7 +54,8 @@ void powermgmSleep()
 
 void powermgmWakeup()
 {
-    setSpeed(240);
+    if (sleeping || tired)
+        setSpeed(240);
 
     sleepTimer = millis();
 
@@ -122,7 +124,8 @@ void powermgmInit()
     // attachInterrupt(TP_INT, powermgmTickle, RISING);
     // attachInterrupt(0, powermgmTickle, RISING);
 
-    motorVibrate(3, 100);
+    if (!sysinfo.donotdisturb)
+        motorVibrate(3, 100);
 
     setBacklightGradual(100, 1000);
 
@@ -131,6 +134,8 @@ void powermgmInit()
     pm_config.light_sleep_enable = true;
     esp_pm_configure(&pm_config);
     // ESP_ERROR_CHECK(esp_pm_configure(&pm_config));
+
+    // esp_log_level_set("sleep", ESP_LOG_WARN);
 
     // esp_pm_lock_create(ESP_PM_NO_LIGHT_SLEEP, 0, NULL, &lvgl_lock);
 }

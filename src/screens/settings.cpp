@@ -41,6 +41,8 @@ void createSetting(Setting_t *data)
 
     lv_obj_align(title, LV_ALIGN_LEFT_MID, 0, 0);
 
+    lv_obj_t *input;
+
     switch (data->type)
     {
     case SETTING_TYPE_SWITCH:
@@ -51,6 +53,8 @@ void createSetting(Setting_t *data)
         lv_obj_add_event_cb(switchobj, data->onchange, LV_EVENT_VALUE_CHANGED, NULL);
         data->init(switchobj);
 
+        input = switchobj;
+
         break;
     }
     case SETTING_TYPE_TEXT:
@@ -59,10 +63,13 @@ void createSetting(Setting_t *data)
         lv_obj_set_size(text, 100, 30);
         lv_obj_align(text, LV_ALIGN_RIGHT_MID, 10, 0);
         lv_obj_set_style_radius(text, 15, LV_PART_MAIN);
-        lv_obj_set_scroll_dir(text, LV_DIR_HOR);
+        lv_obj_set_style_bg_color(text, lv_color_black(), LV_PART_MAIN);
+        lv_textarea_set_one_line(text, true);
 
         lv_obj_add_event_cb(text, data->onchange, LV_EVENT_VALUE_CHANGED, NULL);
         data->init(text);
+
+        input = text;
 
         attachKeyboard(text, KEYBOARD_CHARS_ALL);
         break;
@@ -74,13 +81,30 @@ void createSetting(Setting_t *data)
         lv_obj_align(number, LV_ALIGN_RIGHT_MID, 10, 0);
         lv_obj_set_style_radius(number, 15, LV_PART_MAIN);
         lv_obj_set_scroll_dir(number, LV_DIR_HOR);
+        lv_obj_set_style_bg_color(number, lv_color_black(), LV_PART_MAIN);
+        lv_textarea_set_one_line(number, true);
 
         lv_obj_add_event_cb(number, data->onchange, LV_EVENT_VALUE_CHANGED, NULL);
         data->init(number);
 
+        input = number;
+
         attachKeyboard(number, KEYBOARD_CHARS_NUMBERS);
         break;
     }
+    default:
+        return;
+        break;
+    }
+
+    if (lv_obj_get_width(setting) - lv_obj_get_width(title) - 8 < lv_obj_get_width(input))
+    {
+        lv_obj_set_height(setting, 80);
+        lv_obj_align(title, LV_ALIGN_TOP_LEFT, 0, 0);
+        lv_obj_align(input, LV_ALIGN_BOTTOM_RIGHT, 10, 10);
+
+        if (data->type != SETTING_TYPE_SWITCH)
+            lv_obj_set_width(input, lv_obj_get_width(setting) - 10);
     }
 }
 
@@ -135,13 +159,11 @@ bool settingsscreate(EventBits_t event, void *arg)
     blename.type = SETTING_TYPE_TEXT;
     blename.init = [](lv_obj_t *obj)
     {
-        Log.verboseln("Init BLE Name: %s", getString("ble_name", "G-Watch", &settings));
         lv_textarea_set_text(obj, getString("ble_name", "G-Watch", &settings));
     };
     blename.onchange = [](lv_event_t *e)
     {
         const char *text = lv_textarea_get_text(lv_event_get_target_obj(e));
-        Log.verboseln("set BLE Name: %s, len: %i", text, strlen(text));
         settings.putBytes("ble_name", text, strlen(text));
     };
 
@@ -154,7 +176,8 @@ bool settingsscreate(EventBits_t event, void *arg)
     };
     disturb.onchange = [](lv_event_t *e)
     {
-        Log.verboseln("Do Not Disturb change: %i", lv_obj_has_state(lv_event_get_target_obj(e), LV_STATE_CHECKED));
+        settings.putBool("dnd", lv_obj_has_state(lv_event_get_target_obj(e), LV_STATE_CHECKED));
+        sysinfo.donotdisturb = settings.getBool("dnd", false);
     };
 
     createSetting(&blename);

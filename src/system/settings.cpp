@@ -40,6 +40,7 @@ bool settingsInit(EventBits_t event, void *arg)
 
     sysinfo.health.goal = settings.getUInt("stepgoal", 10000);
     sysinfo.ble.name = getString("ble_name", "New G-Watch");
+    sysinfo.donotdisturb = settings.getBool("dnd", false);
 
     powermgmRegisterCB(settingsPeriodic, POWERMGM_LOOP_AWAKE, "SettingsPeriodic");
     return true;
