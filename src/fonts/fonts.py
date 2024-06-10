@@ -63,7 +63,10 @@ for symbol in symbols['symbols']:
 for symbol in symbols["symbols"]: 
     symboldefines.append(f"#define FA_{(symbol['name'].replace('-', '_').replace(' ', '_').upper().ljust(longest, ' '))} {hex_to_utf8(symbol['hex'])} // U+{symbol['hex'].upper()}, Sizes: {symbol['sizes']}\n")
     for size in symbol["sizes"]:
-        sizes[size].append(symbol["hex"])
+        if symbol.get("brand") is None:
+            sizes[size].append(symbol["hex"])
+        else:
+            sizes[size].append(symbol["hex"] + "\0")
 
 
 
@@ -91,14 +94,48 @@ for size in sizes:
     if len(size) > 0:
         fontfiles.append("FontAwesome_" + str(sizes.index(size)) + ".c")
 
-        range = ""
+        srange = ""
+        brange = ""
         for hex in size:
-            range += "0x" + hex + ", "
-        range = range[:-2]
+            if hex.endswith("\0"):
+                brange += "0x" + hex[:-1] + ", "
+            else:
+                srange += "0x" + hex + ", "
 
-        print("Generating font: " + "FontAwesome_" + str(sizes.index(size)) + " with range: " + range)
+        srange = srange[:-2]
+        brange = brange[:-2]
+
+        print("Generating font: " + "FontAwesome_" + str(sizes.index(size)) + " with srange: " + srange + " and brange: " + brange)
+
+
+
+        args = [
+            "lv_font_conv",
+            "--size",
+            str(sizes.index(size)),
+            "--bpp",
+            str(symbols['symbol-bpp']),
+            "--format",
+            "lvgl",
+            "--output",
+            os.path.abspath("generated") + "/FontAwesome_" + str(sizes.index(size)) + ".c",
+            "--no-compress"
+        ]
+
+        if srange:
+            args.append("--font")
+            args.append(os.path.abspath("FontAwesome6Pro.woff"))
+            args.append("--range")
+            args.append(srange)
+
+        if brange:
+            args.append("--font")
+            args.append(os.path.abspath("FontAwesome5.woff"))
+            args.append("--range")
+            args.append(brange)
         
-        subprocess.run(["lv_font_conv", "--size", str(sizes.index(size)), "--bpp", str(symbols['symbol-bpp']), "--format", "lvgl", "--font", os.path.abspath("FontAwesome5.woff"), "--range", range, "--output", os.path.abspath("generated") + "/FontAwesome_" + str(sizes.index(size)) + ".c",  "--no-compress"])
+        # subprocess.run(["lv_font_conv", "--size", str(sizes.index(size)), "--bpp", str(symbols['symbol-bpp']), "--format", "lvgl", "--font", os.path.abspath("FontAwesome5.woff"), "--range", range, "--output", os.path.abspath("generated") + "/FontAwesome_" + str(sizes.index(size)) + ".c",  "--no-compress"])
+        subprocess.run(args)
 
 # Create Font Files
 for font in symbols["fonts"]:
