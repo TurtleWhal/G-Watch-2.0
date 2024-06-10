@@ -6,6 +6,7 @@
         {"name": "step forward",    "hex": "f051", "sizes": [32]},
         {"name": "step backward",   "hex": "f048", "sizes": [32]},
         {"name": "reset",           "hex": "f2f1", "sizes": [32]},
+        {"name": "brightness",      "hex": "e0c9", "sizes": [32]},
         {"name": "chevron up",      "hex": "f077", "sizes": [20]},
         {"name": "ok",              "hex": "f00c", "sizes": [20]},
         {"name": "close",           "hex": "f00d", "sizes": [20]},
@@ -17,19 +18,19 @@
         {"name": "battery 1",       "hex": "f243", "sizes": [14]},
         {"name": "battery empty",   "hex": "f244", "sizes": [14]},
         {"name": "steps",           "hex": "f54b", "sizes": [14]},
-        {"name": "bluetooth",       "hex": "f294", "sizes": [14]},
-        {"name": "usb",             "hex": "f287", "sizes": [14]},
-        {"name": "wifi",            "hex": "f1eb", "sizes": [14]},
+        {"name": "bluetooth",       "hex": "f294", "sizes": [14], "brand":true},
+        {"name": "usb",             "hex": "f287", "sizes": [14], "brand":true},
+        {"name": "wifi",            "hex": "f1eb", "sizes": [14], "brand":true},
         {"name": "envelope",        "hex": "f0e0", "sizes": [14]},
         {"name": "bell",            "hex": "f0f3", "sizes": [14]},
         {"name": "point",           "hex": "f192", "sizes": [14]},
         
-        {"name": "discord",         "hex": "f392", "sizes": [14, 40]},
+        {"name": "discord",         "hex": "f392", "sizes": [14, 40], "brand":true},
         {"name": "message",         "hex": "f075", "sizes": [14, 40]},
         {"name": "sms",             "hex": "f7cd", "sizes": [14, 40]},
         {"name": "email",           "hex": "f0e0", "sizes": [14, 40]},
         {"name": "gadgetbridge",    "hex": "f255", "sizes": [14, 40]},
-        {"name": "youtube",         "hex": "f167", "sizes": [14, 40]}
+        {"name": "youtube",         "hex": "f167", "sizes": [14, 40], "brand":true}
 
     ],
     "fonts": [

@@ -5,6 +5,8 @@
 #include "screens.hpp"
 #include "powermgm.hpp"
 #include "settings.hpp"
+#include "display.hpp"
+#include "fonts/fonts.hpp"
 
 #include "Preferences.h"
 
@@ -29,6 +31,8 @@ typedef struct
 lv_obj_t *settingsscr;
 int8_t settingsx = -1, settingsy = 0;
 
+lv_obj_t *bright;
+
 void createSetting(Setting_t *data)
 {
     lv_obj_t *setting = lv_obj_create(settingsscr);
@@ -40,6 +44,7 @@ void createSetting(Setting_t *data)
     lv_label_set_text(title, data->title.c_str());
 
     lv_obj_align(title, LV_ALIGN_LEFT_MID, 0, 0);
+    lv_obj_add_flag(setting, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
 
     lv_obj_t *input;
 
@@ -48,7 +53,7 @@ void createSetting(Setting_t *data)
     case SETTING_TYPE_SWITCH:
     {
         lv_obj_t *switchobj = lv_switch_create(setting);
-        lv_obj_align(switchobj, LV_ALIGN_RIGHT_MID, 10, 0);
+        lv_obj_align(switchobj, LV_ALIGN_RIGHT_MID, 12, 0);
 
         lv_obj_add_event_cb(switchobj, data->onchange, LV_EVENT_VALUE_CHANGED, NULL);
         data->init(switchobj);
@@ -61,7 +66,7 @@ void createSetting(Setting_t *data)
     {
         lv_obj_t *text = lv_textarea_create(setting);
         lv_obj_set_size(text, 100, 30);
-        lv_obj_align(text, LV_ALIGN_RIGHT_MID, 10, 0);
+        lv_obj_align(text, LV_ALIGN_RIGHT_MID, 12, 0);
         lv_obj_set_style_radius(text, 15, LV_PART_MAIN);
         lv_obj_set_style_bg_color(text, lv_color_black(), LV_PART_MAIN);
         lv_textarea_set_one_line(text, true);
@@ -77,12 +82,13 @@ void createSetting(Setting_t *data)
     case SETTING_TYPE_NUMBER:
     {
         lv_obj_t *number = lv_textarea_create(setting);
-        lv_obj_set_size(number, 100, 30);
-        lv_obj_align(number, LV_ALIGN_RIGHT_MID, 10, 0);
+        lv_obj_set_size(number, 80, 30);
+        lv_obj_align(number, LV_ALIGN_RIGHT_MID, 12, 0);
         lv_obj_set_style_radius(number, 15, LV_PART_MAIN);
         lv_obj_set_scroll_dir(number, LV_DIR_HOR);
         lv_obj_set_style_bg_color(number, lv_color_black(), LV_PART_MAIN);
         lv_textarea_set_one_line(number, true);
+        lv_obj_set_style_text_align(number, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN);
 
         lv_obj_add_event_cb(number, data->onchange, LV_EVENT_VALUE_CHANGED, NULL);
         data->init(number);
@@ -104,8 +110,17 @@ void createSetting(Setting_t *data)
         lv_obj_align(input, LV_ALIGN_BOTTOM_RIGHT, 10, 10);
 
         if (data->type != SETTING_TYPE_SWITCH)
+        {
             lv_obj_set_width(input, lv_obj_get_width(setting) - 10);
+        }
+
+        lv_obj_set_style_radius(input, lv_obj_get_style_radius(setting, LV_PART_MAIN) - 5, LV_PART_MAIN);
     }
+    else
+        lv_obj_set_style_radius(input, 30, LV_PART_MAIN);
+
+    lv_obj_set_style_border_opa(setting, LV_OPA_TRANSP, LV_PART_MAIN);
+    lv_obj_set_style_border_opa(input, LV_OPA_TRANSP, LV_PART_MAIN);
 }
 
 bool settingsLoad(EventBits_t event, void *arg)
@@ -114,6 +129,8 @@ bool settingsLoad(EventBits_t event, void *arg)
     if (ON_CURRENT_SCREEN(settingsx, settingsy))
     {
         setScroll(LV_DIR_HOR);
+        lv_slider_set_value(bright, getBacklight(), LV_ANIM_OFF);
+        lv_obj_send_event(bright, LV_EVENT_VALUE_CHANGED, NULL);
     }
 
     return true;
@@ -137,7 +154,7 @@ bool settingsscreate(EventBits_t event, void *arg)
     lv_obj_set_flex_align(settingsscr, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
     lv_obj_t *s1 = lv_obj_create(settingsscr);
-    lv_obj_set_size(s1, 0, 30);
+    lv_obj_set_size(s1, 0, 20);
 
     lv_obj_set_scroll_dir(settingsscr, LV_DIR_VER);
     createCurvedScrollbar(settingsscr);
@@ -180,16 +197,43 @@ bool settingsscreate(EventBits_t event, void *arg)
         sysinfo.donotdisturb = settings.getBool("dnd", false);
     };
 
-    createSetting(&blename);
+    Setting_t stepgoal;
+    stepgoal.title = "Step Goal";
+    stepgoal.type = SETTING_TYPE_NUMBER;
+    stepgoal.init = [](lv_obj_t *obj)
+    {
+        lv_textarea_set_text(obj, String(sysinfo.health.goal).c_str());
+    };
+    stepgoal.onchange = [](lv_event_t *e)
+    {
+        const char *text = lv_textarea_get_text(lv_event_get_target_obj(e));
+        sysinfo.health.goal = atoi(text);
+        settings.putUInt("stepgoal", sysinfo.health.goal);
+    };
+
+    bright = lv_slider_create(settingsscr);
+    lv_obj_set_size(bright, 180, 40);
+    lv_obj_set_style_bg_opa(bright, LV_OPA_TRANSP, LV_PART_KNOB);
+
+    lv_slider_set_range(bright, -40 / 1.4, 100);
+    lv_obj_add_flag(bright, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
+
+    lv_obj_t *brightlabel = lv_label_create(bright);
+    SET_SYMBOL_32(brightlabel, FA_BRIGHTNESS);
+    lv_obj_align(brightlabel, LV_ALIGN_LEFT_MID, 4, 0);
+    lv_obj_set_style_text_color(brightlabel, lv_color_white(), LV_PART_MAIN);
+
+    lv_obj_add_event_cb(bright, [](lv_event_t *e)
+                        {
+                            if (lv_slider_get_value(lv_event_get_target_obj(e)) < 1)
+                                lv_slider_set_value(lv_event_get_target_obj(e), 1, LV_ANIM_OFF);
+
+                            setBacklight(lv_slider_get_value(lv_event_get_target_obj(e)));
+                            lv_obj_set_x((lv_obj_t *)e->user_data, (lv_slider_get_value(lv_event_get_target_obj(e)) * 1.4) + 4); }, LV_EVENT_VALUE_CHANGED, brightlabel);
+
+    createSetting(&stepgoal);
     createSetting(&disturb);
-    // createSetting(&setting3);
-    // createSetting(&setting1);
-    // createSetting(&setting2);
-    // createSetting(&setting1);
-    // createSetting(&setting1);
-    // createSetting(&setting1);
-    // createSetting(&setting1);
-    // createSetting(&setting1);
+    createSetting(&blename);
 
     lv_obj_t *s2 = lv_obj_create(settingsscr);
     lv_obj_set_size(s2, 0, 20);
