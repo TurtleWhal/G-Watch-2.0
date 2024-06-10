@@ -26,7 +26,7 @@ bool charging = false;
 // movingAvg voltFilter(100);
 // movingAvg percentFilter(100);
 movingAvg voltFilter(1);
-movingAvg percentFilter(1);
+movingAvg percentFilter(10);
 
 Preferences storage;
 
@@ -42,6 +42,7 @@ float Qcm[2][QCM_POINTS] =
 bool sendPowerBLE(EventBits_t event, void *arg)
 {
     sendBLEf("{t:\"status\", bat:%i, chg:%i, volt:%f}", sysinfo.bat.percent, CHARGING ? 1 : 0, voltage / 1000);
+    setBLEBatteryLevel(sysinfo.bat.percent);
     return true;
 }
 
@@ -95,11 +96,11 @@ void updatePower()
             float decade = i * 10.0;
             percentage = constrain(decade + 10.0 * ((voltage - Qcm[chrgint][i]) / vol_section), 0.0, 100.0);
 
-            // if (sysinfo.bat.percent != percentFilter.reading((int)percentage + 0.5))
-            if (sysinfo.bat.percent != (int)percentage + 0.5)
+            if (sysinfo.bat.percent != percentFilter.reading((int)percentage + 0.5))
+            // if (sysinfo.bat.percent != (int)percentage + 0.5)
             {
-                // sysinfo.bat.percent = percentFilter.getAvg();
-                sysinfo.bat.percent = (int)percentage + 0.5;
+                sysinfo.bat.percent = percentFilter.getAvg();
+                // sysinfo.bat.percent = (int)percentage + 0.5;
                 sendPowerBLE((EventBits_t)NULL, NULL);
             }
         }

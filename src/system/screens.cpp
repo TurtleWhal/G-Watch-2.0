@@ -70,12 +70,12 @@ lv_obj_t *screenCreate(int8_t x, int8_t y)
     return screen;
 }
 
-void setScreen(lv_obj_t *screen, lv_screen_load_anim_t anim)
+void setScreen(lv_obj_t *screen, lv_screen_load_anim_t anim, uint32_t delay, bool del)
 {
     if (screen == nullptr)
         screen = scr;
 
-    lv_screen_load_anim(screen, anim, 150, 0, 0);
+    lv_screen_load_anim(screen, anim, 150, delay, del);
 }
 
 void setScroll(lv_dir_t dir)

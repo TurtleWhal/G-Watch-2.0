@@ -11,6 +11,7 @@
 #include "motor.hpp"
 #include "music.hpp"
 #include "screens/screens.hpp"
+#include "fonts/fonts.hpp"
 #include "powermgm.hpp"
 #include "notification.hpp"
 
@@ -47,7 +48,6 @@ void disconn()
 
 bool blePeriodic(EventBits_t event, void *arg)
 {
-    setBLEBatteryLevel(sysinfo.bat.percent);
     if (BLEtimer)
     {
         BLEtimer = false;
@@ -97,9 +97,9 @@ void ble_setup()
     pBatteryDescriptor->setNamespace(1);
     pBatteryDescriptor->setUnit(0x27ad);
 
-    pAdvertising->addServiceUUID(pBatteryService->getUUID());
-
     pBatteryService->start();
+
+    pAdvertising->addServiceUUID(pBatteryService->getUUID());
 }
 
 void pairBT(uint32_t passkey)
@@ -107,25 +107,29 @@ void pairBT(uint32_t passkey)
     static lv_obj_t *pairscr;
     if (passkey != UINT32_MAX)
     {
-        Log.verboseln("Pairing with passkey: %d", passkey);
+        Serial.printf("Pairing with passkey: %06i\n", passkey);
 
         pairscr = lv_obj_create(NULL);
         lv_obj_t *pairlbl = lv_label_create(pairscr);
-        lv_label_set_text_fmt(pairlbl, "Bluetooth Pairing code: \n%i", passkey);
-        lv_obj_align(pairlbl, LV_ALIGN_CENTER, 0, 0);
+        lv_label_set_text_fmt(pairlbl, "Bluetooth Pairing code:");
+        lv_obj_set_style_text_font(pairlbl, &Outfit_20, LV_PART_MAIN);
+        lv_obj_align(pairlbl, LV_ALIGN_CENTER, 0, -12);
+
+        lv_obj_t *codelbl = lv_label_create(pairscr);
+        lv_label_set_text_fmt(codelbl, "%06i", passkey);
+        lv_obj_set_style_text_font(codelbl, &Outfit_46, LV_PART_MAIN);
+        lv_obj_align(codelbl, LV_ALIGN_CENTER, 0, 25);
+
+        // powermgmTickle(); // crashes for some reason
+        motorVibrate(HAPTIC_NOTIFICATION);
 
         setScreen(pairscr, LV_SCR_LOAD_ANIM_FADE_IN);
-
-        powermgmTickle();
-
-        motorVibrate(HAPTIC_NOTIFICATION);
     }
     else
     {
         Log.verboseln("Paired BLE");
 
-        setScreen(nullptr, LV_SCR_LOAD_ANIM_FADE_OUT);
-        lv_obj_delete_delayed(pairscr, 2000);
+        setScreen(nullptr, LV_SCR_LOAD_ANIM_FADE_OUT, 0, true);
     }
 }
 
