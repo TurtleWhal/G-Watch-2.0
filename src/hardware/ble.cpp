@@ -132,7 +132,7 @@ void pairBT(uint32_t passkey)
 void setBLEBatteryLevel(uint8_t level)
 {
     // Serial.println(level);
-    // pBatteryCharacteristic->setValue(&level, 1);
+    pBatteryCharacteristic->setValue(&level, 1);
 }
 
 void parseBLE(char *message)
@@ -290,19 +290,22 @@ void BLEmsgloop()
     unsigned char tempmsg[BLECTL_CHUNKSIZE + 1];
     if (msg.length() and isBLEConnected())
     {
-        if (msg.indexOf(BLE_TERM_CHAR) - 1 > BLECTL_CHUNKSIZE)
-        {
-            msg.getBytes(tempmsg + 1, BLECTL_CHUNKSIZE);
-            msg.remove(0, BLECTL_CHUNKSIZE - 1);
-            gadgetbridge_send_chunk(tempmsg, BLECTL_CHUNKSIZE);
-        }
-        else
-        {
-            msg.getBytes(tempmsg, BLECTL_CHUNKSIZE);
-            gadgetbridge_send_chunk(tempmsg, msg.indexOf(BLE_TERM_CHAR) - 1);
-            msg.remove(0, msg.indexOf(BLE_TERM_CHAR) + 1);
-        }
-        // Log.verboseln(msg);
+        // if (msg.indexOf(BLE_TERM_CHAR) - 1 > BLECTL_CHUNKSIZE)
+        // {
+        //     msg.getBytes(tempmsg + 1, BLECTL_CHUNKSIZE);
+        //     msg.remove(0, BLECTL_CHUNKSIZE - 1);
+        //     gadgetbridge_send_chunk(tempmsg, BLECTL_CHUNKSIZE);
+        // }
+        // else
+        // {
+        //     msg.getBytes(tempmsg, BLECTL_CHUNKSIZE);
+        //     gadgetbridge_send_chunk(tempmsg, msg.indexOf(BLE_TERM_CHAR) - 1);
+        //     msg.remove(0, msg.indexOf(BLE_TERM_CHAR) + 1);
+        // }
+
+        msg.getBytes(tempmsg, BLECTL_CHUNKSIZE);
+        msg.remove(0, BLECTL_CHUNKSIZE - 1);
+        gadgetbridge_send_chunk(tempmsg, strlen((char *)tempmsg));
     }
 }
 

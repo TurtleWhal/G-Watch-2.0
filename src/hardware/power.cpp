@@ -17,6 +17,8 @@
 #define VOLT_MULT 3
 #endif
 
+#define QCM_POINTS 11
+
 float percentage = 0;
 float voltage = 0.0;
 bool charging = false;
@@ -28,7 +30,7 @@ movingAvg percentFilter(1);
 
 Preferences storage;
 
-float Qcm[2][11] =
+float Qcm[2][QCM_POINTS] =
     {
         /* 280mah battery */ //{2671, 3079, 3148, 3211, 3282, 3335, 3379, 3441, 3522, 3611, 3740}, //discharge
 
@@ -39,7 +41,7 @@ float Qcm[2][11] =
 
 bool sendPowerBLE(EventBits_t event, void *arg)
 {
-    // sendBLEf("{t:\"status\", bat:%i, chg:%i, volt:%f}", sysinfo.bat.percent, CHARGING ? 1 : 0, voltage / 1000);
+    sendBLEf("{t:\"status\", bat:%i, chg:%i, volt:%f}", sysinfo.bat.percent, CHARGING ? 1 : 0, voltage / 1000);
     return true;
 }
 
@@ -55,8 +57,8 @@ void checkPower()
             while (storage.isKey(("d_data_" + String(points)).c_str()))
                 points++;
 
-            for (int i = 0; i < 10; i++)
-                storage.putFloat(("qcmd" + String(i)).c_str(), storage.getFloat(("d_data_" + String((points / 10) * i)).c_str()));
+            for (int i = 0; i < QCM_POINTS; i++)
+                storage.putFloat(("qcmd" + String(i)).c_str(), storage.getFloat(("d_data_" + String((points / QCM_POINTS) * i)).c_str()));
         }
 
         esp_deep_sleep(5 * 60 * 1000 * 1000); // 5 minutes
@@ -122,6 +124,7 @@ bool powerPeriodic(EventBits_t event, void *arg)
         if (CHARGING)
         {
             powermgmSendEvent(POWERMGM_PLUGGED_IN);
+            sendPowerBLE((EventBits_t)NULL, NULL);
 
             storage.putBool("discharging", false);
 
@@ -131,6 +134,7 @@ bool powerPeriodic(EventBits_t event, void *arg)
         else
         {
             powermgmSendEvent(POWERMGM_UNPLUGGED);
+            sendPowerBLE((EventBits_t)NULL, NULL);
 
             storage.putBool("charging", false);
 
@@ -174,8 +178,8 @@ bool powerPeriodic(EventBits_t event, void *arg)
             while (storage.isKey(("c_data_" + String(points)).c_str()))
                 points++;
 
-            for (int i = 0; i < 10; i++)
-                storage.putFloat(("qcmc" + String(i)).c_str(), storage.getFloat(("c_data_" + String((points / 10) * i)).c_str()));
+            for (int i = 0; i < QCM_POINTS; i++)
+                storage.putFloat(("qcmc" + String(i)).c_str(), storage.getFloat(("c_data_" + String((points / QCM_POINTS) * i)).c_str()));
         }
 
         static int lastmin = -1;
@@ -221,19 +225,19 @@ bool powerInit(EventBits_t event, void *arg)
     if (storage.isKey("qcmd0"))
     {
         // Qcm[0] = {storage.getFloat("qcmd0"), storage.getFloat("qcmd1"), storage.getFloat("qcmd2"), storage.getFloat("qcmd3"), storage.getFloat("qcmd4"), storage.getFloat("qcmd5"), storage.getFloat("qcmd6"), storage.getFloat("qcmd7"), storage.getFloat("qcmd8"), storage.getFloat("qcmd9")};
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < QCM_POINTS; i++)
             Qcm[0][i] = storage.getFloat(("qcmd" + String(i)).c_str());
     }
 
     if (storage.isKey("qcmc0"))
     {
         // Qcm[1] = {storage.getFloat("qcmc0"), storage.getFloat("qcmc1"), storage.getFloat("qcmc2"), storage.getFloat("qcmc3"), storage.getFloat("qcmc4"), storage.getFloat("qcmc5"), storage.getFloat("qcmc6"), storage.getFloat("qcmc7"), storage.getFloat("qcmc8"), storage.getFloat("qcmc9")};
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < QCM_POINTS; i++)
             Qcm[1][i] = storage.getFloat(("qcmc" + String(i)).c_str());
     }
 
-    Serial.printf("Charging  Qcm: %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f\n", Qcm[0][0], Qcm[0][1], Qcm[0][2], Qcm[0][3], Qcm[0][4], Qcm[0][5], Qcm[0][6], Qcm[0][7], Qcm[0][8], Qcm[0][9]);
-    Serial.printf("Discharge Qcm: %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f\n", Qcm[1][0], Qcm[1][1], Qcm[1][2], Qcm[1][3], Qcm[1][4], Qcm[1][5], Qcm[1][6], Qcm[1][7], Qcm[1][8], Qcm[1][9]);
+    Serial.printf("Charging  Qcm: %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f\n", Qcm[0][0], Qcm[0][1], Qcm[0][2], Qcm[0][3], Qcm[0][4], Qcm[0][5], Qcm[0][6], Qcm[0][7], Qcm[0][8], Qcm[0][9], Qcm[0][10]);
+    Serial.printf("Discharge Qcm: %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f\n", Qcm[1][0], Qcm[1][1], Qcm[1][2], Qcm[1][3], Qcm[1][4], Qcm[1][5], Qcm[1][6], Qcm[1][7], Qcm[1][8], Qcm[1][9], Qcm[1][10]);
 
     powermgmRegisterCB(sendPowerBLE, POWERMGM_BLE_CONNECT, "PowerConnectBLE");
     powermgmRegisterCB(powerPeriodic, POWERMGM_LOOP, "PowerPeriodic");

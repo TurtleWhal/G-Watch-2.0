@@ -198,7 +198,7 @@ void blectl_setup(String device_name)
      */
     deviceinfo_setup();
     gadgetbridge_setup();
-    // ble_setup();
+    ble_setup();
     /*
      * Start advertising
      */
