@@ -6,6 +6,7 @@
 #include "powermgm.hpp"
 #include "settings.hpp"
 #include "display.hpp"
+#include "wifi.hpp"
 #include "fonts/fonts.hpp"
 
 #include "Preferences.h"
@@ -32,8 +33,9 @@ lv_obj_t *settingsscr;
 int8_t settingsx = -1, settingsy = 0;
 
 lv_obj_t *bright;
+lv_obj_t *uptime;
 
-void createSetting(Setting_t *data)
+lv_obj_t *createSetting(Setting_t *data)
 {
     lv_obj_t *setting = lv_obj_create(settingsscr);
     lv_obj_set_size(setting, 180, 40);
@@ -99,7 +101,7 @@ void createSetting(Setting_t *data)
         break;
     }
     default:
-        return;
+        return setting;
         break;
     }
 
@@ -121,6 +123,8 @@ void createSetting(Setting_t *data)
 
     lv_obj_set_style_border_opa(setting, LV_OPA_TRANSP, LV_PART_MAIN);
     lv_obj_set_style_border_opa(input, LV_OPA_TRANSP, LV_PART_MAIN);
+
+    return setting;
 }
 
 bool settingsLoad(EventBits_t event, void *arg)
@@ -138,10 +142,12 @@ bool settingsLoad(EventBits_t event, void *arg)
 
 bool settingsperiodic(EventBits_t event, void *arg)
 {
-    // if (ON_CURRENT_SCREEN(settingsx, settingsy))
-    // {
-    //     Log.verboseln("on Settings screen");
-    // }
+    if (ON_CURRENT_SCREEN(settingsx, settingsy))
+    {
+        //     Log.verboseln("on Settings screen");
+        uint32_t mils = millis();
+        lv_label_set_text_fmt(uptime, "Uptime: %d:%02d:%02d", mils / 3600000, (mils / 60000) % 60, (mils / 1000) % 60);
+    }
 
     return true;
 }
@@ -234,6 +240,19 @@ bool settingsscreate(EventBits_t event, void *arg)
     createSetting(&stepgoal);
     createSetting(&disturb);
     createSetting(&blename);
+
+    lv_obj_t *ota = lv_button_create(settingsscr);
+    lv_obj_set_size(ota, 180, 40);
+    lv_obj_set_style_radius(ota, 20, LV_PART_MAIN);
+    lv_obj_t *otatext = lv_label_create(ota);
+    lv_label_set_text(otatext, "Start OTA");
+    lv_obj_add_flag(ota, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
+    lv_obj_center(otatext);
+
+    uptime = lv_label_create(settingsscr);
+    lv_obj_t *compdate = lv_label_create(settingsscr);
+    lv_label_set_text_fmt(compdate, "Compilation Date:\n%s", __DATE__);
+    lv_obj_set_style_text_align(compdate, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
 
     lv_obj_t *s2 = lv_obj_create(settingsscr);
     lv_obj_set_size(s2, 0, 20);

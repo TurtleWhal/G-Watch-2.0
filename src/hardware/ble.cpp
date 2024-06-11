@@ -116,7 +116,7 @@ void pairBT(uint32_t passkey)
         lv_obj_align(pairlbl, LV_ALIGN_CENTER, 0, -12);
 
         lv_obj_t *codelbl = lv_label_create(pairscr);
-        lv_label_set_text_fmt(codelbl, "%06i", passkey);
+        lv_label_set_text_fmt(codelbl, "%03i %03i", passkey / 1000, passkey % 1000);
         lv_obj_set_style_text_font(codelbl, &Outfit_46, LV_PART_MAIN);
         lv_obj_align(codelbl, LV_ALIGN_CENTER, 0, 25);
 
