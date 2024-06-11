@@ -6,7 +6,6 @@
 #include "powermgm.hpp"
 #include "settings.hpp"
 #include "display.hpp"
-#include "wifi.hpp"
 #include "fonts/fonts.hpp"
 
 #include "Preferences.h"

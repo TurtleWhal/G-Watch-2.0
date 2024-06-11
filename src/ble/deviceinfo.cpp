@@ -14,7 +14,12 @@ void deviceinfo_setup(void)
      */
     NimBLEService *pDeviceInformationService = pServer->createService(NimBLEUUID(DEVICE_INFORMATION_SERVICE_UUID));
     NimBLECharacteristic *pManufacturerNameStringCharacteristic = pDeviceInformationService->createCharacteristic(MANUFACTURER_NAME_STRING_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ);
-    pManufacturerNameStringCharacteristic->setValue("Waveshare");
+// #ifdef WAVESHARE_ESP32_LCD
+//     pManufacturerNameStringCharacteristic->setValue("Waveshare");
+// #else
+//     pManufacturerNameStringCharacteristic->setValue("LilyGo");
+// #endif
+    pManufacturerNameStringCharacteristic->setValue("Garrett Jordan");
     NimBLECharacteristic *pFirmwareRevisionStringCharacteristic = pDeviceInformationService->createCharacteristic(FIRMWARE_REVISION_STRING_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ);
     pFirmwareRevisionStringCharacteristic->setValue(__FIRMWARE__);
     pDeviceInformationService->start();

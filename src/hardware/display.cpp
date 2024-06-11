@@ -142,7 +142,7 @@ bool displayPeriodic(EventBits_t event, void *arg)
 
 bool displayWakeup(EventBits_t event, void *arg)
 {
-    lv_task_handler();
+    // lv_task_handler();
     return true;
 }
 

@@ -63,11 +63,6 @@ void forEachNotification(void (*func)(Notification_t *))
 
 void handleNotification(String title, String subject, String body, String sender, String tel, String src, int id)
 {
-    powermgmTickle();
-
-    if (!sysinfo.donotdisturb)
-    motorVibrate(HAPTIC_NOTIFICATION);
-
     Log.verboseln("Recieved Notification, Title: %s, Subject: %s, Body: %s, Sender: %s, Tel: %s, Src: %s, Id: %d", title.c_str(), subject.c_str(), body.c_str(), sender.c_str(), tel.c_str(), src.c_str(), id);
 
     Notification_t *notif = new Notification_t();
@@ -95,4 +90,9 @@ void handleNotification(String title, String subject, String body, String sender
         notif->icon = FA_BELL;
 
     showNotification(notif);
+
+    if (!sysinfo.donotdisturb)
+        motorVibrate(HAPTIC_NOTIFICATION);
+
+    powermgmTickle();
 }

@@ -120,10 +120,9 @@ void pairBT(uint32_t passkey)
         lv_obj_set_style_text_font(codelbl, &Outfit_46, LV_PART_MAIN);
         lv_obj_align(codelbl, LV_ALIGN_CENTER, 0, 25);
 
-        // powermgmTickle(); // crashes for some reason
-        motorVibrate(HAPTIC_NOTIFICATION);
-
         setScreen(pairscr, LV_SCR_LOAD_ANIM_FADE_IN);
+        motorVibrate(HAPTIC_NOTIFICATION);
+        powermgmTickle();
     }
     else
     {
@@ -135,8 +134,8 @@ void pairBT(uint32_t passkey)
 
 void setBLEBatteryLevel(uint8_t level)
 {
-    // Serial.println(level);
     pBatteryCharacteristic->setValue(&level, 1);
+    // pBatteryCharacteristic->notify();
 }
 
 void parseBLE(char *message)
