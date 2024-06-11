@@ -249,6 +249,9 @@ bool settingsscreate(EventBits_t event, void *arg)
     lv_obj_add_flag(ota, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
     lv_obj_center(otatext);
 
+    lv_obj_add_event_cb(ota, [](lv_event_t *e)
+                        { startOta(); }, LV_EVENT_PRESSED, ota);
+
     uptime = lv_label_create(settingsscr);
     lv_obj_t *compdate = lv_label_create(settingsscr);
     lv_label_set_text_fmt(compdate, "Compilation Date:\n%s", __DATE__);

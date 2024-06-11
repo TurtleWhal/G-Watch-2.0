@@ -1,0 +1,2 @@
+void startOta();
+void wifiInit();
