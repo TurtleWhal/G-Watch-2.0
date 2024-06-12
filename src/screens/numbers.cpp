@@ -216,13 +216,13 @@ bool numbersperiodic(EventBits_t event, void *arg)
             forEachNotification(
                 [](Notification_t *notif)
                 {
-                    createInfoIcon((char *)notif->icon.c_str(), 15 - notificonidx);
+                    createInfoIcon((char *)notif->icon.c_str(), ICON_COUNT - 1 - notificonidx);
                     notificonidx++;
                 });
 
             for (int i = notificonidx; i < 10; i++)
             {
-                infoicons[15 - i] = nullptr;
+                infoicons[ICON_COUNT - 1 - i] = nullptr;
             }
 
             iconschanged = true;
