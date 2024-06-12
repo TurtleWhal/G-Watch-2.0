@@ -219,6 +219,10 @@ void parseGB(char *message)
             received["src"].as<String>(),
             received["id"].as<int>());
     }
+    else if (strcmp(notifType, "notify-") == 0)
+    {
+        popNotificationId(received["id"].as<int>());
+    }
 }
 
 void sendBLE(String message, int repeat)

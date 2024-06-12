@@ -7,10 +7,11 @@
 #include "system.hpp"
 #include "screens.hpp"
 #include "fonts/fonts.hpp"
+#include "notification.hpp"
 
 #define RADIAL_COORDS(angle, radius) (cos((DEG_TO_RAD) * (angle)) * (radius)), (sin((DEG_TO_RAD) * (angle)) * (radius))
 #define ICON_SPACING 12
-#define ICON_COUNT 10
+#define ICON_COUNT 15
 
 void nullCallback(uint8_t arcid) {}
 
@@ -173,6 +174,8 @@ bool numbersLoad(EventBits_t event, void *arg)
     return true;
 }
 
+int notificonidx;
+
 bool numbersperiodic(EventBits_t event, void *arg)
 {
     if (ON_CURRENT_SCREEN(numberx, numbery))
@@ -208,6 +211,19 @@ bool numbersperiodic(EventBits_t event, void *arg)
                 lv_obj_remove_flag(infoicons[1], LV_OBJ_FLAG_HIDDEN);
             else
                 lv_obj_add_flag(infoicons[1], LV_OBJ_FLAG_HIDDEN);
+
+            notificonidx = 0;
+            forEachNotification(
+                [](Notification_t *notif)
+                {
+                    createInfoIcon((char *)notif->icon.c_str(), 15 - notificonidx);
+                    notificonidx++;
+                });
+
+            for (int i = notificonidx; i < 10; i++)
+            {
+                infoicons[15 - i] = nullptr;
+            }
 
             iconschanged = true;
             lastsec = sysinfo.time.second;

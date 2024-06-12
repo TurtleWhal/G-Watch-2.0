@@ -39,7 +39,19 @@ Notification_t popNotification(uint8_t index = UINT8_MAX)
         notifs[i] = notifs[i + 1];
     }
 
+    drawNotifs();
+
     return out;
+}
+
+Notification_t popNotificationId(uint32_t id) {
+    for (uint8_t i = 0; i < 10; i++) {
+        if (notifs[i].id == id) {
+            return popNotification(i);
+        }
+    }
+
+    return Notification_t();
 }
 
 void storeNotification(Notification_t *notif)

@@ -12,6 +12,8 @@ lv_obj_t *notifsscr;
 lv_obj_t *notifpanel;
 int8_t notifx = 0, notify = -1;
 
+lv_obj_t *nolabel;
+
 lv_obj_t *createNotification(Notification_t *data)
 {
     lv_obj_t *notif = lv_obj_create(notifsscr);
@@ -24,32 +26,48 @@ lv_obj_t *createNotification(Notification_t *data)
     lv_obj_set_flex_flow(notif, LV_FLEX_FLOW_COLUMN);
     lv_obj_set_flex_align(notif, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-    lv_obj_t *title = lv_label_create(notif);
-    lv_label_set_text(title, data->title.c_str());
-    lv_obj_align(title, LV_ALIGN_LEFT_MID, 0, 0);
-    lv_obj_set_style_text_font(title, &Outfit_20, LV_PART_MAIN);
-    lv_obj_set_width(title, 160);
+    if (data->title != "")
+    {
+        lv_obj_t *title = lv_label_create(notif);
+        lv_label_set_text(title, data->title.c_str());
+        lv_obj_align(title, LV_ALIGN_LEFT_MID, 0, 0);
+        lv_obj_set_style_text_font(title, &Outfit_20, LV_PART_MAIN);
+        lv_obj_set_width(title, 160);
+    }
 
-    lv_obj_t *body = lv_label_create(notif);
-    lv_label_set_text(body, data->body.c_str());
-    lv_obj_align(body, LV_ALIGN_LEFT_MID, 0, 0);
-    lv_obj_set_width(body, 160);
+    if (data->body != "")
+    {
+        lv_obj_t *body = lv_label_create(notif);
+        lv_label_set_text(body, data->body.c_str());
+        lv_obj_align(body, LV_ALIGN_LEFT_MID, 0, 0);
+        lv_obj_set_width(body, 160);
+    }
 
     lv_obj_set_user_data(notif, data);
 
     return notif;
 }
 
+bool notificationcheck;
+
 void drawNotifs()
 {
-    for (int i = lv_obj_get_child_count(notifsscr) - 1; i >= 0; i--) {
-        if (lv_obj_get_child(notifsscr, i)->user_data != NULL) {
+    for (int i = lv_obj_get_child_count(notifsscr) - 1; i >= 0; i--)
+    {
+        if (lv_obj_get_child(notifsscr, i)->user_data != NULL)
+        {
             lv_obj_del(lv_obj_get_child(notifsscr, i));
         }
     }
 
+    notificationcheck = true;
     forEachNotification([](Notification_t *notif)
-                        { createNotification(notif); Serial.println(notif->title); });
+                        { createNotification(notif); Serial.println(notif->title); notificationcheck = false; });
+
+    if (notificationcheck)
+        lv_obj_remove_flag(nolabel, LV_OBJ_FLAG_HIDDEN);
+    else
+        lv_obj_add_flag(nolabel, LV_OBJ_FLAG_HIDDEN);
 }
 
 bool notifsLoad(EventBits_t event, void *arg)
@@ -62,11 +80,6 @@ bool notifsLoad(EventBits_t event, void *arg)
     }
 
     return true;
-}
-
-void click(lv_event_t *e)
-{
-    motorVibrate(HAPTIC_NOTIFICATION);
 }
 
 bool notifsperiodic(EventBits_t event, void *arg)
@@ -89,13 +102,19 @@ bool notifsscreate(EventBits_t event, void *arg)
     // lv_obj_set_align(notifpanel, LV_ALIGN_CENTER);
 
     lv_obj_t *s1 = lv_obj_create(notifsscr);
-    lv_obj_set_size(s1, 0, 80);
+    lv_obj_set_size(s1, 0, 40);
 
     lv_obj_set_flex_flow(notifsscr, LV_FLEX_FLOW_COLUMN);
     lv_obj_set_flex_align(notifsscr, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
     lv_obj_set_scroll_dir(notifsscr, LV_DIR_VER);
     createCurvedScrollbar(notifsscr);
+
+    nolabel = lv_label_create(notifsscr);
+    lv_label_set_text(nolabel, "No Notifications");
+    lv_obj_align(nolabel, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_style_text_font(nolabel, &Outfit_20, LV_PART_MAIN);
+    lv_obj_set_style_text_color(nolabel, lv_color_darken(lv_color_white(), 40), LV_PART_MAIN);
 
     // lv_obj_t *notification = createNotification();
     // lv_obj_set_align(notification, LV_ALIGN_CENTER);

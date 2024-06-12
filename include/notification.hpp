@@ -16,6 +16,7 @@ typedef struct
 void handleNotification(String title, String subject, String body, String sender, String tel, String src, int id);
 void showNotification(Notification_t *);
 void storeNotification(Notification_t *);
-void forEachNotification(void (*)(Notification_t *));
+void forEachNotification(void (*func)(Notification_t *));
 void showAlert(String text, void (*cb)());
 void drawNotifs();
+Notification_t popNotificationId(uint32_t id);
