@@ -22,9 +22,9 @@
         {"name": "usb",             "hex": "f287", "sizes": [14], "brand":true},
         {"name": "wifi",            "hex": "f1eb", "sizes": [14], "brand":true},
         {"name": "envelope",        "hex": "f0e0", "sizes": [14]},
-        {"name": "bell",            "hex": "f0f3", "sizes": [14]},
         {"name": "point",           "hex": "f192", "sizes": [14]},
         
+        {"name": "bell",            "hex": "f0f3", "sizes": [14, 40]},
         {"name": "discord",         "hex": "f392", "sizes": [14, 40], "brand":true},
         {"name": "message",         "hex": "f075", "sizes": [14, 40]},
         {"name": "sms",             "hex": "f7cd", "sizes": [14, 40]},

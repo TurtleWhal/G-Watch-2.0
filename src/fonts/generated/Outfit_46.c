@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Size: 46 px
  * Bpp: 4
- * Opts: --size 46 --bpp 4 --format lvgl --font /Users/gj0987888/Documents/GitHub/G-Watch-2.0/src/fonts/files/Outfit.ttf --output /Users/gj0987888/Documents/GitHub/G-Watch-2.0/src/fonts/generated/Outfit_46.c --no-compress --symbols 0123456789:
+ * Opts: --size 46 --bpp 4 --format lvgl --font C:\Users\garre\OneDrive\Documents\GitHub\G-Watch-2.0\src\fonts\files\Outfit.ttf --output C:\Users\garre\OneDrive\Documents\GitHub\G-Watch-2.0\src\fonts\generated/Outfit_46.c --no-compress --symbols 0123456789:
  ******************************************************************************/
 
 #ifdef LV_LVGL_H_INCLUDE_SIMPLE

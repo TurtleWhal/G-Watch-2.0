@@ -18,3 +18,4 @@ void showNotification(Notification_t *);
 void storeNotification(Notification_t *);
 void forEachNotification(void (*)(Notification_t *));
 void showAlert(String text, void (*cb)());
+void drawNotifs();

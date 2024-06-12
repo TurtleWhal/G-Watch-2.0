@@ -24,16 +24,21 @@ def hex_to_utf8(hex_value):
     return '"' + str(utf8_bytes)[2:-1].upper().replace("X", "x") + "\""
 # End of function
 
-
+if os.name == "nt":
+    windowscmd = "cmd.exe"
+    windowsbase = "/c"
+else:
+    windowscmd = None
+    windowsbase = None
 
 
 # Check if npm is installed
 print("Checking if npm is installed")
-if subprocess.check_call(["npm", "-v"]) != 0: print("npm is not installed, please install it at https://nodejs.org/en/download/package-manager"); exit(1)
+if subprocess.check_call([windowscmd, windowsbase, "npm", "-v"]) != 0: print("npm is not installed, please install it at https://nodejs.org/en/download/package-manager"); exit(1)
 
 # Check if lv_font_conv is installed
 print("Checking if lv_font_conv is installed")
-if subprocess.check_call(["npm", "list", "-g", "grep", "lv_font_conv"]) != 0: print("Please install lv_font_conv at https://github.com/lvgl/lv_font_conv?tab=readme-ov-file#install-the-script"); exit(1)
+if subprocess.check_call([windowscmd, windowsbase, "npm", "list", "-g", "grep", "lv_font_conv"]) != 0: print("Please install lv_font_conv at https://github.com/lvgl/lv_font_conv?tab=readme-ov-file#install-the-script"); exit(1)
 
 
 
@@ -110,6 +115,8 @@ for size in sizes:
 
 
         args = [
+            windowscmd,
+            windowsbase,
             "lv_font_conv",
             "--size",
             str(sizes.index(size)),
@@ -145,7 +152,7 @@ for font in symbols["fonts"]:
 
         fontdefines.append(dest[:-2])
 
-        args = ["lv_font_conv", "--size", str(size), "--bpp", str(font["bpp"]), "--format", "lvgl", "--font", os.path.abspath("files/" + font["font"]), "--output", os.path.abspath("generated") + "/" + dest, "--no-compress"]
+        args = [windowscmd, windowsbase, "lv_font_conv", "--size", str(size), "--bpp", str(font["bpp"]), "--format", "lvgl", "--font", os.path.abspath("files/" + font["font"]), "--output", os.path.abspath("generated") + "/" + dest, "--no-compress"]
         
         if font["range"]:
             args.append("--range")

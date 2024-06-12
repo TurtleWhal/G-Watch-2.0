@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Size: 14 px
  * Bpp: 4
- * Opts: --size 14 --bpp 4 --format lvgl --output /Users/gj0987888/Documents/GitHub/G-Watch-2.0/src/fonts/generated/FontAwesome_14.c --no-compress --font /Users/gj0987888/Documents/GitHub/G-Watch-2.0/src/fonts/FontAwesome6Pro.woff --range 0xf0e7, 0xf240, 0xf241, 0xf242, 0xf243, 0xf244, 0xf54b, 0xf0e0, 0xf0f3, 0xf192, 0xf075, 0xf7cd, 0xf0e0, 0xf255 --font /Users/gj0987888/Documents/GitHub/G-Watch-2.0/src/fonts/FontAwesome5.woff --range 0xf294, 0xf287, 0xf1eb, 0xf392, 0xf167
+ * Opts: --size 14 --bpp 4 --format lvgl --output C:\Users\garre\OneDrive\Documents\GitHub\G-Watch-2.0\src\fonts\generated/FontAwesome_14.c --no-compress --font C:\Users\garre\OneDrive\Documents\GitHub\G-Watch-2.0\src\fonts\FontAwesome6Pro.woff --range 0xf0e7, 0xf240, 0xf241, 0xf242, 0xf243, 0xf244, 0xf54b, 0xf0e0, 0xf192, 0xf0f3, 0xf075, 0xf7cd, 0xf0e0, 0xf255 --font C:\Users\garre\OneDrive\Documents\GitHub\G-Watch-2.0\src\fonts\FontAwesome5.woff --range 0xf294, 0xf287, 0xf1eb, 0xf392, 0xf167
  ******************************************************************************/
 
 #ifdef LV_LVGL_H_INCLUDE_SIMPLE

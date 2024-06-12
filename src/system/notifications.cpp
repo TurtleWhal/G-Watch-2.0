@@ -5,9 +5,10 @@
 #include "system.hpp"
 #include "fonts/fonts.hpp"
 
-Notification_t *notifs[10] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
+// Notification_t nullNotif;
+Notification_t notifs[10];
 
-void pushNotification(Notification_t *notif, uint8_t index = 0)
+void pushNotification(Notification_t notif, uint8_t index = 0)
 {
     for (uint8_t i = 9; i > index; i--)
     {
@@ -17,13 +18,13 @@ void pushNotification(Notification_t *notif, uint8_t index = 0)
     notifs[index] = notif;
 }
 
-Notification_t *popNotification(uint8_t index = UINT8_MAX)
+Notification_t popNotification(uint8_t index = UINT8_MAX)
 {
     if (index == UINT8_MAX)
     {
         for (uint8_t i = 0; i < 9; i++)
         {
-            if (notifs[i] == nullptr)
+            if (notifs[i].id)
             {
                 index = i;
                 break;
@@ -31,7 +32,7 @@ Notification_t *popNotification(uint8_t index = UINT8_MAX)
         }
     }
 
-    Notification_t *out = notifs[index];
+    Notification_t out = notifs[index];
 
     for (uint8_t i = index; i < 9; i++)
     {
@@ -45,19 +46,20 @@ void storeNotification(Notification_t *notif)
 {
     // Log.verboseln("storing notification with Name: %s, Body: %s, Sender: %s, Tel: %s, Time: %d", notif->title.c_str(), notif->body.c_str(), notif->sender.c_str(), String(notif->tel_number).c_str(), notif->time);
 
-    pushNotification(notif);
+    pushNotification(*notif);
 
     forEachNotification([](Notification_t *n)
                         { Serial.println(n->title); });
+
+    drawNotifs();
 }
 
 void forEachNotification(void (*func)(Notification_t *))
 {
     for (uint8_t i = 0; i < 10; i++)
     {
-        if (notifs[i] != nullptr)
-            Serial.println(notifs[i]->title);
-        // func(notifs[i]);
+        if (notifs[i].id)
+            func(&notifs[i]);
     }
 }
 
@@ -73,6 +75,7 @@ void handleNotification(String title, String subject, String body, String sender
     notif->time = millis();
     notif->id = id;
     notif->src = src;
+    notif->icon = FA_BELL;
 
     if (src == "SMS Message")
         notif->icon = FA_SMS;
@@ -86,8 +89,6 @@ void handleNotification(String title, String subject, String body, String sender
         notif->icon = FA_DISCORD;
     else if (src == "Gmail")
         notif->icon = FA_EMAIL;
-    else
-        notif->icon = FA_BELL;
 
     showNotification(notif);
 

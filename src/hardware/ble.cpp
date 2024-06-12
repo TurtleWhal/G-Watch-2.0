@@ -59,9 +59,7 @@ bool blePeriodic(EventBits_t event, void *arg)
 
 bool bleInit(EventBits_t event, void *arg)
 {
-    // blectl_setup("Garrett's Watch");
     blectl_setup(sysinfo.ble.name + " G-Watch");
-    // setBLEBatteryLevel(100);
 
     // BTmsgloop 50ms timer
     hw_timer_t *timer = NULL;
@@ -88,9 +86,6 @@ void ble_setup()
     // pBatteryService = pHIDDevice->batteryService();
     pBatteryService = pServer->createService(NimBLEUUID((uint16_t)0x180f));
 
-    /*
-     * Mandatory battery level characteristic with notification and presence descriptor
-     */
     pBatteryCharacteristic = pBatteryService->createCharacteristic((uint16_t)0x2a19, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
     pBatteryDescriptor = (NimBLE2904 *)pBatteryCharacteristic->createDescriptor((uint16_t)0x2904);
     pBatteryDescriptor->setFormat(NimBLE2904::FORMAT_UINT8);
@@ -169,37 +164,21 @@ void parseBLE(char *message)
 
 void parseGB(char *message)
 {
-    // int info.music.length = 600;
-    //  GB({t:"notify",id:1689704373,src:"Gadgetbridge",title:"",subject:"Testgh",body:"Testgh",sender:"Testgh",tel:"Testgh"})
-
-    // StaticJsonDocument<2048> received; // Depricated
     JsonDocument received;
 
-    // char Message2[] = "{t:\"notify\",id:1689704373,src:\"Gadgetbridge\",title:\"\",subject:\"Testgh\",body:\"Testgh\",sender:\"Testgh\",tel:\"Testgh\"}";
-    // message = "GB({t:\"notify\",id:1234567890,src:\"Messages\",title:\"Dad\",body:\"Test\"})";
-    // GB({t:"notify",id:1234567890,src:"Messages",title:"Dad",body:"Test"})
-    //  char json[] =
-    //      "{sensor:\"gps\",\"time\":1351824120,\"data\":[48.756080,2.302038]}";
     const char *tempMessage = message;
-    // const char TempMessage[] = "GB({t:\"notify\",id:1689704373,src:\"Gadgetbridge\",title:\"Testgh\",subject:\"Testgh\",body:\"Testgh\",sender:\"Testgh\",tel:\"Testgh\"})";
     DeserializationError error = deserializeJson(received, tempMessage + 3); // message +3 to get rid of GB( at beginning of gadgetbridge message
 
     // Test if parsing succeeds.
     if (error)
     {
-        // lv_label_set_text(ui_Now_Playing_Label, message);
         Log.verboseln("Error Parsing JSON: %s", error.c_str());
         return;
     }
 
     const char *notifType = received["t"];
 
-    Log.verboseln("Notification Type: %s", notifType);
-
-    //  if (strcmp(NotifType, "musicstate") != 0)
-    // lv_label_set_text(ui_Now_Playing_Label, message);
-
-    // Log.verboseln(message);
+    Log.verboseln("BLE Msg Type: %s", notifType);
 
     if (strcmp(notifType, "is_gps_active") == 0)
     {
@@ -224,8 +203,6 @@ void parseGB(char *message)
     {
         static MusicInfo_t musicState;
 
-        // musicState.position = (int)received["position"];
-        // musicState.playing = (strcmp((received["state"].as<char *>()), "play") == 0 ? true : false);
         musicState.position = received["position"].as<uint16_t>();
         musicState.playing = ((received["state"].as<String>() == "play") ? true : false);
 
@@ -233,22 +210,6 @@ void parseGB(char *message)
     }
     else if (strcmp(notifType, "notify") == 0)
     {
-        // powermgmTickle();
-
-        // motorVibrate(HAPTIC_NOTIFICATION);
-
-        // Notification_t notif;
-
-        // if (received["title"].as<String>() != "")
-        //     notif.title = received["title"].as<String>();
-        // else
-        //     notif.title = received["subject"].as<String>();
-
-        // notif.body = received["body"].as<String>();
-        // notif.sender = received["sender"].as<String>();
-
-        // showNotification(&notif);
-
         handleNotification(
             received["title"].as<String>(),
             received["subject"].as<String>(),
@@ -275,9 +236,7 @@ void sendBLEf(const char *fmt, ...)
 
     va_list args;
     va_start(args, fmt);
-
     vsprintf(msg, fmt, args);
-
     va_end(args);
 
     sendBLE(msg);
