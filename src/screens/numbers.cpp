@@ -10,8 +10,8 @@
 #include "notification.hpp"
 
 #define RADIAL_COORDS(angle, radius) (cos((DEG_TO_RAD) * (angle)) * (radius)), (sin((DEG_TO_RAD) * (angle)) * (radius))
-#define ICON_SPACING 12
-#define ICON_COUNT 15
+#define ICON_SPACING 16
+#define ICON_COUNT 10
 
 void nullCallback(uint8_t arcid) {}
 
@@ -35,7 +35,7 @@ lv_obj_t *date;
 InfoArc_t arcs[3];
 uint8_t arcsize = 55;
 
-lv_obj_t *infoicons[ICON_COUNT] = {nullptr};
+lv_obj_t *infoicons[ICON_COUNT * 2] = {nullptr};
 bool iconschanged = false;
 
 int8_t numberx = 0, numbery = 0;
@@ -216,14 +216,23 @@ bool numbersperiodic(EventBits_t event, void *arg)
             forEachNotification(
                 [](Notification_t *notif)
                 {
-                    createInfoIcon((char *)notif->icon.c_str(), ICON_COUNT - 1 - notificonidx);
-                    notificonidx++;
-                });
+                    if (notificonidx == ICON_COUNT - 1)
+                        return;
 
-            for (int i = notificonidx; i < 10; i++)
-            {
-                infoicons[ICON_COUNT - 1 - i] = nullptr;
-            }
+                    createInfoIcon((char *)notif->icon.c_str(), 5 + notificonidx);
+                    notificonidx++;
+
+                    if (notificonidx == ICON_COUNT - 1)
+                        createInfoIcon(FA_POINT, ICON_COUNT - 1);
+                },
+                true);
+
+            // remove unused icons
+            if (notificonidx < ICON_COUNT - 1)
+                for (int i = notificonidx; i < 10; i++)
+                {
+                    infoicons[5 + i] = nullptr;
+                }
 
             iconschanged = true;
             lastsec = sysinfo.time.second;

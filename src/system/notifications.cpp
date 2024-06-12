@@ -56,7 +56,7 @@ Notification_t popNotificationId(uint32_t id) {
 
 void storeNotification(Notification_t *notif)
 {
-    // Log.verboseln("storing notification with Name: %s, Body: %s, Sender: %s, Tel: %s, Time: %d", notif->title.c_str(), notif->body.c_str(), notif->sender.c_str(), String(notif->tel_number).c_str(), notif->time);
+    Log.verboseln("storing notification with Name: %s, Body: %s, Sender: %s, Tel: %s, Time: %d", notif->title.c_str(), notif->body.c_str(), notif->sender.c_str(), String(notif->tel_number).c_str(), notif->time);
 
     pushNotification(*notif);
 
@@ -66,16 +66,16 @@ void storeNotification(Notification_t *notif)
     drawNotifs();
 }
 
-void forEachNotification(void (*func)(Notification_t *))
+void forEachNotification(void (*func)(Notification_t *), bool reversed)
 {
-    for (uint8_t i = 0; i < 10; i++)
+    for (uint8_t i = reversed ? 9 : 0; i < (reversed ? 0 : 9); i++)
     {
         if (notifs[i].id)
             func(&notifs[i]);
     }
 }
 
-void handleNotification(String title, String subject, String body, String sender, String tel, String src, int id)
+void handleNotification(String title, String subject, String body, String sender, String tel, String src, int id, bool reply)
 {
     Log.verboseln("Recieved Notification, Title: %s, Subject: %s, Body: %s, Sender: %s, Tel: %s, Src: %s, Id: %d", title.c_str(), subject.c_str(), body.c_str(), sender.c_str(), tel.c_str(), src.c_str(), id);
 
@@ -88,6 +88,7 @@ void handleNotification(String title, String subject, String body, String sender
     notif->id = id;
     notif->src = src;
     notif->icon = FA_BELL;
+    notif->reply = reply;
 
     if (src == "SMS Message")
         notif->icon = FA_SMS;

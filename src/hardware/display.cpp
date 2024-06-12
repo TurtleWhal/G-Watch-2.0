@@ -214,7 +214,7 @@ bool displayInit(EventBits_t event, void *arg)
 
     // Log.verboseln("Display Init");
 
-    xTaskCreatePinnedToCore(backlight_updata, "backlight", 1024 * 10, NULL, 2, &backlightHandle, 1);
+    xTaskCreatePinnedToCore(backlight_updata, "backlight", 1024 * 10, NULL, 2, &backlightHandle, 0);
 
     powermgmRegisterCB(displayWakeup, POWERMGM_WAKEUP, "DisplayWakeup");
     powermgmRegisterCBPrio(displayPeriodic, POWERMGM_LOOP_AWAKE, "DisplayPeriodic", CALL_CB_FIRST);

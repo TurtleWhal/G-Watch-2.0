@@ -20,6 +20,12 @@ for filename in os.listdir(folder):
         print('Failed to delete %s. Reason: %s' % (file_path, e))
 
 
+if os.name == "nt":
+    windows = ["cmd.exe", "/c"]
+else:
+    windows = []
+
+
 hfile = open("images.hpp", "w")
 hfile.truncate(0)
 hfile.write("#include \"lvgl.h\"\n\n")
@@ -31,6 +37,6 @@ for file in os.listdir("files"):
     copy_and_rename("files/" + file, "generated", "IMG_" + file.split(".")[0].upper() + "." + file.split(".")[1])
 
     hfile.write("LV_IMAGE_DECLARE(IMG_" + file.split(".")[0].upper() + ");\n")
-    subprocess.call(["python3", "lv_img_conv.py", "--ofmt", "C", "--cf", "RGB565A8", "-o", "generated/", "--compress", "NONE", os.path.abspath("generated/IMG_" + file.split(".")[0].upper() + "." + file.split(".")[1])])
+    subprocess.call(windows + ["python3", "lv_img_conv.py", "--ofmt", "C", "--cf", "RGB565A8", "-o", "generated/", "--compress", "NONE", os.path.abspath("generated/IMG_" + file.split(".")[0].upper() + "." + file.split(".")[1])])
     
     os.remove("generated/IMG_" + file.split(".")[0].upper() + "." + file.split(".")[1])

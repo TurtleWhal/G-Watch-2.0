@@ -234,7 +234,21 @@ bool settingsscreate(EventBits_t event, void *arg)
                                 lv_slider_set_value(lv_event_get_target_obj(e), 1, LV_ANIM_OFF);
 
                             setBacklight(lv_slider_get_value(lv_event_get_target_obj(e)));
-                            lv_obj_set_x((lv_obj_t *)e->user_data, (lv_slider_get_value(lv_event_get_target_obj(e)) * 1.4) + 4); }, LV_EVENT_VALUE_CHANGED, brightlabel);
+                            lv_obj_set_x((lv_obj_t *)e->user_data, (lv_slider_get_value(lv_event_get_target_obj(e)) * 1.4) + 4);
+
+                            if (lv_slider_get_value(lv_event_get_target_obj(e)) < 50)
+                            {
+                                SET_SYMBOL_32((lv_obj_t *)lv_event_get_user_data(e), FA_BRIGHTNESS_LOW);
+                            }
+                            else
+                            {
+                                SET_SYMBOL_32((lv_obj_t *)lv_event_get_user_data(e), FA_BRIGHTNESS);
+                            }
+                        },
+                        LV_EVENT_VALUE_CHANGED, brightlabel);
+
+    lv_slider_set_value(bright, 100, LV_ANIM_OFF);
+    lv_obj_send_event(bright, LV_EVENT_VALUE_CHANGED, NULL);
 
     createSetting(&stepgoal);
     createSetting(&disturb);

@@ -210,6 +210,10 @@ void parseGB(char *message)
     }
     else if (strcmp(notifType, "notify") == 0)
     {
+        // bool reply = false;
+        // if (received.containsKey("reply"))
+        //     reply = received["reply"].as<bool>();
+
         handleNotification(
             received["title"].as<String>(),
             received["subject"].as<String>(),
@@ -217,7 +221,9 @@ void parseGB(char *message)
             received["sender"].as<String>(),
             received["tel"].as<String>(),
             received["src"].as<String>(),
-            received["id"].as<int>());
+            received["id"].as<int>(),
+            received.containsKey("reply") ? received["reply"].as<bool>() : false);
+            // reply);
     }
     else if (strcmp(notifType, "notify-") == 0)
     {

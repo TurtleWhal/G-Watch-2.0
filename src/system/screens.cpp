@@ -92,7 +92,7 @@ void addGestureCB(lv_obj_t *obj, lv_dir_t dir, lv_event_cb_t cb)
     gestcb = cb;
 
     lv_obj_add_event_cb(obj, [](lv_event_t *e)
-                        {lv_dir_t direction = lv_indev_get_gesture_dir(lv_indev_get_act()); if (direction == gestdir) gestcb(e); }, LV_EVENT_GESTURE, nullptr);
+                        {lv_dir_t direction = lv_indev_get_gesture_dir(lv_indev_active()); if (direction == gestdir) gestcb(e); }, LV_EVENT_GESTURE, nullptr);
 }
 
 lv_obj_t *createCurvedScrollbar(lv_obj_t *scr)
@@ -268,7 +268,9 @@ void createKeyboard(lv_obj_t *scr, lv_obj_t *dest, char *accepted)
 
     lv_obj_add_event_cb(apply, [](lv_event_t *e)
                         {
-                            lv_textarea_set_text((lv_obj_t *)e->user_data, lv_textarea_get_text((lv_obj_t *)((lv_obj_t *)e->user_data)->user_data));
+                            // if (strlen(lv_textarea_get_text((lv_obj_t *)((lv_obj_t *)e->user_data)->user_data)) > 0)
+                                lv_textarea_set_text((lv_obj_t *)e->user_data, lv_textarea_get_text((lv_obj_t *)((lv_obj_t *)e->user_data)->user_data));
+
                             lv_obj_delete(lv_obj_get_parent((lv_obj_t *)((lv_obj_t *)e->user_data)->user_data)); }, LV_EVENT_CLICKED, dest);
 
     lv_obj_add_event_cb(accept, [](lv_event_t *e)
