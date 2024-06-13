@@ -10,6 +10,7 @@ Notification_t notifs[10];
 
 void pushNotification(Notification_t notif, uint8_t index = 0)
 {
+    Log.verboseln("Pushing notification with Name: %s, Body: %s, Sender: %s, Tel: %s, Time: %d", notif.title.c_str(), notif.body.c_str(), notif.sender.c_str(), String(notif.tel_number).c_str(), notif.time);
     for (uint8_t i = 9; i > index; i--)
     {
         notifs[i] = notifs[i - 1];
@@ -20,6 +21,7 @@ void pushNotification(Notification_t notif, uint8_t index = 0)
 
 Notification_t popNotification(uint8_t index = UINT8_MAX)
 {
+    Log.verboseln("Popping notification with index: %d", index);
     if (index == UINT8_MAX)
     {
         for (uint8_t i = 0; i < 9; i++)

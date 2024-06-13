@@ -43,6 +43,18 @@ lv_obj_t *createNotification(Notification_t *data)
         lv_obj_set_width(body, 160);
     }
 
+    lv_obj_add_event_cb(notif, [](lv_event_t *e)
+                        { showNotification((Notification_t *)e->user_data); }, LV_EVENT_CLICKED, data);
+    lv_obj_add_event_cb(notif, [](lv_event_t *e)
+                        {
+                            if (lv_indev_get_gesture_dir(lv_indev_active()) == LV_DIR_RIGHT)
+                            {
+                                popNotificationId(((Notification_t *)e->user_data)->id);
+                                drawNotifs();
+                            }
+                        },
+                        LV_EVENT_GESTURE, data);
+
     lv_obj_set_user_data(notif, data);
 
     return notif;
@@ -56,7 +68,8 @@ void drawNotifs()
     {
         if (lv_obj_get_child(notifsscr, i)->user_data != NULL)
         {
-            lv_obj_del(lv_obj_get_child(notifsscr, i));
+            Log.verboseln("Deleting notification: %s", ((Notification_t *)lv_obj_get_child(notifsscr, i)->user_data)->title.c_str());
+            lv_obj_delete(lv_obj_get_child(notifsscr, i));
         }
     }
 
