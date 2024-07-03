@@ -26,6 +26,7 @@ LV_FONT_DECLARE(FontAwesome_40);
 #define FA_RESET          "\xEF\x8B\xB1" // U+F2F1, Sizes: [32]
 #define FA_BRIGHTNESS     "\xEE\x83\x89" // U+E0C9, Sizes: [32]
 #define FA_BRIGHTNESS_LOW "\xEE\x83\x8A" // U+E0CA, Sizes: [32]
+#define FA_ARROW_RIGHT    "\xEF\x81\xA1" // U+F061, Sizes: [32]
 #define FA_CHEVRON_UP     "\xEF\x81\xB7" // U+F077, Sizes: [20]
 #define FA_OK             "\xEF\x80\x8C" // U+F00C, Sizes: [20]
 #define FA_CLOSE          "\xEF\x80\x8D" // U+F00D, Sizes: [20]

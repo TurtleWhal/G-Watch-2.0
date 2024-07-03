@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Size: 16 px
  * Bpp: 4
- * Opts: --size 16 --bpp 4 --format lvgl --output /Users/gj0987888/Documents/GitHub/G-Watch-2.0/src/fonts/generated/FontAwesome_16.c --no-compress --font /Users/gj0987888/Documents/GitHub/G-Watch-2.0/src/fonts/FontAwesome6Pro.woff --range 0xe20a
+ * Opts: --size 16 --bpp 4 --format lvgl --output C:\Users\garre\OneDrive\Documents\GitHub\G-Watch-2.0\src\fonts\generated/FontAwesome_16.c --no-compress --font FontAwesome6Pro.woff --range 0xe20a
  ******************************************************************************/
 
 #ifdef LV_LVGL_H_INCLUDE_SIMPLE

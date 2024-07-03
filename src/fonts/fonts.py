@@ -128,13 +128,13 @@ for size in sizes:
 
         if srange:
             args.append("--font")
-            args.append(os.path.abspath("FontAwesome6Pro.woff"))
+            args.append("FontAwesome6Pro.woff")
             args.append("--range")
             args.append(srange)
 
         if brange:
             args.append("--font")
-            args.append(os.path.abspath("FontAwesome5.woff"))
+            args.append("FontAwesome5.woff")
             args.append("--range")
             args.append(brange)
         
@@ -149,7 +149,7 @@ for font in symbols["fonts"]:
 
         fontdefines.append(dest[:-2])
 
-        args = windows + ["lv_font_conv", "--size", str(size), "--bpp", str(font["bpp"]), "--format", "lvgl", "--font", os.path.abspath("files/" + font["font"]), "--output", os.path.abspath("generated") + "/" + dest, "--no-compress"]
+        args = windows + ["lv_font_conv", "--size", str(size), "--bpp", str(font["bpp"]), "--format", "lvgl", "--font", "files/" + font["font"], "--output", os.path.abspath("generated") + "/" + dest, "--no-compress"]
         
         if font["range"]:
             args.append("--range")

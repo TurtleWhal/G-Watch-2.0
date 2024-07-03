@@ -16,6 +16,27 @@ lv_obj_t *nolabel;
 
 lv_obj_t *createNotification(Notification_t *data)
 {
+    lv_obj_t *base = lv_obj_create(notifsscr);
+
+    lv_obj_set_width(base, 180);
+    lv_obj_set_height(base, 60);
+    lv_obj_set_style_radius(base, 0, LV_PART_MAIN);
+    lv_obj_set_style_bg_opa(base, LV_OPA_TRANSP, LV_PART_MAIN);
+    lv_obj_set_style_border_opa(base, LV_OPA_TRANSP, LV_PART_MAIN);
+
+    lv_obj_set_scroll_dir(base, LV_DIR_HOR);
+    lv_obj_set_scroll_snap_x(base, LV_SCROLL_SNAP_CENTER);
+    lv_obj_set_scrollbar_mode(base, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_set_flex_flow(base, LV_FLEX_FLOW_ROW);
+
+    lv_obj_t *space = lv_obj_create(base);
+    lv_obj_set_width(space, 10);
+    lv_obj_set_style_bg_opa(space, LV_OPA_TRANSP, LV_PART_MAIN);
+    lv_obj_set_style_border_opa(space, LV_OPA_TRANSP, LV_PART_MAIN);
+
+    // lv_obj_t *arrow = lv_label_create(base);
+    // SET_SYMBOL_32(arrow, FA_ARROW_RIGHT);
+
     lv_obj_t *notif = lv_obj_create(notifsscr);
     lv_obj_set_width(notif, 180);
     lv_obj_set_style_height(notif, LV_SIZE_CONTENT, LV_PART_MAIN);
@@ -45,19 +66,20 @@ lv_obj_t *createNotification(Notification_t *data)
 
     lv_obj_add_event_cb(notif, [](lv_event_t *e)
                         { showNotification((Notification_t *)e->user_data); }, LV_EVENT_CLICKED, data);
-    lv_obj_add_event_cb(notif, [](lv_event_t *e)
-                        {
-                            if (lv_indev_get_gesture_dir(lv_indev_active()) == LV_DIR_RIGHT)
-                            {
-                                popNotificationId(((Notification_t *)e->user_data)->id);
-                                drawNotifs();
-                            }
-                        },
-                        LV_EVENT_GESTURE, data);
+    // lv_obj_add_event_cb(notif, [](lv_event_t *e)
+    //                     {
+    //                         if (lv_indev_get_gesture_dir(lv_indev_active()) == LV_DIR_RIGHT)
+    //                         {
+    //                             popNotificationId(((Notification_t *)e->user_data)->id);
+    //                             drawNotifs();
+    //                         }
+    //                     },
+    //                     LV_EVENT_GESTURE, data);
 
-    lv_obj_set_user_data(notif, data);
+    lv_obj_set_user_data(base, data);
+    lv_obj_scroll_to_view(notif, LV_ANIM_ON);
 
-    return notif;
+    return base;
 }
 
 bool notificationcheck;

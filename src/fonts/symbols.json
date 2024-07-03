@@ -8,6 +8,7 @@
         {"name": "reset",           "hex": "f2f1", "sizes": [32]},
         {"name": "brightness",      "hex": "e0c9", "sizes": [32]},
         {"name": "brightness low",  "hex": "e0ca", "sizes": [32]},
+        {"name": "arrow right",     "hex": "f061", "sizes": [32]},
         {"name": "chevron up",      "hex": "f077", "sizes": [20]},
         {"name": "ok",              "hex": "f00c", "sizes": [20]},
         {"name": "close",           "hex": "f00d", "sizes": [20]},

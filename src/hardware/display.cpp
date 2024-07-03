@@ -178,8 +178,8 @@ bool displayInit(EventBits_t event, void *arg)
     lv_display_set_buffers(display, buf1, buf2, sizeof(buf1), LV_DISPLAY_RENDER_MODE_PARTIAL);
 
 #ifdef WAVESHARE_ESP32_LCD
-    tft.setRotation(3);
     lv_display_set_rotation(display, LV_DISPLAY_ROTATION_90); // lvgl rotation is counter-clockwise
+    tft.setRotation((4 - lv_display_get_rotation(display)) % 4);
 #endif
 
     // Log.verboseln("LVGL Init");
@@ -234,6 +234,12 @@ void setBacklight(int16_t val)
         ledcWrite(0, 0x1FFF); // 100% || 8191
         bgval = 100;
     }
+}
+
+void setRotation(lv_display_rotation_t rotation)
+{
+    lv_display_set_rotation(display, rotation); // lvgl rotation is counter-clockwise
+    tft.setRotation((4 - lv_display_get_rotation(display)) % 4);
 }
 
 int16_t getBacklight() { return bgval; }

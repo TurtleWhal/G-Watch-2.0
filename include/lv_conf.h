@@ -50,7 +50,7 @@
     #ifdef WAVESHARE_ESP32_LCD
         #define LV_MEM_SIZE (72 * 1024U)          /*[bytes]*/
     #else
-        #define LV_MEM_SIZE (54 * 1024U)          /*[bytes]*/
+        #define LV_MEM_SIZE (48 * 1024U)          /*[bytes]*/
     #endif
 
     /*Size of the memory expand for `lv_malloc()` in bytes*/

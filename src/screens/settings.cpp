@@ -216,6 +216,20 @@ bool settingsscreate(EventBits_t event, void *arg)
         settings.putUInt("stepgoal", sysinfo.health.goal);
     };
 
+    Setting_t flipscr;
+    flipscr.title = "Flip Screen";
+    flipscr.type = SETTING_TYPE_SWITCH;
+    flipscr.init = [](lv_obj_t *obj)
+    {
+        lv_obj_set_state(obj, LV_STATE_CHECKED, settings.getBool("flip", false));
+        setRotation(lv_obj_has_state(obj, LV_STATE_CHECKED) ? LV_DISPLAY_ROTATION_270 : LV_DISPLAY_ROTATION_90);
+    };
+    flipscr.onchange = [](lv_event_t *e)
+    {
+        settings.putBool("flip", lv_obj_has_state(lv_event_get_target_obj(e), LV_STATE_CHECKED));
+        setRotation(lv_obj_has_state(lv_event_get_target_obj(e), LV_STATE_CHECKED) ? LV_DISPLAY_ROTATION_270 : LV_DISPLAY_ROTATION_90);
+    };
+
     bright = lv_slider_create(settingsscr);
     lv_obj_set_size(bright, 180, 40);
     lv_obj_set_style_bg_opa(bright, LV_OPA_TRANSP, LV_PART_KNOB);
@@ -243,15 +257,14 @@ bool settingsscreate(EventBits_t event, void *arg)
                             else
                             {
                                 SET_SYMBOL_32((lv_obj_t *)lv_event_get_user_data(e), FA_BRIGHTNESS);
-                            }
-                        },
-                        LV_EVENT_VALUE_CHANGED, brightlabel);
+                            } }, LV_EVENT_VALUE_CHANGED, brightlabel);
 
     lv_slider_set_value(bright, 100, LV_ANIM_OFF);
     lv_obj_send_event(bright, LV_EVENT_VALUE_CHANGED, NULL);
 
     createSetting(&stepgoal);
     createSetting(&disturb);
+    createSetting(&flipscr);
     createSetting(&blename);
 
     lv_obj_t *ota = lv_button_create(settingsscr);

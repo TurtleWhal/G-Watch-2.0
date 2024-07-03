@@ -10,7 +10,7 @@
 #include "notification.hpp"
 
 #define RADIAL_COORDS(angle, radius) (cos((DEG_TO_RAD) * (angle)) * (radius)), (sin((DEG_TO_RAD) * (angle)) * (radius))
-#define ICON_SPACING 16
+#define ICON_SPACING 18
 #define ICON_COUNT 10
 
 void nullCallback(uint8_t arcid) {}
@@ -213,26 +213,36 @@ bool numbersperiodic(EventBits_t event, void *arg)
                 lv_obj_add_flag(infoicons[1], LV_OBJ_FLAG_HIDDEN);
 
             notificonidx = 0;
-            forEachNotification(
-                [](Notification_t *notif)
-                {
-                    if (notificonidx == ICON_COUNT - 1)
-                        return;
+            // forEachNotification(
+            //     [](Notification_t *notif)
+            //     {
+            //         if (notificonidx == ICON_COUNT - 1)
+            //             return;
 
-                    createInfoIcon((char *)notif->icon.c_str(), 5 + notificonidx);
-                    notificonidx++;
+            //         createInfoIcon((char *)notif->icon.c_str(), 5 + notificonidx);
+            //         notificonidx++;
 
-                    if (notificonidx == ICON_COUNT - 1)
-                        createInfoIcon(FA_POINT, ICON_COUNT - 1);
-                },
-                true);
+            //         if (notificonidx == ICON_COUNT - 1)
+            //             createInfoIcon(FA_POINT, ICON_COUNT - 1);
+            //     },
+            //     true);
 
-            // remove unused icons
-            if (notificonidx < ICON_COUNT - 1)
-                for (int i = notificonidx; i < 10; i++)
-                {
-                    infoicons[5 + i] = nullptr;
-                }
+            for (int i = 5; i < 10; i++)
+            {
+                infoicons[i] = nullptr;
+            }
+
+            forEachNotification([](Notification_t *notif)
+                                {
+                                    if (notificonidx >= ICON_COUNT)
+                                    {
+                                        createInfoIcon(FA_POINT, ICON_COUNT - 1);
+                                        return;
+                                    }
+
+                                    createInfoIcon((char *)notif->icon.c_str(), 5 + notificonidx);
+                                    notificonidx++;
+                                });
 
             iconschanged = true;
             lastsec = sysinfo.time.second;
@@ -253,17 +263,9 @@ bool numbersperiodic(EventBits_t event, void *arg)
             for (uint8_t i = 0; i < ICON_COUNT; i++)
                 if (infoicons[i] != nullptr && lv_obj_has_flag(infoicons[i], LV_OBJ_FLAG_HIDDEN) == false)
                 {
-                    // lv_obj_align(infoicons[i], LV_ALIGN_CENTER,
-                    //              RADIAL_COORDS((((90) + ((infoiconcount / 2) * ICON_SPACING)) - (idx * ICON_SPACING)),
-                    //                            (110)));
-                    // lv_obj_align(infoicons[i], LV_ALIGN_CENTER,
-                    //              RADIAL_COORDS(((90 + (((double)infoiconcount / 2) * ICON_SPACING)) - (idx * ICON_SPACING)),
-                    //                            (110)));
                     lv_obj_align(infoicons[i], LV_ALIGN_CENTER,
                                  RADIAL_COORDS(((90 + ((double)((infoiconcount - 1) * ICON_SPACING) / 2)) - (idx * ICON_SPACING)),
                                                (110)));
-
-                    // Serial.println((90 + ((double)(infoiconcount*ICON_SPACING) / 2)));
 
                     idx++;
                 }
