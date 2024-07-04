@@ -162,6 +162,60 @@ void parseBLE(char *message)
     }
 }
 
+void sendBLE(String message, int repeat)
+{
+    for (int i = repeat; i > 0; i--)
+    {
+        msg = msg + "\r\n" + message + "\r\n" + BLE_TERM_CHAR;
+        Log.verboseln("Sending BLE message: %s", message.c_str());
+    }
+}
+
+void sendBLEf(const char *fmt, ...)
+{
+    char msg[256];
+
+    va_list args;
+    va_start(args, fmt);
+    vsprintf(msg, fmt, args);
+    va_end(args);
+
+    sendBLE(msg);
+}
+
+bool isBLEConnected()
+{
+    return blectl_get_event(BLECTL_CONNECT | BLECTL_AUTHWAIT);
+}
+
+void BLEmsgloop()
+{
+    unsigned char tempmsg[BLECTL_CHUNKSIZE + 1];
+    if (msg.length() and isBLEConnected())
+    {
+        // if (msg.indexOf(BLE_TERM_CHAR) - 1 > BLECTL_CHUNKSIZE)
+        // {
+        //     msg.getBytes(tempmsg + 1, BLECTL_CHUNKSIZE);
+        //     msg.remove(0, BLECTL_CHUNKSIZE - 1);
+        //     gadgetbridge_send_chunk(tempmsg, BLECTL_CHUNKSIZE);
+        // }
+        // else
+        // {
+        //     msg.getBytes(tempmsg, BLECTL_CHUNKSIZE);
+        //     gadgetbridge_send_chunk(tempmsg, msg.indexOf(BLE_TERM_CHAR) - 1);
+        //     msg.remove(0, msg.indexOf(BLE_TERM_CHAR) + 1);
+        // }
+
+        msg.getBytes(tempmsg, BLECTL_CHUNKSIZE);
+        msg.remove(0, BLECTL_CHUNKSIZE - 1);
+        gadgetbridge_send_chunk(tempmsg, strlen((char *)tempmsg));
+    }
+}
+
+bool blesetup = powermgmRegisterCBPrio(bleInit, POWERMGM_INIT, "BLEInit", CALL_CB_FIRST);
+
+// HANDLE ALL BLE NOTIFICATIONS FROM GADGETBRIDGE
+
 void parseGB(char *message)
 {
     JsonDocument received;
@@ -223,62 +277,17 @@ void parseGB(char *message)
             received["src"].as<String>(),
             received["id"].as<int>(),
             received.containsKey("reply") ? received["reply"].as<bool>() : false);
-            // reply);
+        // reply);
     }
     else if (strcmp(notifType, "notify-") == 0)
     {
         popNotificationId(received["id"].as<int>());
     }
-}
-
-void sendBLE(String message, int repeat)
-{
-    for (int i = repeat; i > 0; i--)
+    else if (strcmp(notifType, "find") == 0)
     {
-        msg = msg + "\r\n" + message + "\r\n" + BLE_TERM_CHAR;
-        Log.verboseln("Sending BLE message: %s", message.c_str());
+        if (received["n"] == true)
+            motorVibrate(60, 1000);
+        else
+            motorVibrate(0, 0);
     }
 }
-
-void sendBLEf(const char *fmt, ...)
-{
-    char msg[256];
-
-    va_list args;
-    va_start(args, fmt);
-    vsprintf(msg, fmt, args);
-    va_end(args);
-
-    sendBLE(msg);
-}
-
-bool isBLEConnected()
-{
-    return blectl_get_event(BLECTL_CONNECT | BLECTL_AUTHWAIT);
-}
-
-void BLEmsgloop()
-{
-    unsigned char tempmsg[BLECTL_CHUNKSIZE + 1];
-    if (msg.length() and isBLEConnected())
-    {
-        // if (msg.indexOf(BLE_TERM_CHAR) - 1 > BLECTL_CHUNKSIZE)
-        // {
-        //     msg.getBytes(tempmsg + 1, BLECTL_CHUNKSIZE);
-        //     msg.remove(0, BLECTL_CHUNKSIZE - 1);
-        //     gadgetbridge_send_chunk(tempmsg, BLECTL_CHUNKSIZE);
-        // }
-        // else
-        // {
-        //     msg.getBytes(tempmsg, BLECTL_CHUNKSIZE);
-        //     gadgetbridge_send_chunk(tempmsg, msg.indexOf(BLE_TERM_CHAR) - 1);
-        //     msg.remove(0, msg.indexOf(BLE_TERM_CHAR) + 1);
-        // }
-
-        msg.getBytes(tempmsg, BLECTL_CHUNKSIZE);
-        msg.remove(0, BLECTL_CHUNKSIZE - 1);
-        gadgetbridge_send_chunk(tempmsg, strlen((char *)tempmsg));
-    }
-}
-
-bool blesetup = powermgmRegisterCBPrio(bleInit, POWERMGM_INIT, "BLEInit", CALL_CB_FIRST);

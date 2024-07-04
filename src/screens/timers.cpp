@@ -107,7 +107,7 @@ bool timerperiodic(EventBits_t event, void *arg)
                 powermgmTickle();
                 writeTimerTime(0);
                 timerrunning = false;
-                motorVibrate(60, 1000);
+                motorVibrate(30, 1000);
                 SET_SYMBOL_32(timerplaylbl, FA_PLAY);
 
                 showAlert("Alarm", []()
