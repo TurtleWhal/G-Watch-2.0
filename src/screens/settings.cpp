@@ -123,6 +123,19 @@ lv_obj_t *createSetting(Setting_t *data)
     lv_obj_set_style_border_opa(setting, LV_OPA_TRANSP, LV_PART_MAIN);
     lv_obj_set_style_border_opa(input, LV_OPA_TRANSP, LV_PART_MAIN);
 
+    lv_obj_add_flag(title, LV_OBJ_FLAG_EVENT_BUBBLE);
+    lv_obj_add_event_cb(setting, [](lv_event_t *e)
+                        {
+                            lv_obj_t *i = (lv_obj_t *)e->user_data;
+
+                            if (lv_obj_check_type(i, &lv_switch_class))
+                            {
+                                lv_obj_has_state(i, LV_STATE_CHECKED) ? lv_obj_remove_state(i, LV_STATE_CHECKED) : lv_obj_add_state(i, LV_STATE_CHECKED);
+                                lv_obj_send_event(i, LV_EVENT_VALUE_CHANGED, e->param);
+                            }
+
+                            lv_obj_send_event(i, LV_EVENT_CLICKED, e->param); }, LV_EVENT_CLICKED, input);
+
     return setting;
 }
 
