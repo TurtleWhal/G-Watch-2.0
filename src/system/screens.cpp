@@ -118,10 +118,9 @@ lv_obj_t *createCurvedScrollbar(lv_obj_t *scr)
     lv_arc_set_bg_angles(bar, SCROLLBAR_START, SCROLLBAR_START + SCROLLBAR_WIDTH);
 
     lv_obj_add_event_cb(scr, curvedScrollbarCB, LV_EVENT_SCROLL, bar);
-    lv_obj_send_event(scr, LV_EVENT_SCROLL, bar);
-
-    // lv_obj_scroll_to_y(scr, 1, LV_ANIM_OFF);
-    // lv_obj_scroll_to_y(scr, 0, LV_ANIM_OFF);
+    lv_obj_add_event_cb(scr, curvedScrollbarCB, LV_EVENT_LAYOUT_CHANGED, bar);
+    // lv_obj_update_layout(scr);
+    lv_obj_send_event(scr, LV_EVENT_SCROLL, NULL);
 
     return bar;
 }
@@ -132,8 +131,6 @@ void curvedScrollbarCB(lv_event_t *e)
     lv_obj_t *bar = (lv_obj_t *)lv_event_get_user_data(e);
 
     int height = lv_obj_get_scroll_top(scr) + lv_obj_get_scroll_bottom(scr) + TFT_HEIGHT;
-
-    // Log.verboseln("Scrollbar Height: %i, Scroll Y: %i", height, lv_obj_get_scroll_y(scr));
 
     if (height <= TFT_HEIGHT)
     {
