@@ -104,7 +104,7 @@ lv_obj_t *createSetting(Setting_t *data)
         break;
     }
 
-    if (lv_obj_get_width(setting) - lv_obj_get_width(title) - 8 < lv_obj_get_width(input))
+    if (lv_obj_get_style_width(setting, LV_PART_MAIN) - lv_obj_get_content_width(title) - 8 < lv_obj_get_style_width(input, LV_PART_MAIN))
     {
         lv_obj_set_height(setting, 80);
         lv_obj_align(title, LV_ALIGN_TOP_LEFT, 0, 0);
