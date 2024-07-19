@@ -253,6 +253,31 @@ bool settingsscreate(EventBits_t event, void *arg)
 #endif
     };
 
+    Setting_t flash;
+    flash.title = "Flashlight";
+    flash.type = SETTING_TYPE_SWITCH;
+    flash.init = [](lv_obj_t *obj) {
+    };
+    flash.onchange = [](lv_event_t *e)
+    {
+        lv_obj_t *scr = lv_obj_create(nullptr);
+        lv_obj_set_style_bg_color(scr, lv_color_white(), LV_PART_MAIN);
+        lv_obj_set_scrollbar_mode(scr, LV_SCROLLBAR_MODE_OFF);
+
+        const uint16_t pb = getBacklight();
+
+        lv_obj_add_event_cb(scr, [](lv_event_t *e)
+                            {
+                                Serial.println((long)e->user_data);
+                                setBacklight((long)e->user_data);
+                                setScreen(nullptr, LV_SCR_LOAD_ANIM_NONE, 0, true);
+                            },
+                            LV_EVENT_CLICKED, (void *)pb);
+
+        setScreen(scr, LV_SCR_LOAD_ANIM_NONE, 0, false);
+        setBacklight(100);
+    };
+
     bright = lv_slider_create(settingsscr);
     lv_obj_set_size(bright, 180, 40);
     lv_obj_set_style_bg_opa(bright, LV_OPA_TRANSP, LV_PART_KNOB);
@@ -287,6 +312,7 @@ bool settingsscreate(EventBits_t event, void *arg)
 
     createSetting(&stepgoal);
     createSetting(&disturb);
+    createSetting(&flash);
     createSetting(&flipscr);
     createSetting(&blename);
 
