@@ -235,12 +235,22 @@ bool settingsscreate(EventBits_t event, void *arg)
     flipscr.init = [](lv_obj_t *obj)
     {
         lv_obj_set_state(obj, LV_STATE_CHECKED, settings.getBool("flip", false));
+
+#ifdef LILYGO_TWATCH_2021
+        setRotation(lv_obj_has_state(obj, LV_STATE_CHECKED) ? LV_DISPLAY_ROTATION_180 : LV_DISPLAY_ROTATION_0);
+#else
         setRotation(lv_obj_has_state(obj, LV_STATE_CHECKED) ? LV_DISPLAY_ROTATION_270 : LV_DISPLAY_ROTATION_90);
+#endif
     };
     flipscr.onchange = [](lv_event_t *e)
     {
         settings.putBool("flip", lv_obj_has_state(lv_event_get_target_obj(e), LV_STATE_CHECKED));
+
+#ifdef LILYGO_TWATCH_2021
+        setRotation(lv_obj_has_state(lv_event_get_target_obj(e), LV_STATE_CHECKED) ? LV_DISPLAY_ROTATION_180 : LV_DISPLAY_ROTATION_0);
+#else
         setRotation(lv_obj_has_state(lv_event_get_target_obj(e), LV_STATE_CHECKED) ? LV_DISPLAY_ROTATION_270 : LV_DISPLAY_ROTATION_90);
+#endif
     };
 
     bright = lv_slider_create(settingsscr);

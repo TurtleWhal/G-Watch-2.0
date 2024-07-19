@@ -112,6 +112,7 @@ bool notifcreate(EventBits_t event, void *arg)
                             }
                             else if (direction == LV_DIR_RIGHT)
                             {
+                                sendBLEf("{t:\"notify\", n:\"DISMISS\", id:%i}", notif.id);
                                 notifshowing = false;
                                 setScreen(nullptr);
                             } }, LV_EVENT_GESTURE, nullptr);
