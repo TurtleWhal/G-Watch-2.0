@@ -244,4 +244,4 @@ void setRotation(lv_display_rotation_t rotation)
 
 int16_t getBacklight() { return bgval; }
 
-bool displaysetup = powermgmRegisterCBPrio(displayInit, POWERMGM_INIT, "ExampleFunc", CALL_CB_FIRST);
+bool displaysetup = powermgmRegisterCBPrio(displayInit, POWERMGM_INIT, "ExampleFunc", CALL_CB_MIDDLE);

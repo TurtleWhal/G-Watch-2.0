@@ -147,12 +147,12 @@ bool powermgmRegisterCB(CALLBACK_FUNC cb_func, EventBits_t event, const char *id
         powermgmCallback = callback_init("powermgm");
         // ASSERT(powermgmCallback, "powermgm callback alloc failed");
     }
-    Log.verboseln("Registering powermgm callback: %s", id);
+    // Log.verboseln("Registering powermgm callback: %s", id);
     bool ret = callback_register(powermgmCallback, event, cb_func, id);
 
-    if (ret)
-        Log.verboseln("Successfully registered callback: %s", id);
-    else
+    if (!ret)
+        // Log.verboseln("Successfully registered callback: %s", id);
+        // else
         Log.verboseln("Failed to register callback: %s", id);
 
     return (ret);
@@ -165,13 +165,13 @@ bool powermgmRegisterCBPrio(CALLBACK_FUNC cb_func, EventBits_t event, const char
         powermgmCallback = callback_init("powermgm");
         // ASSERT(powermgmCallback, "powermgm callback alloc failed");
     }
-    Log.verboseln("Registering powermgm callback: %s with prio: %d", id, prio);
+    // Log.verboseln("Registering powermgm callback: %s with prio: %d", id, prio);
     bool ret = callback_register_with_prio(powermgmCallback, event, cb_func, id, prio);
 
-    if (ret)
-        Log.verboseln("Successfully registered callback: %s", id);
-    else
-        Log.verboseln("Failed to register callback: %s", id);
+    if (!ret)
+        // Log.verboseln("Successfully registered callback: %s", id);
+        // else
+        Log.verboseln("Failed to register callback: %s with priority: %d", id, prio);
 
     return (ret);
 }

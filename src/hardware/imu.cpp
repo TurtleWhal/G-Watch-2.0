@@ -190,7 +190,7 @@ bool imuInit(EventBits_t event, void *arg)
     // pinMode(IMU_INT1, INPUT);
     // attachInterrupt(IMU_INT2, setFlag, RISING);
 
-    return true;
+    // return true;
 
     if (!bma.begin(Wire, 0x18, IIC_SDA, IIC_SCL))
     {

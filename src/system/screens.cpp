@@ -320,4 +320,4 @@ void attachKeyboard(lv_obj_t *textarea, char *accepted)
                         { createKeyboard(lv_obj_get_screen(lv_event_get_target_obj(e)), lv_event_get_target_obj(e), (char *)e->user_data); }, LV_EVENT_CLICKED, accepted);
 }
 
-bool screensetup = powermgmRegisterCBPrio(screenInit, POWERMGM_INIT, "ScreenInit", CALL_CB_MIDDLE);
+bool screensetup = powermgmRegisterCBPrio(screenInit, POWERMGM_INIT, "ScreenInit", CALL_CB_LAST);
