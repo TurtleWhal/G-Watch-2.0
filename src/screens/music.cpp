@@ -19,6 +19,7 @@ lv_obj_t *songlbl;
 lv_obj_t *artistlbl;
 lv_obj_t *albumlbl;
 lv_obj_t *timelbl;
+lv_obj_t *lengthlbl;
 
 int8_t musicx = 0, musicy = 1;
 
@@ -48,7 +49,9 @@ bool musicUpdate(EventBits_t event, void *arg)
     lv_bar_set_range(bar, 0, state->length);
     lv_bar_set_value(bar, state->position, LV_ANIM_ON);
 
-    lv_label_set_text_fmt(timelbl, "%i:%02i / %i:%02i", state->position / 60, state->position % 60, state->length / 60, state->length % 60);
+    // lv_label_set_text_fmt(timelbl, "%i:%02i / %i:%02i", state->position / 60, state->position % 60, state->length / 60, state->length % 60);
+    lv_label_set_text_fmt(lengthlbl, "%i:%02i", state->length / 60, state->length % 60);
+    lv_label_set_text_fmt(timelbl, "%i:%02i", state->position / 60, state->position % 60);
 
     if (state->playing)
     {
@@ -121,23 +124,26 @@ bool musiccreate(EventBits_t event, void *arg)
     lv_label_set_long_mode(songlbl, LV_LABEL_LONG_SCROLL_CIRCULAR);
     lv_obj_set_width(songlbl, 220);
     lv_label_set_text(songlbl, "");
-    lv_obj_align(songlbl, LV_ALIGN_LEFT_MID, -10, -24);
+    lv_obj_align(songlbl, LV_ALIGN_LEFT_MID, -10, -26);
 
     artistlbl = lv_label_create(musicscr);
-    lv_obj_align(artistlbl, LV_ALIGN_LEFT_MID, 0, -48);
+    lv_obj_align(artistlbl, LV_ALIGN_LEFT_MID, 0, -52);
     lv_label_set_text(artistlbl, "");
 
     timelbl = lv_label_create(musicscr);
     lv_obj_align(timelbl, LV_ALIGN_LEFT_MID, -15, 0);
-    lv_label_set_text(timelbl, "0:00 / 0:00");
-    // lv_obj_set_width(timelbl, 20);
-    // lv_obj_set_style_text_align(timelbl, LV_TEXT_ALIGN_CENTER, 0);
+    lv_label_set_text(timelbl, "0:00");
+
+    lengthlbl = lv_label_create(musicscr);
+    lv_obj_align(lengthlbl, LV_ALIGN_RIGHT_MID, 15, 0);
+    lv_label_set_text(lengthlbl, "0:00");
 
     albumlbl = lv_label_create(musicscr);
     lv_label_set_long_mode(albumlbl, LV_LABEL_LONG_SCROLL);
-    lv_obj_set_width(timelbl, 140);
+    // lv_obj_set_width(timelbl, 150);
+    lv_obj_set_style_max_width(albumlbl, 150, LV_PART_MAIN);
     lv_label_set_text(albumlbl, "");
-    lv_obj_align(albumlbl, LV_ALIGN_LEFT_MID, 80, 0);
+    lv_obj_align(albumlbl, LV_ALIGN_CENTER, 0, 0);
 
     musicUpdate((EventBits_t)NULL, NULL);
 

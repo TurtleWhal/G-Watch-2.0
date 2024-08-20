@@ -20,11 +20,8 @@
 #define HID_SERVICE_UUID (uint16_t)0x1812
 #define BATTERY_SERVICE_UUID (uint16_t)0x180F
 
-// NimBLEHIDDevice *pHIDDevice;
-// NimBLEService *pService;
-NimBLEService *pBatteryService;
-NimBLECharacteristic *pBatteryCharacteristic;
-NimBLE2904 *pBatteryDescriptor;
+NimBLECharacteristic *pBatteryLevelCharacteristic;
+// NimBLE2904 *pBatteryDescriptor;
 
 static String msg;
 bool BLEtimer = false;
@@ -80,21 +77,24 @@ void ble_setup()
     NimBLEServer *pServer = blectl_get_ble_server();
     NimBLEAdvertising *pAdvertising = blectl_get_ble_advertising();
 
-    // pHIDDevice = new NimBLEHIDDevice(pServer);
-    // pService = pServer->createService(NimBLEUUID((uint32_t)BATTERY_SERVICE_UUID));
+    // Create the Battery Service
+    NimBLEService *pBatteryService = pServer->createService(NimBLEUUID((uint16_t)0x180F));
 
-    // pBatteryService = pHIDDevice->batteryService();
-    pBatteryService = pServer->createService(NimBLEUUID((uint16_t)0x180f));
+    // Create the Battery Level Characteristic
+    pBatteryLevelCharacteristic = pBatteryService->createCharacteristic(
+        NimBLEUUID((uint16_t)0x2A19),
+        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
 
-    pBatteryCharacteristic = pBatteryService->createCharacteristic((uint16_t)0x2a19, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
-    pBatteryDescriptor = (NimBLE2904 *)pBatteryCharacteristic->createDescriptor((uint16_t)0x2904);
-    pBatteryDescriptor->setFormat(NimBLE2904::FORMAT_UINT8);
-    pBatteryDescriptor->setNamespace(1);
-    pBatteryDescriptor->setUnit(0x27ad);
+    // Set initial battery level (0-100%)
+    uint8_t batteryLevel = 100; // Example: Full battery
+    pBatteryLevelCharacteristic->setValue(&batteryLevel, 1);
 
+    // Start the service
     pBatteryService->start();
 
-    pAdvertising->addServiceUUID(pBatteryService->getUUID());
+    // Start advertising
+    pAdvertising->addServiceUUID(NimBLEUUID((uint16_t)0x180F));
+    pAdvertising->start();
 }
 
 void pairBT(uint32_t passkey)
@@ -129,8 +129,8 @@ void pairBT(uint32_t passkey)
 
 void setBLEBatteryLevel(uint8_t level)
 {
-    pBatteryCharacteristic->setValue(&level, 1);
-    // pBatteryCharacteristic->notify();
+    pBatteryLevelCharacteristic->setValue(&level, 1);
+    pBatteryLevelCharacteristic->notify();
 }
 
 void parseBLE(char *message)
@@ -162,9 +162,9 @@ void parseBLE(char *message)
     }
 }
 
-void sendBLE(String message, int repeat)
+void sendBLE(String message, uint8_t repeat)
 {
-    for (int i = repeat; i > 0; i--)
+    for (uint8_t i = repeat; i > 0; i--)
     {
         msg = msg + "\r\n" + message + "\r\n" + BLE_TERM_CHAR;
         Log.verboseln("Sending BLE message: %s", message.c_str());
@@ -237,6 +237,7 @@ void parseGB(char *message)
     if (strcmp(notifType, "is_gps_active") == 0)
     {
         sendBLE("{t:\"gps_power\", status: false}");
+        powermgmSendEvent(POWERMGM_BLE_CONNECT);
     }
     else if (strcmp(notifType, "reboot") == 0)
     {

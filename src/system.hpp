@@ -61,17 +61,17 @@ typedef struct
 
         typedef struct
         {
-            float x = 0.0;
-            float y = 0.0;
-            float z = 0.0;
+            double x = 0.0;
+            double y = 0.0;
+            double z = 0.0;
         } GyroInfo;
         GyroInfo gyro;
 
         typedef struct
         {
-            float x = 0.0;
-            float y = 0.0;
-            float z = 0.0;
+            double x = 0.0;
+            double y = 0.0;
+            double z = 0.0;
         } AccelInfo;
         AccelInfo acc;
 
@@ -90,7 +90,7 @@ typedef struct
     {
         bool connected = false;
         String name = "New G-Watch";
-        
+
     } BLEInfo;
     BLEInfo ble;
 
@@ -107,6 +107,22 @@ typedef struct
     USBInfo usb;
 
     bool donotdisturb = false;
+    bool sleeping = false;
+
+    typedef struct
+    {
+        enum Codes
+        {
+            NOW_PLAYING,
+            STOPWATCH,
+            TIMER
+        };
+
+        int shown = 0;
+        String strings[10];
+        String icons[10];
+    } GlanceInfo;
+    GlanceInfo glance;
 
 } SystemInfo;
 

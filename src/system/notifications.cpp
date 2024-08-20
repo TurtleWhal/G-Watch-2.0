@@ -5,26 +5,31 @@
 #include "system.hpp"
 #include "fonts/fonts.hpp"
 
-// Notification_t nullNotif;
-Notification_t notifs[10];
+#define NOTIF_COUNT 10
 
-void pushNotification(Notification_t notif, uint8_t index = 0)
+Notification_t nullnotif;
+Notification_t notifs[NOTIF_COUNT];
+
+uint32_t nowPlayingID;
+
+void pushNotification(Notification_t *notif, uint8_t index = 0)
 {
-    Log.verboseln("Pushing notification with Name: %s, Body: %s, Sender: %s, Tel: %s, Time: %d", notif.title.c_str(), notif.body.c_str(), notif.sender.c_str(), String(notif.tel_number).c_str(), notif.time);
-    for (uint8_t i = 9; i > index; i--)
+    Log.verboseln("Pushing notification with Name: %s, Body: %s, Sender: %s, Tel: %s, Time: %d", notif->title.c_str(), notif->body.c_str(), notif->sender.c_str(), String(notif->tel_number).c_str(), notif->time);
+    for (uint8_t i = NOTIF_COUNT - 1; i > index; i--)
     {
         notifs[i] = notifs[i - 1];
     }
 
-    notifs[index] = notif;
+    notifs[index] = *notif;
 }
 
-Notification_t popNotification(uint8_t index = UINT8_MAX)
+Notification_t popNotification(uint8_t index)
 {
     Log.verboseln("Popping notification with index: %d", index);
+
     if (index == UINT8_MAX)
     {
-        for (uint8_t i = 0; i < 9; i++)
+        for (uint8_t i = 0; i < NOTIF_COUNT; i++)
         {
             if (notifs[i].id)
             {
@@ -35,10 +40,11 @@ Notification_t popNotification(uint8_t index = UINT8_MAX)
     }
 
     Notification_t out = notifs[index];
+    deleteNotification(out.id);
 
-    for (uint8_t i = index; i < 9; i++)
+    for (uint8_t i = index; i < NOTIF_COUNT; i++)
     {
-        notifs[i] = notifs[i + 1];
+        notifs[i] = (i == NOTIF_COUNT - 1) ? nullnotif : notifs[i + 1];
     }
 
     drawNotifs();
@@ -46,9 +52,18 @@ Notification_t popNotification(uint8_t index = UINT8_MAX)
     return out;
 }
 
-Notification_t popNotificationId(uint32_t id) {
-    for (uint8_t i = 0; i < 10; i++) {
-        if (notifs[i].id == id) {
+Notification_t popNotificationId(uint32_t id)
+{
+    if (nowPlayingID == id)
+    {
+        nowPlayingID = 0;
+        sysinfo.glance.strings[sysinfo.glance.NOW_PLAYING] = "";
+        return nullnotif;
+    }
+    for (uint8_t i = 0; i < NOTIF_COUNT; i++)
+    {
+        if (notifs[i].id == id)
+        {
             return popNotification(i);
         }
     }
@@ -60,26 +75,68 @@ void storeNotification(Notification_t *notif)
 {
     Log.verboseln("storing notification with Name: %s, Body: %s, Sender: %s, Tel: %s, Time: %d", notif->title.c_str(), notif->body.c_str(), notif->sender.c_str(), String(notif->tel_number).c_str(), notif->time);
 
-    pushNotification(*notif);
+    displayNotification(notif);
 
-    forEachNotification([](Notification_t *n)
-                        { Serial.println(n->title); });
+    // forEachNotification([](Notification_t *n)
+    //                     { Serial.println(n->title); });
+
+    pushNotification(notif);
 
     drawNotifs();
 }
 
 void forEachNotification(void (*func)(Notification_t *), bool reversed)
 {
-    for (uint8_t i = reversed ? 9 : 0; i < (reversed ? 0 : 9); i++)
+    if (!reversed)
     {
-        if (notifs[i].id)
-            func(&notifs[i]);
+        // Serial.print("ForEach: ");
+        for (uint8_t i = 0; i < NOTIF_COUNT; i++)
+        {
+            // Serial.print(notifs[i].title);
+            // Serial.print(", ");
+            // Serial.print(notifs[i].id);
+            // Serial.print(" | ");
+            if (notifs[i].id)
+                func(&notifs[i]);
+        }
+        // Serial.println();
+    }
+    else
+    {
+        // Serial.print("ForEach Reverse: ");
+        for (uint8_t i = NOTIF_COUNT; i > 0; i--)
+        {
+            // Serial.print(notifs[i - 1].title);
+            // Serial.print(", ");
+            // Serial.print(notifs[i - 1].id);
+            // Serial.print(" | ");
+            if (notifs[i - 1].id)
+                func(&notifs[i - 1]);
+        }
+        // Serial.println();
     }
 }
 
 void handleNotification(String title, String subject, String body, String sender, String tel, String src, int id, bool reply)
 {
     Log.verboseln("Recieved Notification, Title: %s, Subject: %s, Body: %s, Sender: %s, Tel: %s, Src: %s, Id: %d", title.c_str(), subject.c_str(), body.c_str(), sender.c_str(), tel.c_str(), src.c_str(), id);
+
+    if (strcmp(src.c_str(), "Android System Intelligence") == 0) // Check for Now Playing Notification
+    {
+        char nowPlayingTitle[64];
+        char nowPlayingArtist[64];
+        sscanf(title.c_str(), "%s by %s", nowPlayingTitle, nowPlayingArtist);
+
+        char nowPlaying[132]; // 64 + 64 + " • " + null
+        sprintf(nowPlaying, "%s • %s", nowPlayingTitle, nowPlayingArtist);
+        sysinfo.glance.strings[sysinfo.glance.NOW_PLAYING] = nowPlaying;
+        sysinfo.glance.icons[sysinfo.glance.NOW_PLAYING] = FA_MUSIC_NOTE;
+        // Log.verboseln("Recieved Now Playing, \"%s\", id: %d", nowPlaying, nowPlayingID);
+        Log.verboseln("Recieved Now Playing, Artist: %s, Song: %s, id: %d", nowPlayingArtist, nowPlayingTitle, nowPlayingID);
+
+        nowPlayingID = id;
+        return;
+    }
 
     Notification_t *notif = new Notification_t();
     notif->title = (title != "") ? title : "Notification";

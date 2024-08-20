@@ -3,11 +3,12 @@
     "symbols": [
         {"name": "play",            "hex": "f04b", "sizes": [40, 32]},
         {"name": "pause",           "hex": "f04c", "sizes": [40, 32]},
+        {"name": "brightness",      "hex": "e0c9", "sizes": [40]},
+        {"name": "brightness low",  "hex": "e0ca", "sizes": [40]},
+        {"name": "flashlight",      "hex": "f8b8", "sizes": [32]},
         {"name": "step forward",    "hex": "f051", "sizes": [32]},
         {"name": "step backward",   "hex": "f048", "sizes": [32]},
         {"name": "reset",           "hex": "f2f1", "sizes": [32]},
-        {"name": "brightness",      "hex": "e0c9", "sizes": [32]},
-        {"name": "brightness low",  "hex": "e0ca", "sizes": [32]},
         {"name": "arrow right",     "hex": "f061", "sizes": [32]},
         {"name": "chevron up",      "hex": "f077", "sizes": [20]},
         {"name": "ok",              "hex": "f00c", "sizes": [20]},
@@ -21,11 +22,15 @@
         {"name": "battery 1",       "hex": "f243", "sizes": [14]},
         {"name": "battery empty",   "hex": "f244", "sizes": [14]},
         {"name": "steps",           "hex": "f54b", "sizes": [14]},
-        {"name": "bluetooth",       "hex": "f294", "sizes": [14], "brand":true},
+        {"name": "bluetooth",       "hex": "f294", "sizes": [14, 32], "brand":true},
         {"name": "usb",             "hex": "f287", "sizes": [14], "brand":true},
         {"name": "wifi",            "hex": "f1eb", "sizes": [14], "brand":true},
         {"name": "envelope",        "hex": "f0e0", "sizes": [14]},
         {"name": "point",           "hex": "e122", "sizes": [14]},
+        {"name": "do not disturb",  "hex": "f056", "sizes": [14, 32]},
+        {"name": "timer",           "hex": "f254", "sizes": [16]},
+        {"name": "stopwatch",       "hex": "f2f2", "sizes": [16]},
+        {"name": "music note",      "hex": "f8cf", "sizes": [16]},
         
         {"name": "bell",            "hex": "f0f3", "sizes": [14, 40]},
         {"name": "discord",         "hex": "f392", "sizes": [14, 40], "brand":true},
@@ -37,8 +42,9 @@
 
     ],
     "fonts": [
-        {"font":"Outfit.ttf", "size": [8, 16, 20, 32], "range":"default", "symbols":"", "bpp":4},
-        {"font":"Outfit.ttf", "size": [46], "range":"", "symbols":"0123456789:", "bpp":4},
-        {"font":"Outfit-Light.ttf", "size": [80], "range":"", "symbols":"0123456789:", "bpp":4}
+        {"font":"Outfit.ttf",       "size": [8, 16, 20, 32], "range":"default", "symbols":"•™",           "bpp":4},
+        {"font":"Outfit.ttf",       "size": [46],            "range":"",        "symbols":"0123456789: ", "bpp":4},
+        {"font":"Outfit-Light.ttf", "size": [80],            "range":"",        "symbols":"0123456789: ", "bpp":4},
+        {"font":"OpenSans.ttf",     "size": [80],            "range":"",        "symbols":"0123456789: ", "bpp":4}
     ]
 }

@@ -22,9 +22,12 @@ lv_obj_t *scrollbar;
 
 uint32_t notifmillis = 0;
 bool notifshowing = false;
+bool original = true;
 
-void showNotification(Notification_t *data)
+void showNotification(Notification_t *data, bool o)
 {
+    original = o;
+
     if (notifshowing)
         storeNotification(&notif);
 
@@ -34,7 +37,7 @@ void showNotification(Notification_t *data)
     lv_label_set_text(title, data->title.c_str());
     lv_label_set_text(body, data->body.c_str());
 
-    setScreen(notifscr);
+    setScreen(notifscr, LV_SCR_LOAD_ANIM_NONE);
 
     lv_obj_scroll_to_y(notifscr, 0, LV_ANIM_ON);
     lv_obj_send_event(notifscr, LV_EVENT_SCROLL, scrollbar);
@@ -63,7 +66,7 @@ void showNotification(Notification_t *data)
 
 bool notifperiodic(EventBits_t event, void *arg)
 {
-    if (!notifshowing)
+    if (!notifshowing || !original)
         return true;
     // if (ON_CURRENT_SCREEN(notifx, notify))
     // {
@@ -78,7 +81,9 @@ bool notifperiodic(EventBits_t event, void *arg)
         Log.verboseln("hiding notification with Name: %s, Body: %s, Sender: %s, Tel: %s, Time: %d", notif.title.c_str(), notif.body.c_str(), notif.sender.c_str(), String(notif.tel_number).c_str(), notif.time);
 
         storeNotification(&notif);
-        setScreen(nullptr, LV_SCR_LOAD_ANIM_FADE_OUT);
+
+        // setScreen(nullptr, LV_SCR_LOAD_ANIM_FADE_OUT);
+        setScreen(nullptr, LV_SCR_LOAD_ANIM_NONE);
         notifshowing = false;
     }
     // else
@@ -105,16 +110,20 @@ bool notifcreate(EventBits_t event, void *arg)
                             lv_dir_t direction = lv_indev_get_gesture_dir(lv_indev_active());
                             if (direction == LV_DIR_LEFT)
                             {
-                                storeNotification(&notif);
+                                if (original)
+                                    storeNotification(&notif);
+
                                 notifmillis = -1;
                                 notifshowing = false;
-                                setScreen(nullptr);
+                                setScreen(nullptr, LV_SCR_LOAD_ANIM_NONE);
                             }
                             else if (direction == LV_DIR_RIGHT)
                             {
-                                sendBLEf("{t:\"notify\", n:\"DISMISS\", id:%i}", notif.id);
+                                if (original)
+                                    sendBLEf("{t:\"notify\", n:\"DISMISS\", id:%i}", notif.id);
+
                                 notifshowing = false;
-                                setScreen(nullptr);
+                                setScreen(nullptr, LV_SCR_LOAD_ANIM_NONE);
                             } }, LV_EVENT_GESTURE, nullptr);
 
     // lv_obj_add_event_cb(notifscr, [](lv_event_t *e)

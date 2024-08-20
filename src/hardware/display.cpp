@@ -2,6 +2,7 @@
 #include "TFT_eSPI.h"
 #include "CST816S.h"
 #include "lvgl.h"
+#include "system.hpp"
 #include "display.hpp"
 #include "fonts/fonts.hpp"
 
@@ -27,14 +28,6 @@ void my_flush_cb(lv_display_t *disp, const lv_area_t *area, void *px_map)
     tft.pushImageDMA(area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1), buf16);
     tft.endWrite();
 
-    // for (int j = area->y1; j < area->y2; j++)
-    // {
-    //     for (int i = area->x1; i < area->x2; i++)
-    //     {
-    //         Serial.print(buf16[1]);
-    //     }
-    // }
-
     lv_display_flush_ready(disp);
 }
 
@@ -43,9 +36,16 @@ void my_input_read(lv_indev_t *indev, lv_indev_data_t *data)
     static uint16_t last_x = 0;
     static uint16_t last_y = 0;
     static bool touching = false;
+    static bool ignore = false; // ignore touch if waking up screen
 
     if (touch.available())
     {
+        // if (ignore)
+        //     return;
+
+        // if (sysinfo.sleeping)
+        //     ignore = true;
+
         if (!touching)
             Log.verboseln("Screen Touched at: %d, %d", touch.data.x, touch.data.y);
 
@@ -60,6 +60,7 @@ void my_input_read(lv_indev_t *indev, lv_indev_data_t *data)
     else
     {
         touching = false;
+        ignore = false;
         data->state = LV_INDEV_STATE_REL;
     }
     data->point.x = last_x;
@@ -186,6 +187,7 @@ bool displayInit(EventBits_t event, void *arg)
 
     // Init Touch
     touch.begin();
+    // delay(1000);
 
     indev = lv_indev_create();
     lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
@@ -244,4 +246,4 @@ void setRotation(lv_display_rotation_t rotation)
 
 int16_t getBacklight() { return bgval; }
 
-bool displaysetup = powermgmRegisterCBPrio(displayInit, POWERMGM_INIT, "ExampleFunc", CALL_CB_MIDDLE);
+bool displaysetup = powermgmRegisterCBPrio(displayInit, POWERMGM_INIT, "ExampleFunc", CALL_CB_FIRST);

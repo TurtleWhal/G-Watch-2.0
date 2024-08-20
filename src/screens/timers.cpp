@@ -80,10 +80,38 @@ bool timerperiodic(EventBits_t event, void *arg)
     }
 
     if (stopwatchrunning)
+    {
         stopwatchmillis += diff;
 
+        char stop[8];
+        if (timermillis >= 3600000)
+            sprintf(stop, "%i:%02i", (uint8_t)(stopwatchmillis / 3600000), (uint8_t)((stopwatchmillis % 3600000) / 60000));
+        else
+            sprintf(stop, "%i:%02i", (uint8_t)((stopwatchmillis % 3600000) / 60000), (uint8_t)((stopwatchmillis % 60000) / 1000));
+        sysinfo.glance.strings[sysinfo.glance.STOPWATCH] = stop;
+        sysinfo.glance.icons[sysinfo.glance.STOPWATCH] = FA_STOPWATCH;
+    }
+    else
+    {
+        sysinfo.glance.strings[sysinfo.glance.STOPWATCH] = "";
+    }
+
     if (timerrunning)
+    {
         timermillis -= diff;
+
+        char timer[8];
+        if (timermillis >= 3600000)
+            sprintf(timer, "%i:%02i", (uint8_t)(timermillis / 3600000), (uint8_t)((timermillis % 3600000) / 60000));
+        else
+            sprintf(timer, "%i:%02i", (uint8_t)((timermillis % 3600000) / 60000), (uint8_t)((timermillis % 60000) / 1000));
+        sysinfo.glance.strings[sysinfo.glance.TIMER] = timer;
+        sysinfo.glance.icons[sysinfo.glance.TIMER] = FA_TIMER;
+    }
+    else
+    {
+        sysinfo.glance.strings[sysinfo.glance.TIMER] = "";
+    }
 
     if (ON_CURRENT_SCREEN(timerx, timery))
     {
@@ -101,19 +129,19 @@ bool timerperiodic(EventBits_t event, void *arg)
             {
                 writeTimerTime(timermillis);
             }
-
-            if (timermillis > ULONG_MAX - 1000)
-            {
-                powermgmTickle();
-                writeTimerTime(0);
-                timerrunning = false;
-                motorVibrate(30, 1000);
-                SET_SYMBOL_32(timerplaylbl, FA_PLAY);
-
-                showAlert("Alarm", []()
-                          { motorVibrate(0, 0); });
-            }
         }
+    }
+    
+    if (timerrunning && timermillis > ULONG_MAX - 1000)
+    {
+        powermgmTickle();
+        writeTimerTime(0);
+        timerrunning = false;
+        motorVibrate(30, 1000);
+        SET_SYMBOL_32(timerplaylbl, FA_PLAY);
+
+        showAlert("Alarm", []()
+                  { motorVibrate(0, 0); });
     }
 
     return true;

@@ -27,12 +27,16 @@ void updateMusicInfo(MusicInfo_t *info)
     musicState->artist = info->artist;
     musicState->album = info->album;
     musicState->length = info->length;
+
+    powermgmSendEvent(POWERMGM_MUSIC_UPDATE);
 }
 
 void updateMusicState(MusicInfo_t *info)
 {
     musicState->playing = info->playing;
     musicState->position = info->position;
+    
+    powermgmSendEvent(POWERMGM_MUSIC_UPDATE);
 }
 
 bool musicInit(EventBits_t event, void *arg)
@@ -74,8 +78,6 @@ void musicplaypause(lv_event_t *e)
         sendBLE("{t:\"music\", n:\"play\"}", 2);
     }
     musicState->playing = !musicState->playing;
-
-    powermgmSendEvent(POWERMGM_MUSIC_UPDATE);
 }
 
 void musicnext(lv_event_t *e)

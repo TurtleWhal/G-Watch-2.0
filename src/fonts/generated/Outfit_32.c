@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Size: 32 px
  * Bpp: 4
- * Opts: --size 32 --bpp 4 --format lvgl --font files/Outfit.ttf --output C:\Users\garre\OneDrive\Documents\GitHub\G-Watch-2.0\src\fonts\generated/Outfit_32.c --no-compress --range 0x20-0x7F
+ * Opts: --size 32 --bpp 4 --format lvgl --font files/Outfit.ttf --output /Users/gj0987888/Documents/GitHub/G-Watch-2.0/src/fonts/generated/Outfit_32.c --no-compress --range 0x20-0x7F --symbols •™
  ******************************************************************************/
 
 #ifdef LV_LVGL_H_INCLUDE_SIMPLE
@@ -2060,7 +2060,32 @@ static LV_ATTRIBUTE_LARGE_CONST const uint8_t glyph_bitmap[] = {
     0x0, 0x5c, 0xff, 0xd8, 0x30, 0x0, 0x76, 0x0,
     0x8f, 0xff, 0xff, 0xff, 0xed, 0xff, 0xf5, 0x1e,
     0xff, 0xdd, 0xff, 0xff, 0xff, 0xfd, 0x10, 0x29,
-    0x10, 0x0, 0x5a, 0xef, 0xe8, 0x0
+    0x10, 0x0, 0x5a, 0xef, 0xe8, 0x0,
+
+    /* U+2022 "•" */
+    0x6, 0xef, 0xb2, 0x5, 0xff, 0xff, 0xd0, 0xcf,
+    0xff, 0xff, 0x4d, 0xff, 0xff, 0xf5, 0x9f, 0xff,
+    0xff, 0x21, 0xdf, 0xff, 0x80, 0x0, 0x57, 0x30,
+    0x0,
+
+    /* U+2122 "™" */
+    0x2, 0x22, 0x22, 0x22, 0x22, 0x11, 0x0, 0x0,
+    0x0, 0x0, 0x11, 0x3f, 0xff, 0xff, 0xff, 0xfd,
+    0x7e, 0x10, 0x0, 0x0, 0x1, 0xf6, 0x3, 0x33,
+    0x8f, 0x33, 0x32, 0x7f, 0xa0, 0x0, 0x0, 0xa,
+    0xf6, 0x0, 0x0, 0x7f, 0x0, 0x0, 0x7f, 0xf4,
+    0x0, 0x0, 0x4f, 0xf6, 0x0, 0x0, 0x7f, 0x0,
+    0x0, 0x7f, 0xbd, 0x0, 0x0, 0xdc, 0xf6, 0x0,
+    0x0, 0x7f, 0x0, 0x0, 0x7f, 0x2f, 0x70, 0x7,
+    0xf3, 0xf6, 0x0, 0x0, 0x7f, 0x0, 0x0, 0x7f,
+    0x17, 0xf2, 0x2f, 0x71, 0xf6, 0x0, 0x0, 0x7f,
+    0x0, 0x0, 0x7f, 0x10, 0xdb, 0xbd, 0x1, 0xf6,
+    0x0, 0x0, 0x7f, 0x0, 0x0, 0x7f, 0x10, 0x4f,
+    0xf4, 0x1, 0xf6, 0x0, 0x0, 0x7f, 0x0, 0x0,
+    0x7f, 0x10, 0x8, 0x80, 0x1, 0xf6, 0x0, 0x0,
+    0x7f, 0x0, 0x0, 0x7f, 0x10, 0x0, 0x0, 0x1,
+    0xf6, 0x0, 0x0, 0x6f, 0x0, 0x0, 0x6f, 0x0,
+    0x0, 0x0, 0x1, 0xf6
 };
 
 
@@ -2164,14 +2189,18 @@ static const lv_font_fmt_txt_glyph_dsc_t glyph_dsc[] = {
     {.bitmap_index = 14216, .adv_w = 165, .box_w = 10, .box_h = 27, .ofs_x = 0, .ofs_y = -3},
     {.bitmap_index = 14351, .adv_w = 142, .box_w = 3, .box_h = 30, .ofs_x = 3, .ofs_y = -4},
     {.bitmap_index = 14396, .adv_w = 165, .box_w = 9, .box_h = 27, .ofs_x = 1, .ofs_y = -3},
-    {.bitmap_index = 14518, .adv_w = 278, .box_w = 15, .box_h = 4, .ofs_x = 1, .ofs_y = 9}
+    {.bitmap_index = 14518, .adv_w = 278, .box_w = 15, .box_h = 4, .ofs_x = 1, .ofs_y = 9},
+    {.bitmap_index = 14548, .adv_w = 169, .box_w = 7, .box_h = 7, .ofs_x = 2, .ofs_y = 9},
+    {.bitmap_index = 14573, .adv_w = 355, .box_w = 22, .box_h = 12, .ofs_x = 0, .ofs_y = 10}
 };
 
 /*---------------------
  *  CHARACTER MAPPING
  *--------------------*/
 
-
+static const uint16_t unicode_list_1[] = {
+    0x0, 0x100
+};
 
 /*Collect the unicode lists and glyph_id offsets*/
 static const lv_font_fmt_txt_cmap_t cmaps[] =
@@ -2179,6 +2208,10 @@ static const lv_font_fmt_txt_cmap_t cmaps[] =
     {
         .range_start = 32, .range_length = 95, .glyph_id_start = 1,
         .unicode_list = NULL, .glyph_id_ofs_list = NULL, .list_length = 0, .type = LV_FONT_FMT_TXT_CMAP_FORMAT0_TINY
+    },
+    {
+        .range_start = 8226, .range_length = 257, .glyph_id_start = 96,
+        .unicode_list = unicode_list_1, .glyph_id_ofs_list = NULL, .list_length = 2, .type = LV_FONT_FMT_TXT_CMAP_SPARSE_TINY
     }
 };
 
@@ -2201,7 +2234,8 @@ static const uint8_t kern_left_class_mapping[] =
     0, 0, 42, 19, 43, 0, 44, 45,
     46, 47, 48, 49, 50, 0, 47, 47,
     19, 19, 51, 52, 53, 54, 55, 56,
-    57, 58, 59, 60, 61, 26, 0, 0
+    57, 58, 59, 60, 61, 26, 0, 0,
+    0, 0
 };
 
 /*Map glyph_ids to kern right classes*/
@@ -2218,7 +2252,8 @@ static const uint8_t kern_right_class_mapping[] =
     0, 0, 21, 35, 21, 21, 21, 36,
     21, 37, 38, 39, 37, 37, 40, 40,
     41, 40, 21, 40, 42, 36, 43, 44,
-    45, 46, 47, 48, 0, 23, 49, 0
+    45, 46, 47, 48, 0, 23, 49, 0,
+    0, 0
 };
 
 /*Kern values between classes*/
@@ -2627,7 +2662,7 @@ static lv_font_fmt_txt_dsc_t font_dsc = {
     .cmaps = cmaps,
     .kern_dsc = &kern_classes,
     .kern_scale = 16,
-    .cmap_num = 1,
+    .cmap_num = 2,
     .bpp = 4,
     .kern_classes = 1,
     .bitmap_format = 0,

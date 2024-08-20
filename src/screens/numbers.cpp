@@ -10,8 +10,8 @@
 #include "notification.hpp"
 
 #define RADIAL_COORDS(angle, radius) (cos((DEG_TO_RAD) * (angle)) * (radius)), (sin((DEG_TO_RAD) * (angle)) * (radius))
-#define ICON_SPACING 18
-#define ICON_COUNT 10
+#define ICON_SPACING 10
+#define ICON_COUNT 6
 
 void nullCallback(uint8_t arcid) {}
 
@@ -31,11 +31,16 @@ lv_obj_t *numberscr;
 lv_obj_t *hour;
 lv_obj_t *minute;
 lv_obj_t *date;
+lv_obj_t *info;
+lv_obj_t *infoicon;
 
 InfoArc_t arcs[3];
 uint8_t arcsize = 55;
 
-lv_obj_t *infoicons[ICON_COUNT * 2] = {nullptr};
+// lv_obj_t *infoicons[ICON_COUNT * 2] = {nullptr};
+lv_obj_t *iconobjs[ICON_COUNT] = {nullptr};
+// char *icons[ICON_COUNT];
+char *icons[ICON_COUNT] = {FA_GADGETBRIDGE, FA_GADGETBRIDGE, FA_GADGETBRIDGE, FA_GADGETBRIDGE, FA_GADGETBRIDGE, FA_GADGETBRIDGE};
 bool iconschanged = false;
 
 int8_t numberx = 0, numbery = 0;
@@ -135,34 +140,6 @@ void batteryCallback(uint8_t arcid)
     }
 }
 
-void createInfoIcon(char *symbol, uint8_t index = UINT8_MAX)
-{
-    if (index == UINT8_MAX)
-    {
-        for (int8_t i = 0; i < ICON_COUNT; i++)
-        {
-            if (infoicons[i] == nullptr)
-            {
-                index = i;
-                break;
-            }
-        }
-    }
-
-    if (index == UINT8_MAX)
-        index = 0;
-
-    if (index >= ICON_COUNT)
-        return;
-
-    lv_obj_t *icon = lv_label_create(numberscr);
-    SET_SYMBOL_14(icon, symbol);
-
-    infoicons[index] = icon;
-
-    iconschanged = true;
-}
-
 bool numbersLoad(EventBits_t event, void *arg)
 {
 
@@ -202,49 +179,53 @@ bool numbersperiodic(EventBits_t event, void *arg)
         static uint8_t lastsec = -1;
         if (lastsec != sysinfo.time.second)
         {
-            if (sysinfo.ble.connected)
-                lv_obj_remove_flag(infoicons[0], LV_OBJ_FLAG_HIDDEN);
-            else
-                lv_obj_add_flag(infoicons[0], LV_OBJ_FLAG_HIDDEN);
-
-            if (sysinfo.wifi.connected)
-                lv_obj_remove_flag(infoicons[1], LV_OBJ_FLAG_HIDDEN);
-            else
-                lv_obj_add_flag(infoicons[1], LV_OBJ_FLAG_HIDDEN);
+            for (uint8_t i = 0; i < ICON_COUNT; i++)
+                icons[i] = nullptr;
 
             notificonidx = 0;
-            // forEachNotification(
-            //     [](Notification_t *notif)
-            //     {
-            //         if (notificonidx == ICON_COUNT - 1)
-            //             return;
 
-            //         createInfoIcon((char *)notif->icon.c_str(), 5 + notificonidx);
-            //         notificonidx++;
+            if (sysinfo.ble.connected)
+                icons[notificonidx++] = FA_BLUETOOTH;
 
-            //         if (notificonidx == ICON_COUNT - 1)
-            //             createInfoIcon(FA_POINT, ICON_COUNT - 1);
-            //     },
-            //     true);
+            if (sysinfo.wifi.connected)
+                icons[notificonidx++] = FA_WIFI;
 
-            for (int i = 5; i < 10; i++)
-            {
-                infoicons[i] = nullptr;
-            }
+            if (sysinfo.donotdisturb)
+                icons[notificonidx++] = FA_DO_NOT_DISTURB;
 
             forEachNotification([](Notification_t *notif)
                                 {
                                     if (notificonidx >= ICON_COUNT)
                                     {
-                                        createInfoIcon(FA_POINT, ICON_COUNT - 1);
+                                        icons[ICON_COUNT - 1] = FA_POINT;
                                         return;
                                     }
 
-                                    createInfoIcon((char *)notif->icon.c_str(), 5 + notificonidx);
-                                    notificonidx++;
-                                });
+                                    icons[notificonidx] = (char *)notif->icon.c_str();
+                                    notificonidx++; },
+                                true);
 
             iconschanged = true;
+
+            if (lastsec % 20 == 0)
+            {
+                uint8_t i = 0;
+                do
+                {
+                    sysinfo.glance.shown = (sysinfo.glance.shown + 1) % 10;
+
+                    if (i++ > 10)
+                        break;
+                } while (!strcmp(sysinfo.glance.strings[sysinfo.glance.shown].c_str(), ""));
+            }
+
+            String t = sysinfo.glance.strings[sysinfo.glance.shown];
+            if (strcmp(lv_label_get_text(info), t.c_str()))
+            {
+                lv_label_set_text(info, t.c_str());
+                SET_SYMBOL_16(infoicon, t == "" ? t.c_str() : sysinfo.glance.icons[sysinfo.glance.shown].c_str());
+            }
+
             lastsec = sysinfo.time.second;
         }
 
@@ -255,20 +236,25 @@ bool numbersperiodic(EventBits_t event, void *arg)
         if (iconschanged)
         {
             uint8_t infoiconcount = 0;
+
             for (uint8_t i = 0; i < ICON_COUNT; i++)
-                if (infoicons[i] != nullptr && lv_obj_has_flag(infoicons[i], LV_OBJ_FLAG_HIDDEN) == false)
+                if (icons[i] != nullptr)
                     infoiconcount++;
 
             uint8_t idx = 0;
+
             for (uint8_t i = 0; i < ICON_COUNT; i++)
-                if (infoicons[i] != nullptr && lv_obj_has_flag(infoicons[i], LV_OBJ_FLAG_HIDDEN) == false)
+            {
+                if (icons[i] != nullptr)
                 {
-                    lv_obj_align(infoicons[i], LV_ALIGN_CENTER,
+                    lv_obj_align(iconobjs[idx], LV_ALIGN_CENTER,
                                  RADIAL_COORDS(((90 + ((double)((infoiconcount - 1) * ICON_SPACING) / 2)) - (idx * ICON_SPACING)),
                                                (110)));
-
                     idx++;
                 }
+
+                SET_SYMBOL_14(iconobjs[i], icons[i] == nullptr ? "" : icons[i]);
+            }
 
             iconschanged = false;
         }
@@ -290,6 +276,8 @@ bool numberscreate(EventBits_t event, void *arg)
     lv_obj_align(hour, LV_ALIGN_CENTER, 30, -65);
     lv_obj_align(minute, LV_ALIGN_CENTER, 30, 5);
 
+    // lv_obj_set_style_text_font(hour, &OpenSans_80, 0);
+    // lv_obj_set_style_text_font(minute, &OpenSans_80, 0);
     lv_obj_set_style_text_font(hour, &OutfitLight_80, 0);
     lv_obj_set_style_text_font(minute, &OutfitLight_80, 0);
 
@@ -304,10 +292,33 @@ bool numberscreate(EventBits_t event, void *arg)
     createArc(0, RADIAL_COORDS(210, 80), FA_STEPS, stepsCallback);
     createArc(1, RADIAL_COORDS(150, 80), FA_BATTERY_FULL, batteryCallback);
 
-    createInfoIcon(FA_BLUETOOTH, 0);
-    createInfoIcon(FA_WIFI, 1);
-    // createInfoIcon(FA_USB);
-    // createInfoIcon(FA_POINT);
+    for (uint8_t i = 0; i < ICON_COUNT; i++)
+    {
+        iconobjs[i] = lv_label_create(numberscr);
+        SET_SYMBOL_14(iconobjs[i], "");
+    }
+
+    lv_obj_t *infobox = lv_obj_create(numberscr);
+    lv_obj_set_style_border_opa(infobox, LV_OPA_TRANSP, LV_PART_MAIN);
+    lv_obj_set_style_bg_opa(infobox, LV_OPA_TRANSP, LV_PART_MAIN);
+    lv_obj_set_align(infobox, LV_ALIGN_CENTER);
+    lv_obj_set_size(infobox, 140, 18);
+    lv_obj_set_y(infobox, 80);
+    lv_obj_set_style_pad_all(infobox, 0, LV_PART_MAIN);
+    lv_obj_set_flex_flow(infobox, LV_FLEX_FLOW_ROW);
+    lv_obj_set_flex_align(infobox, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_set_scroll_dir(infobox, LV_DIR_NONE);
+
+    infoicon = lv_label_create(infobox);
+    lv_obj_set_style_text_color(infoicon, lv_color_hex(0xaaaaaa), LV_PART_MAIN);
+    lv_obj_set_style_text_align(infoicon, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN);
+
+    info = lv_label_create(infobox);
+    lv_obj_set_style_text_color(info, lv_color_hex(0xaaaaaa), LV_PART_MAIN);
+    lv_obj_set_style_text_align(info, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN);
+    lv_label_set_long_mode(info, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    lv_obj_set_style_text_font(info, &Outfit_16, LV_PART_MAIN);
+    // lv_obj_set_width(info, 120);
 
     powermgmRegisterCB(numbersperiodic, POWERMGM_LOOP_AWAKE, "numbersscreenperiodic");
     powermgmRegisterCB(numbersLoad, POWERMGM_SCREEN_CHANGE, "numbersscreenload");

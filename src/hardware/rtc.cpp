@@ -80,4 +80,4 @@ void setTime(ulong timevalue, short timezone)
 #endif // LILYGO_TWATCH_2021
 }
 
-bool rtcsetup = powermgmRegisterCBPrio(rtcInit, POWERMGM_INIT, "RTCInit", CALL_CB_FIRST);
+bool rtcsetup = powermgmRegisterCBPrio(rtcInit, POWERMGM_INIT, "RTCInit", CALL_CB_MIDDLE);

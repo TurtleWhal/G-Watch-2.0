@@ -14,7 +14,10 @@ enum SettingType
 {
     SETTING_TYPE_SWITCH,
     SETTING_TYPE_TEXT,
-    SETTING_TYPE_NUMBER
+    SETTING_TYPE_NUMBER,
+    SETTING_TYPE_BUTTON,
+    SETTING_TYPE_ICON_BUTTON,
+    SETTING_TYPE_ICON_BUTTON_GROUP
 };
 
 void nullFuncObj(lv_obj_t *e) {}
@@ -99,6 +102,49 @@ lv_obj_t *createSetting(Setting_t *data)
         attachKeyboard(number, KEYBOARD_CHARS_NUMBERS);
         break;
     }
+    case SETTING_TYPE_BUTTON:
+    {
+        lv_obj_set_style_border_opa(setting, LV_OPA_TRANSP, LV_PART_MAIN);
+        lv_obj_set_style_bg_color(setting, lv_theme_get_color_primary(setting), LV_PART_MAIN);
+        lv_obj_add_event_cb(setting, data->onchange, LV_EVENT_CLICKED, NULL);
+
+        lv_obj_center(title);
+        return setting;
+    }
+    case SETTING_TYPE_ICON_BUTTON:
+    {
+        lv_obj_set_size(setting, 50, 50);
+        lv_obj_set_style_radius(setting, 25, LV_PART_MAIN);
+
+        lv_obj_set_style_border_opa(setting, LV_OPA_TRANSP, LV_PART_MAIN);
+        lv_obj_set_style_bg_color(setting, lv_theme_get_color_primary(setting), LV_PART_MAIN);
+        lv_obj_set_style_bg_color(setting, lv_color_make(255, 80, 80), LV_PART_MAIN | LV_STATE_CHECKED);
+        lv_obj_add_flag(setting, LV_OBJ_FLAG_CHECKABLE);
+        lv_obj_add_event_cb(setting, data->onchange, LV_EVENT_CLICKED, NULL);
+
+        lv_obj_center(title);
+        SET_SYMBOL_32(title, data->title.c_str());
+
+        data->init(setting);
+
+        return setting;
+    }
+    case SETTING_TYPE_ICON_BUTTON_GROUP:
+    {
+        lv_obj_set_height(setting, 50);
+        lv_obj_set_style_border_opa(setting, LV_OPA_TRANSP, LV_PART_MAIN);
+        lv_obj_set_style_bg_opa(setting, LV_OPA_TRANSP, LV_PART_MAIN);
+
+        lv_obj_set_flex_flow(setting, LV_FLEX_FLOW_ROW);
+        lv_obj_set_flex_align(setting, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_SPACE_BETWEEN);
+
+        lv_obj_set_style_pad_all(setting, 0, LV_PART_MAIN);
+        lv_obj_delete(title);
+
+        data->init(setting);
+
+        return setting;
+    }
     default:
         return setting;
         break;
@@ -177,17 +223,54 @@ bool settingsscreate(EventBits_t event, void *arg)
     lv_obj_set_scroll_dir(settingsscr, LV_DIR_VER);
     createCurvedScrollbar(settingsscr);
 
-    // Setting_t setting1;
-    // setting1.title = "Switch";
-    // setting1.type = SETTING_TYPE_SWITCH;
+    Setting_t group;
+    group.type = SETTING_TYPE_ICON_BUTTON_GROUP;
+    group.init = [](lv_obj_t *obj)
+    {
+        Setting_t dnd;
+        dnd.title = FA_DO_NOT_DISTURB;
+        dnd.type = SETTING_TYPE_ICON_BUTTON;
+        dnd.init = [](lv_obj_t *obj)
+        {
+            lv_obj_set_state(obj, LV_STATE_CHECKED, settings.getBool("dnd", false));
+        };
+        dnd.onchange = [](lv_event_t *e)
+        {
+            settings.putBool("dnd", lv_obj_has_state(lv_event_get_target_obj(e), LV_STATE_CHECKED));
+            sysinfo.donotdisturb = settings.getBool("dnd", false);
+        };
 
-    // Setting_t setting2;
-    // setting2.title = "Text";
-    // setting2.type = SETTING_TYPE_TEXT;
+        Setting_t flash;
+        flash.title = FA_FLASHLIGHT;
+        flash.type = SETTING_TYPE_ICON_BUTTON;
+        flash.onchange = [](lv_event_t *e)
+        {
+            lv_obj_set_state(lv_event_get_target_obj(e), LV_STATE_CHECKED, false);
+            lv_obj_t *scr = lv_obj_create(nullptr);
+            lv_obj_set_style_bg_color(scr, lv_color_white(), LV_PART_MAIN);
+            lv_obj_set_scrollbar_mode(scr, LV_SCROLLBAR_MODE_OFF);
 
-    // Setting_t setting3;
-    // setting3.title = "Number";
-    // setting3.type = SETTING_TYPE_NUMBER;
+            const long pb = getBacklight();
+
+            lv_obj_add_event_cb(scr, [](lv_event_t *e)
+                                {
+                                    Serial.println((long)e->user_data);
+                                    setBacklight((long)e->user_data);
+                                    setScreen(nullptr, LV_SCR_LOAD_ANIM_NONE, 0, true); }, LV_EVENT_CLICKED, (void *)pb);
+
+            setScreen(scr, LV_SCR_LOAD_ANIM_NONE, 0, false);
+            setBacklight(100);
+        };
+
+        Setting_t ble;
+        ble.title = FA_BLUETOOTH;
+        ble.type = SETTING_TYPE_ICON_BUTTON;
+        ble.onchange = [](lv_event_t *e) {};
+
+        lv_obj_set_parent(createSetting(&flash), obj);
+        lv_obj_set_parent(createSetting(&dnd), obj);
+        lv_obj_set_parent(createSetting(&ble), obj);
+    };
 
     Setting_t blename;
     blename.title = "BLE Name";
@@ -202,18 +285,18 @@ bool settingsscreate(EventBits_t event, void *arg)
         settings.putBytes("ble_name", text, strlen(text));
     };
 
-    Setting_t disturb;
-    disturb.title = "Do Not Disturb";
-    disturb.type = SETTING_TYPE_SWITCH;
-    disturb.init = [](lv_obj_t *obj)
-    {
-        lv_obj_set_state(obj, LV_STATE_CHECKED, settings.getBool("dnd", false));
-    };
-    disturb.onchange = [](lv_event_t *e)
-    {
-        settings.putBool("dnd", lv_obj_has_state(lv_event_get_target_obj(e), LV_STATE_CHECKED));
-        sysinfo.donotdisturb = settings.getBool("dnd", false);
-    };
+    // Setting_t disturb;
+    // disturb.title = "Do Not Disturb";
+    // disturb.type = SETTING_TYPE_SWITCH;
+    // disturb.init = [](lv_obj_t *obj)
+    // {
+    //     lv_obj_set_state(obj, LV_STATE_CHECKED, settings.getBool("dnd", false));
+    // };
+    // disturb.onchange = [](lv_event_t *e)
+    // {
+    //     settings.putBool("dnd", lv_obj_has_state(lv_event_get_target_obj(e), LV_STATE_CHECKED));
+    //     sysinfo.donotdisturb = settings.getBool("dnd", false);
+    // };
 
     Setting_t stepgoal;
     stepgoal.title = "Step Goal";
@@ -253,40 +336,42 @@ bool settingsscreate(EventBits_t event, void *arg)
 #endif
     };
 
-    Setting_t flash;
-    flash.title = "Flashlight";
-    flash.type = SETTING_TYPE_SWITCH;
-    flash.init = [](lv_obj_t *obj) {
-    };
-    flash.onchange = [](lv_event_t *e)
-    {
-        lv_obj_t *scr = lv_obj_create(nullptr);
-        lv_obj_set_style_bg_color(scr, lv_color_white(), LV_PART_MAIN);
-        lv_obj_set_scrollbar_mode(scr, LV_SCROLLBAR_MODE_OFF);
+    // Setting_t flash;
+    // flash.title = "Flashlight";
+    // flash.type = SETTING_TYPE_SWITCH;
+    // flash.onchange = [](lv_event_t *e)
+    // {
+    //     lv_obj_t *scr = lv_obj_create(nullptr);
+    //     lv_obj_set_style_bg_color(scr, lv_color_white(), LV_PART_MAIN);
+    //     lv_obj_set_scrollbar_mode(scr, LV_SCROLLBAR_MODE_OFF);
 
-        const uint16_t pb = getBacklight();
+    //     const long pb = getBacklight();
 
-        lv_obj_add_event_cb(scr, [](lv_event_t *e)
-                            {
-                                Serial.println((long)e->user_data);
-                                setBacklight((long)e->user_data);
-                                setScreen(nullptr, LV_SCR_LOAD_ANIM_NONE, 0, true);
-                            },
-                            LV_EVENT_CLICKED, (void *)pb);
+    //     lv_obj_add_event_cb(scr, [](lv_event_t *e)
+    //                         {
+    //                             Serial.println((long)e->user_data);
+    //                             setBacklight((long)e->user_data);
+    //                             setScreen(nullptr, LV_SCR_LOAD_ANIM_NONE, 0, true); }, LV_EVENT_CLICKED, (void *)pb);
 
-        setScreen(scr, LV_SCR_LOAD_ANIM_NONE, 0, false);
-        setBacklight(100);
-    };
+    //     setScreen(scr, LV_SCR_LOAD_ANIM_NONE, 0, false);
+    //     setBacklight(100);
+    // };
+
+    Setting_t rst;
+    rst.title = "Reboot";
+    rst.type = SETTING_TYPE_BUTTON;
+    rst.onchange = [](lv_event_t *e)
+    { ESP.restart(); };
 
     bright = lv_slider_create(settingsscr);
-    lv_obj_set_size(bright, 180, 40);
+    lv_obj_set_size(bright, 180, 50);
     lv_obj_set_style_bg_opa(bright, LV_OPA_TRANSP, LV_PART_KNOB);
 
-    lv_slider_set_range(bright, -40 / 1.4, 100);
+    lv_slider_set_range(bright, -44 / 1.4, 100);
     lv_obj_add_flag(bright, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
 
     lv_obj_t *brightlabel = lv_label_create(bright);
-    SET_SYMBOL_32(brightlabel, FA_BRIGHTNESS);
+    SET_SYMBOL_40(brightlabel, FA_BRIGHTNESS);
     lv_obj_align(brightlabel, LV_ALIGN_LEFT_MID, 4, 0);
     lv_obj_set_style_text_color(brightlabel, lv_color_white(), LV_PART_MAIN);
 
@@ -296,33 +381,27 @@ bool settingsscreate(EventBits_t event, void *arg)
                                 lv_slider_set_value(lv_event_get_target_obj(e), 1, LV_ANIM_OFF);
 
                             setBacklight(lv_slider_get_value(lv_event_get_target_obj(e)));
-                            lv_obj_set_x((lv_obj_t *)e->user_data, (lv_slider_get_value(lv_event_get_target_obj(e)) * 1.4) + 4);
+                            lv_obj_set_x((lv_obj_t *)e->user_data, (lv_slider_get_value(lv_event_get_target_obj(e)) * 1.4) - 4);
 
                             if (lv_slider_get_value(lv_event_get_target_obj(e)) < 50)
                             {
-                                SET_SYMBOL_32((lv_obj_t *)lv_event_get_user_data(e), FA_BRIGHTNESS_LOW);
+                                SET_SYMBOL_40((lv_obj_t *)lv_event_get_user_data(e), FA_BRIGHTNESS_LOW);
                             }
                             else
                             {
-                                SET_SYMBOL_32((lv_obj_t *)lv_event_get_user_data(e), FA_BRIGHTNESS);
+                                SET_SYMBOL_40((lv_obj_t *)lv_event_get_user_data(e), FA_BRIGHTNESS);
                             } }, LV_EVENT_VALUE_CHANGED, brightlabel);
 
     lv_slider_set_value(bright, 100, LV_ANIM_OFF);
     lv_obj_send_event(bright, LV_EVENT_VALUE_CHANGED, NULL);
 
+    createSetting(&group);
     createSetting(&stepgoal);
-    createSetting(&disturb);
-    createSetting(&flash);
+    // createSetting(&disturb);
+    // createSetting(&flash);
     createSetting(&flipscr);
     createSetting(&blename);
-
-    lv_obj_t *ota = lv_button_create(settingsscr);
-    lv_obj_set_size(ota, 180, 40);
-    lv_obj_set_style_radius(ota, 20, LV_PART_MAIN);
-    lv_obj_t *otatext = lv_label_create(ota);
-    lv_label_set_text(otatext, "Start OTA");
-    lv_obj_add_flag(ota, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
-    lv_obj_center(otatext);
+    createSetting(&rst);
 
     uptime = lv_label_create(settingsscr);
     lv_obj_t *compdate = lv_label_create(settingsscr);

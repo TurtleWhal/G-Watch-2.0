@@ -58,7 +58,7 @@ void checkPower()
             while (storage.isKey(("d_data_" + String(points)).c_str()))
                 points++;
 
-            for (int i = 0; i < QCM_POINTS; i++)
+            for (uint8_t i = 0; i < QCM_POINTS; i++)
                 storage.putFloat(("qcmd" + String(i)).c_str(), storage.getFloat(("d_data_" + String((points / QCM_POINTS) * i)).c_str()));
         }
 
@@ -179,7 +179,7 @@ bool powerPeriodic(EventBits_t event, void *arg)
             while (storage.isKey(("c_data_" + String(points)).c_str()))
                 points++;
 
-            for (int i = 0; i < QCM_POINTS; i++)
+            for (uint8_t i = 0; i < QCM_POINTS; i++)
                 storage.putFloat(("qcmc" + String(i)).c_str(), storage.getFloat(("c_data_" + String((points / QCM_POINTS) * i)).c_str()));
         }
 
@@ -226,14 +226,14 @@ bool powerInit(EventBits_t event, void *arg)
     if (storage.isKey("qcmd0"))
     {
         // Qcm[0] = {storage.getFloat("qcmd0"), storage.getFloat("qcmd1"), storage.getFloat("qcmd2"), storage.getFloat("qcmd3"), storage.getFloat("qcmd4"), storage.getFloat("qcmd5"), storage.getFloat("qcmd6"), storage.getFloat("qcmd7"), storage.getFloat("qcmd8"), storage.getFloat("qcmd9")};
-        for (int i = 0; i < QCM_POINTS; i++)
+        for (uint8_t i = 0; i < QCM_POINTS; i++)
             Qcm[0][i] = storage.getFloat(("qcmd" + String(i)).c_str());
     }
 
     if (storage.isKey("qcmc0"))
     {
         // Qcm[1] = {storage.getFloat("qcmc0"), storage.getFloat("qcmc1"), storage.getFloat("qcmc2"), storage.getFloat("qcmc3"), storage.getFloat("qcmc4"), storage.getFloat("qcmc5"), storage.getFloat("qcmc6"), storage.getFloat("qcmc7"), storage.getFloat("qcmc8"), storage.getFloat("qcmc9")};
-        for (int i = 0; i < QCM_POINTS; i++)
+        for (uint8_t i = 0; i < QCM_POINTS; i++)
             Qcm[1][i] = storage.getFloat(("qcmc" + String(i)).c_str());
     }
 

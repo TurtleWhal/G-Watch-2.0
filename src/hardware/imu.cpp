@@ -50,25 +50,20 @@ bool imuPeriodic(EventBits_t event, void *arg)
 
 #ifdef LILYGO_TWATCH_2021
 
-    // int16_t *raw = new int16_t[3];
-    // bma.getAccelRaw(raw);
-    // sysinfo.imu.acc.x = raw[0];
-    // sysinfo.imu.acc.y = raw[1];
-    // sysinfo.imu.acc.z = raw[2];
+    // int16_t x = 0, y = 0, z = 0;
+    // bma.getAccelerometer(x, y, z);
 
-    int16_t x = 0, y = 0, z = 0;
-    bma.getAccelerometer(x, y, z);
-    // Serial.print("X:");
-    // Serial.print(x);
-    // Serial.print(" ");
-    // Serial.print("Y:");
-    // Serial.print(y);
-    // Serial.print(" ");
-    // Serial.print("Z:");
-    // Serial.print(z);
-    // Serial.println();
+    // double gx = (double)x / 512;
+    // double gy = (double)y / -512;
+    // double gz = (double)z / -512;
 
-    sysinfo.health.steps = bma.getPedometerCounter();
+    // Serial.printf("Gyro: X: %9f, Y: %9f, Z: %9f\n", gx, gy, gz);
+
+    // sysinfo.imu.acc.x = gx;
+    // sysinfo.imu.acc.y = gy;
+    // sysinfo.imu.acc.z = gz;
+
+    // sysinfo.health.steps = bma.getPedometerCounter();
 
 #endif
 
@@ -88,13 +83,6 @@ bool imuPeriodic(EventBits_t event, void *arg)
     // Serial.println(sysinfo.health.steps);
 
     return true;
-}
-
-bool sensorIRQ = false;
-
-void setFlag()
-{
-    sensorIRQ = true;
 }
 
 bool imuInit(EventBits_t event, void *arg)
@@ -187,10 +175,10 @@ bool imuInit(EventBits_t event, void *arg)
 
 #ifdef LILYGO_TWATCH_2021
 
-    // pinMode(IMU_INT1, INPUT);
     // attachInterrupt(IMU_INT2, setFlag, RISING);
+    return true;
 
-    // return true;
+    pinMode(IMU_INT1, INPUT);
 
     if (!bma.begin(Wire, 0x18, IIC_SDA, IIC_SCL))
     {
@@ -207,7 +195,7 @@ bool imuInit(EventBits_t event, void *arg)
     bma.enableAccelerometer();
 
     // Enable pedometer steps
-    bma.enablePedometer();
+    // bma.enablePedometer();
 
     // Emptying the pedometer steps
     // bma.resetPedometer();
@@ -219,14 +207,16 @@ bool imuInit(EventBits_t event, void *arg)
     //                       SensorBMA423::FEATURE_TILT |
     //                       SensorBMA423::FEATURE_WAKEUP,
     //                   true);
-    bma.enableFeature(SensorBMA423::FEATURE_STEP_CNTR |
-                          SensorBMA423::FEATURE_TILT,
-                      true);
+    // bma.enableFeature(SensorBMA423::FEATURE_STEP_CNTR |
+    //                       SensorBMA423::FEATURE_TILT,
+    //                   true);
+
+    // bma.enableFeature(SensorBMA423::FEATURE_STEP_CNTR, true);
 
     // Pedometer interrupt enable
-    bma.enablePedometerIRQ();
+    // bma.enablePedometerIRQ();
     // Tilt interrupt enable
-    bma.enableTiltIRQ();
+    // bma.enableTiltIRQ();
     // DoubleTap interrupt enable
     // bma.enableWakeupIRQ();
     // Any  motion / no motion interrupt enable
@@ -234,11 +224,11 @@ bool imuInit(EventBits_t event, void *arg)
     // Activity interruption enable
     // bma.enableActivityIRQ();
     // Chip interrupt function enable
-    bma.configInterrupt();
+    // bma.configInterrupt();
 #endif
 
     powermgmRegisterCB(imuPeriodic, POWERMGM_LOOP, "IMUPeriodic");
     return true;
 }
 
-bool imusetup = powermgmRegisterCBPrio(imuInit, POWERMGM_INIT, "IMUInit", CALL_CB_FIRST);
+bool imusetup = powermgmRegisterCBPrio(imuInit, POWERMGM_INIT, "IMUInit", CALL_CB_LAST);

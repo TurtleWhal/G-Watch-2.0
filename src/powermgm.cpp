@@ -48,6 +48,7 @@ void powermgmSleep()
 
     sleeping = true;
     tired = false;
+    sysinfo.sleeping = true;
 
     setSpeed(80);
 }
@@ -62,6 +63,7 @@ void powermgmWakeup()
     if (sleeping)
     {
         sleeping = false;
+        sysinfo.sleeping = false;
         powermgmSendEvent(POWERMGM_WAKEUP);
         setBacklightGradual(prevBacklight, 150);
     }
@@ -128,6 +130,7 @@ void powermgmInit()
         motorVibrate(3, 100);
 
     setBacklightGradual(100, 1000);
+    powermgmTickle();
 
     pm_config.max_freq_mhz = 240;
     pm_config.min_freq_mhz = 80;
