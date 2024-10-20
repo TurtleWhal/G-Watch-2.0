@@ -34,17 +34,18 @@ bool imuPeriodic(EventBits_t event, void *arg)
         //     Log.verboseln("INT2");
         // }
 
-        qmi.getGyroscope(gyr.x, gyr.y, gyr.z);
-        qmi.getAccelerometer(acc.x, acc.y, acc.z);
-        sysinfo.health.steps = qmi.getPedometerCounter();
+        // sysinfo.health.steps = qmi.getPedometerCounter();
 
-        sysinfo.imu.gyro.x = gyr.x;
-        sysinfo.imu.gyro.y = gyr.y;
-        sysinfo.imu.gyro.z = gyr.z;
+        // qmi.getGyroscope(gyr.x, gyr.y, gyr.z);
+        // qmi.getAccelerometer(acc.x, acc.y, acc.z);
 
-        sysinfo.imu.acc.x = acc.x;
-        sysinfo.imu.acc.y = acc.y;
-        sysinfo.imu.acc.z = acc.z;
+        // sysinfo.imu.gyro.x = gyr.x;
+        // sysinfo.imu.gyro.y = gyr.y;
+        // sysinfo.imu.gyro.z = gyr.z;
+
+        // sysinfo.imu.acc.x = acc.x;
+        // sysinfo.imu.acc.y = acc.y;
+        // sysinfo.imu.acc.z = acc.z;
     }
 #endif
 

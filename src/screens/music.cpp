@@ -21,7 +21,7 @@ lv_obj_t *albumlbl;
 lv_obj_t *timelbl;
 lv_obj_t *lengthlbl;
 
-int8_t musicx = 0, musicy = 1;
+int8_t musicx = 0, musicy = -1;
 
 bool musicLoad(EventBits_t event, void *arg)
 {

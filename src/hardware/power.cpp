@@ -6,14 +6,15 @@
 #include "movingAvg.h"
 #include "preferences.h"
 
+#ifdef LILYGO_TWATCH_2021
 #define PWR_ON 5
 #define CHRG_PIN 2
-
-#ifdef LILYGO_TWATCH_2021
 #define CHARGING (!digitalRead(CHRG_PIN) || voltage > 4000)
 #define VOLT_MULT 2
-#else
-#define CHARGING (voltage > 4000)
+#endif
+
+#ifdef WAVESHARE_ESP32_LCD
+#define CHARGING (voltage > 4300)
 #define VOLT_MULT 3
 #endif
 
@@ -120,6 +121,8 @@ bool powerPeriodic(EventBits_t event, void *arg)
     // voltage = voltFilter.reading(v * 1000) / 1000;
     voltage = v;
 
+    sysinfo.health.steps = v;
+
     if (charging != CHARGING)
     {
         if (CHARGING)
@@ -223,22 +226,26 @@ bool powerInit(EventBits_t event, void *arg)
 
     storage.begin("battery");
 
-    if (storage.isKey("qcmd0"))
-    {
-        // Qcm[0] = {storage.getFloat("qcmd0"), storage.getFloat("qcmd1"), storage.getFloat("qcmd2"), storage.getFloat("qcmd3"), storage.getFloat("qcmd4"), storage.getFloat("qcmd5"), storage.getFloat("qcmd6"), storage.getFloat("qcmd7"), storage.getFloat("qcmd8"), storage.getFloat("qcmd9")};
-        for (uint8_t i = 0; i < QCM_POINTS; i++)
-            Qcm[0][i] = storage.getFloat(("qcmd" + String(i)).c_str());
-    }
+    // if (storage.isKey("qcmd0"))
+    // {
+    //     // Qcm[0] = {storage.getFloat("qcmd0"), storage.getFloat("qcmd1"), storage.getFloat("qcmd2"), storage.getFloat("qcmd3"), storage.getFloat("qcmd4"), storage.getFloat("qcmd5"), storage.getFloat("qcmd6"), storage.getFloat("qcmd7"), storage.getFloat("qcmd8"), storage.getFloat("qcmd9")};
+    //     for (uint8_t i = 0; i < QCM_POINTS; i++)
+    //     {
+    //         Serial.println(("qcmd" + String(i)).c_str());
+    //         Serial.println(storage.getFloat(("qcmd" + String(i)).c_str()));
+    //         Qcm[0][i] = storage.getFloat(("qcmd" + String(i)).c_str());
+    //     }
+    // }
 
-    if (storage.isKey("qcmc0"))
-    {
-        // Qcm[1] = {storage.getFloat("qcmc0"), storage.getFloat("qcmc1"), storage.getFloat("qcmc2"), storage.getFloat("qcmc3"), storage.getFloat("qcmc4"), storage.getFloat("qcmc5"), storage.getFloat("qcmc6"), storage.getFloat("qcmc7"), storage.getFloat("qcmc8"), storage.getFloat("qcmc9")};
-        for (uint8_t i = 0; i < QCM_POINTS; i++)
-            Qcm[1][i] = storage.getFloat(("qcmc" + String(i)).c_str());
-    }
+    // if (storage.isKey("qcmc0"))
+    // {
+    //     // Qcm[1] = {storage.getFloat("qcmc0"), storage.getFloat("qcmc1"), storage.getFloat("qcmc2"), storage.getFloat("qcmc3"), storage.getFloat("qcmc4"), storage.getFloat("qcmc5"), storage.getFloat("qcmc6"), storage.getFloat("qcmc7"), storage.getFloat("qcmc8"), storage.getFloat("qcmc9")};
+    //     for (uint8_t i = 0; i < QCM_POINTS; i++)
+    //         Qcm[1][i] = storage.getFloat(("qcmc" + String(i)).c_str());
+    // }
 
-    Serial.printf("Charging  Qcm: %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f\n", Qcm[0][0], Qcm[0][1], Qcm[0][2], Qcm[0][3], Qcm[0][4], Qcm[0][5], Qcm[0][6], Qcm[0][7], Qcm[0][8], Qcm[0][9], Qcm[0][10]);
-    Serial.printf("Discharge Qcm: %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f\n", Qcm[1][0], Qcm[1][1], Qcm[1][2], Qcm[1][3], Qcm[1][4], Qcm[1][5], Qcm[1][6], Qcm[1][7], Qcm[1][8], Qcm[1][9], Qcm[1][10]);
+    Serial.printf("Discharge Qcm: %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f\n", Qcm[0][0], Qcm[0][1], Qcm[0][2], Qcm[0][3], Qcm[0][4], Qcm[0][5], Qcm[0][6], Qcm[0][7], Qcm[0][8], Qcm[0][9], Qcm[0][10]);
+    Serial.printf("Charging  Qcm: %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f, %.0f\n", Qcm[1][0], Qcm[1][1], Qcm[1][2], Qcm[1][3], Qcm[1][4], Qcm[1][5], Qcm[1][6], Qcm[1][7], Qcm[1][8], Qcm[1][9], Qcm[1][10]);
 
     powermgmRegisterCB(sendPowerBLE, POWERMGM_BLE_CONNECT, "PowerConnectBLE");
     powermgmRegisterCB(powerPeriodic, POWERMGM_LOOP, "PowerPeriodic");

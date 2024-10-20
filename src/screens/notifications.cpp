@@ -11,7 +11,7 @@
 lv_obj_t *notifsscr;
 lv_obj_t *notifpanel;
 // lv_obj_t *notifsbox;
-int8_t notifx = 0, notify = -1;
+int8_t notifx = 0, notify = 1;
 
 lv_obj_t *nolabel;
 lv_obj_t *clrbtn;
@@ -78,6 +78,7 @@ lv_obj_t *displayNotification(Notification_t *data)
 
                             if (scroll == -30 || scroll == 326)
                             {
+                                Serial.println("popping notification");
                                 popNotificationId(((Notification_t *)e->user_data)->id);
                                 lv_obj_delete(lv_event_get_target_obj(e));
                             } }, LV_EVENT_SCROLL_END, data);
@@ -145,8 +146,7 @@ void clearNotifs()
                             // Log.verboseln("Clearing notification: %s", notif->title.c_str());
                             // deleteNotification(notif->id);
                             popNotification(i++);
-                            lv_obj_delete(notif->obj);
-                        });
+                            lv_obj_delete(notif->obj); });
 }
 
 bool notifsLoad(EventBits_t event, void *arg)

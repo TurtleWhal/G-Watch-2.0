@@ -137,7 +137,8 @@ void backlight_updata(void *params)
 
 bool displayPeriodic(EventBits_t event, void *arg)
 {
-    delay(lv_task_handler());
+    // delay(lv_task_handler());
+    lv_task_handler();
     return true;
 }
 
@@ -217,6 +218,10 @@ bool displayInit(EventBits_t event, void *arg)
     // Log.verboseln("Display Init");
 
     xTaskCreatePinnedToCore(backlight_updata, "backlight", 1024 * 10, NULL, 2, &backlightHandle, 0);
+
+    // xTaskCreatePinnedToCore([](void *params){
+    //     delay(lv_task_handler());
+    // }, "lvgl", 1024 * 64, NULL, 0, NULL, 1);
 
     powermgmRegisterCB(displayWakeup, POWERMGM_WAKEUP, "DisplayWakeup");
     powermgmRegisterCBPrio(displayPeriodic, POWERMGM_LOOP_AWAKE, "DisplayPeriodic", CALL_CB_FIRST);

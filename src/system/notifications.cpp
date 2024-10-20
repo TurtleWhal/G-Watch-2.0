@@ -40,7 +40,7 @@ Notification_t popNotification(uint8_t index)
     }
 
     Notification_t out = notifs[index];
-    deleteNotification(out.id);
+    // deleteNotification(out.id);
 
     for (uint8_t i = index; i < NOTIF_COUNT; i++)
     {
@@ -62,11 +62,16 @@ Notification_t popNotificationId(uint32_t id)
     }
     for (uint8_t i = 0; i < NOTIF_COUNT; i++)
     {
+        Log.verboseln("checking notification with id: %d", notifs[i].id);
+
         if (notifs[i].id == id)
         {
+            Log.verboseln("Popping notification with id: %d", id);
             return popNotification(i);
         }
     }
+
+    Log.verboseln("Notification with id: %d not found", id);
 
     return Notification_t();
 }
@@ -123,18 +128,27 @@ void handleNotification(String title, String subject, String body, String sender
 
     if (strcmp(src.c_str(), "Android System Intelligence") == 0) // Check for Now Playing Notification
     {
-        char nowPlayingTitle[64];
-        char nowPlayingArtist[64];
-        sscanf(title.c_str(), "%s by %s", nowPlayingTitle, nowPlayingArtist);
+        // sscanf(title.c_str(), "%s by %s", nowPlayingTitle, nowPlayingArtist);
 
-        char nowPlaying[132]; // 64 + 64 + " • " + null
-        sprintf(nowPlaying, "%s • %s", nowPlayingTitle, nowPlayingArtist);
-        sysinfo.glance.strings[sysinfo.glance.NOW_PLAYING] = nowPlaying;
-        sysinfo.glance.icons[sysinfo.glance.NOW_PLAYING] = FA_MUSIC_NOTE;
-        // Log.verboseln("Recieved Now Playing, \"%s\", id: %d", nowPlaying, nowPlayingID);
-        Log.verboseln("Recieved Now Playing, Artist: %s, Song: %s, id: %d", nowPlayingArtist, nowPlayingTitle, nowPlayingID);
+        int delimiterIndex = title.lastIndexOf(" by ");
+        if (delimiterIndex != -1)
+        {
+            // char nowPlayingTitle[64];
+            // char nowPlayingArtist[64];
 
-        nowPlayingID = id;
+            const char *nowPlayingTitle = title.substring(0, delimiterIndex).c_str();
+            const char *nowPlayingArtist = title.substring(delimiterIndex + 4).c_str();
+
+            char nowPlaying[132]; // 64 + 64 + " • " + null
+            sprintf(nowPlaying, "%s • %s", nowPlayingTitle, nowPlayingArtist);
+            sysinfo.glance.strings[sysinfo.glance.NOW_PLAYING] = nowPlaying;
+            sysinfo.glance.icons[sysinfo.glance.NOW_PLAYING] = FA_MUSIC_NOTE;
+            // Log.verboseln("Recieved Now Playing, \"%s\", id: %d", nowPlaying, nowPlayingID);
+            Log.verboseln("Recieved Now Playing, Artist: %s, Song: %s, id: %d", nowPlayingArtist, nowPlayingTitle, nowPlayingID);
+
+            nowPlayingID = id;
+        }
+
         return;
     }
 

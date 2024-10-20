@@ -83,13 +83,13 @@ void musicplaypause(lv_event_t *e)
 void musicnext(lv_event_t *e)
 {
     sendBLE("{t:\"music\", n:\"next\"}", 1);
-    sendBLE("{t:\"music\", n:\"play\"}", 1);
+    // sendBLE("{t:\"music\", n:\"play\"}", 1);
 }
 
 void musicprev(lv_event_t *e)
 {
     sendBLE("{t:\"music\", n:\"previous\"}", 1);
-    sendBLE("{t:\"music\", n:\"play\"}", 1);
+    // sendBLE("{t:\"music\", n:\"play\"}", 1);
 }
 
 bool musicsetup = powermgmRegisterCBPrio(musicInit, POWERMGM_INIT, "MusicInit", CALL_CB_LAST);

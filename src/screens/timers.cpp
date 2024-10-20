@@ -84,7 +84,7 @@ bool timerperiodic(EventBits_t event, void *arg)
         stopwatchmillis += diff;
 
         char stop[8];
-        if (timermillis >= 3600000)
+        if (stopwatchmillis >= 3600000)
             sprintf(stop, "%i:%02i", (uint8_t)(stopwatchmillis / 3600000), (uint8_t)((stopwatchmillis % 3600000) / 60000));
         else
             sprintf(stop, "%i:%02i", (uint8_t)((stopwatchmillis % 3600000) / 60000), (uint8_t)((stopwatchmillis % 60000) / 1000));
@@ -131,12 +131,13 @@ bool timerperiodic(EventBits_t event, void *arg)
             }
         }
     }
-    
+
     if (timerrunning && timermillis > ULONG_MAX - 1000)
     {
         powermgmTickle();
         writeTimerTime(0);
         timerrunning = false;
+        timermillis = 0;
         motorVibrate(30, 1000);
         SET_SYMBOL_32(timerplaylbl, FA_PLAY);
 
@@ -298,7 +299,7 @@ bool timercreate(EventBits_t event, void *arg)
     lv_obj_center(timerrstlbl);
 
     lv_obj_add_event_cb(timerplay, [](lv_event_t *e)
-                        { timerrunning = !timerrunning; if (timerrunning) {SET_SYMBOL_32((lv_obj_t *)e->user_data, FA_PAUSE);} else {SET_SYMBOL_32((lv_obj_t *)e->user_data, FA_PLAY);} }, LV_EVENT_CLICKED, timerplaylbl);
+                        { if (timermillis != 0) {timerrunning = !timerrunning; if (timerrunning) {SET_SYMBOL_32((lv_obj_t *)e->user_data, FA_PAUSE);} else {SET_SYMBOL_32((lv_obj_t *)e->user_data, FA_PLAY);}} }, LV_EVENT_CLICKED, timerplaylbl);
     lv_obj_add_event_cb(timerrst, [](lv_event_t *e)
                         { timerrunning = false; SET_SYMBOL_32((lv_obj_t *)e->user_data, FA_PLAY); timermillis = 0; writeTimerTime(timermillis); }, LV_EVENT_CLICKED, timerplaylbl);
     lv_obj_add_event_cb(timerplay, [](lv_event_t *e)

@@ -48,7 +48,7 @@
 #if LV_USE_STDLIB_MALLOC == LV_STDLIB_BUILTIN
     /*Size of the memory available for `lv_malloc()` in bytes (>= 2kB)*/
     #ifdef WAVESHARE_ESP32_LCD
-        #define LV_MEM_SIZE (72 * 1024U)          /*[bytes]*/
+        #define LV_MEM_SIZE (70 * 1024U)          /*[bytes]*/
     #else
         #define LV_MEM_SIZE (64 * 1024U)          /*[bytes]*/
     #endif
