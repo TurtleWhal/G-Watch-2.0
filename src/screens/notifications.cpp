@@ -146,7 +146,9 @@ void clearNotifs()
                             // Log.verboseln("Clearing notification: %s", notif->title.c_str());
                             // deleteNotification(notif->id);
                             popNotification(i++);
-                            lv_obj_delete(notif->obj); });
+                            // lv_obj_delete(notif->obj);
+                            lv_obj_scroll_to_x(notif->obj, 326, LV_ANIM_ON);
+                        });
 }
 
 bool notifsLoad(EventBits_t event, void *arg)

@@ -49,10 +49,9 @@ bool motorInit(EventBits_t event, void *arg)
     return true;
 }
 
-// timevalue is unix time in seconds, timezone is offset in hours
 void motorVibrate(uint32_t cnt, uint32_t interval)
 {
-    count = (cnt + 1) * 2;
+    count = cnt * 2;
     interval_ms = interval;
     vibrating = true;
 }

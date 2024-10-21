@@ -318,7 +318,19 @@ bool numberscreate(EventBits_t event, void *arg)
     lv_obj_set_style_text_align(info, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN);
     lv_label_set_long_mode(info, LV_LABEL_LONG_SCROLL_CIRCULAR);
     lv_obj_set_style_text_font(info, &Outfit_16, LV_PART_MAIN);
-    // lv_obj_set_width(info, 120);
+    lv_obj_set_style_max_width(info, 120, LV_PART_MAIN);
+    // lv_obj_set_height(info, 16);
+    // lv_obj_set_style_radius(info, 20, LV_PART_MAIN);
+    // lv_obj_set_style_pad_all(info, 0, LV_PART_MAIN);
+    // lv_obj_set_style_pad_top(info, -3, LV_PART_MAIN);
+    // lv_obj_set_style_pad_bottom(info, 0, LV_PART_MAIN);
+    // lv_obj_set_style_border_color(info, lv_color_hex(0x222222), LV_PART_MAIN);
+    // lv_obj_set_style_border_opa(info, LV_OPA_TRANSP, LV_PART_MAIN);
+    // lv_obj_set_style_border_width(info, 2, LV_PART_MAIN);
+
+    // sysinfo.glance.icons[sysinfo.glance.NOW_PLAYING] = FA_MUSIC_NOTE;
+    // sysinfo.glance.strings[sysinfo.glance.NOW_PLAYING] = "Long Song Name • Long Artist Name";
+    // sysinfo.glance.strings[sysinfo.glance.NOW_PLAYING] = "1234";
 
     powermgmRegisterCB(numbersperiodic, POWERMGM_LOOP_AWAKE, "numbersscreenperiodic");
     powermgmRegisterCB(numbersLoad, POWERMGM_SCREEN_CHANGE, "numbersscreenload");
