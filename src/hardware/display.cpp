@@ -8,6 +8,8 @@
 
 #include "powermgm.hpp"
 
+#define BUFSIZE TFT_WIDTH *TFT_HEIGHT * sizeof(uint16_t)
+
 TFT_eSPI tft = TFT_eSPI();
 
 lv_display_t *display;
@@ -18,14 +20,37 @@ TaskHandle_t backlightHandle = NULL;
 
 CST816S touch(IIC_SDA, IIC_SCL, TP_RST, TP_INT); // sda, scl, rst, irq
 
+uint16_t buf1[TFT_WIDTH * TFT_HEIGHT];
+// uint16_t buf2[TFT_WIDTH * TFT_HEIGHT];
+// uint16_t buf1[TFT_WIDTH * TFT_HEIGHT];
+// uint16_t buf2[TFT_WIDTH * TFT_HEIGHT];
+// uint16_t *buf1;
+// uint16_t *buf2;
+// uint16_t buf[TFT_WIDTH * TFT_HEIGHT];
+
+// void my_flush_cb(lv_display_t *disp, const lv_area_t *area, void *px_map)
+// {
+//     // Serial.printf("Flush cb area: (%i, %i) (%i, %i) Pixel map: %i\n", area->x1, area->y1, area->x2, area->y2, (uint16_t *)px_map);
+
+//     uint16_t *buf16 = (uint16_t *)px_map;
+
+//     tft.startWrite();
+//     tft.pushImageDMA(area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1), buf16);
+//     tft.endWrite();
+
+//     lv_display_flush_ready(disp);
+// }
+
 void my_flush_cb(lv_display_t *disp, const lv_area_t *area, void *px_map)
 {
     // Serial.printf("Flush cb area: (%i, %i) (%i, %i) Pixel map: %i\n", area->x1, area->y1, area->x2, area->y2, (uint16_t *)px_map);
 
-    uint16_t *buf16 = (uint16_t *)px_map;
+    // uint16_t *buf16 = (uint16_t *)px_map;
 
     tft.startWrite();
-    tft.pushImageDMA(area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1), buf16);
+    tft.pushImageDMA(area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1), (uint16_t *)px_map);
+    // tft.pushImageDMA(0, 0, TFT_WIDTH, TFT_HEIGHT, (uint16_t *)px_map);
+    // tft.pushImageDMA(0, 0, TFT_WIDTH, TFT_HEIGHT, buf1);
     tft.endWrite();
 
     lv_display_flush_ready(disp);
@@ -156,6 +181,16 @@ bool displayInit(EventBits_t event, void *arg)
     ledcAttachPin(TFT_LED, 0);
     ledcWrite(0, 0);
 
+    Serial.printf("Free PSRAM: %d bytes\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
+    Serial.printf("Largest free PSRAM block: %d bytes\n", heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM));
+
+    // buf1 = (uint16_t *)heap_caps_malloc(BUFSIZE, MALLOC_CAP_SPIRAM);
+    // buf2 = (uint16_t *)heap_caps_malloc(BUFSIZE, MALLOC_CAP_SPIRAM);
+    // buf1 = (uint16_t *)heap_caps_malloc(BUFSIZE, MALLOC_CAP_DMA);
+    // buf2 = (uint16_t *)heap_caps_malloc(BUFSIZE, MALLOC_CAP_DMA);
+    // buf = (uint16_t *)heap_caps_malloc(TFT_WIDTH * TFT_HEIGHT * sizeof(uint16_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_DMA);
+    // buf2 = (uint16_t *)heap_caps_malloc(TFT_WIDTH * TFT_HEIGHT * sizeof(uint16_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_DMA);
+
     // Log.verboseln("Backlight Init");
 
     // Init TFT_eSPI
@@ -175,9 +210,8 @@ bool displayInit(EventBits_t event, void *arg)
     display = lv_display_create(TFT_WIDTH, TFT_HEIGHT);
     lv_display_set_flush_cb(display, (lv_display_flush_cb_t)my_flush_cb);
 
-    static uint16_t buf1[TFT_WIDTH * TFT_HEIGHT / 10];
-    static uint16_t buf2[TFT_WIDTH * TFT_HEIGHT / 10];
-    lv_display_set_buffers(display, buf1, buf2, sizeof(buf1), LV_DISPLAY_RENDER_MODE_PARTIAL);
+    // lv_display_set_buffers(display, buf1, NULL, BUFSIZE, LV_DISPLAY_RENDER_MODE_DIRECT);
+    lv_display_set_buffers(display, buf1, NULL, BUFSIZE, LV_DISPLAY_RENDER_MODE_PARTIAL);
 
 #ifdef WAVESHARE_ESP32_LCD
     lv_display_set_rotation(display, LV_DISPLAY_ROTATION_90); // lvgl rotation is counter-clockwise
