@@ -191,11 +191,11 @@ bool timercreate(EventBits_t event, void *arg)
     lv_obj_center(rstlbl);
 
     lv_obj_add_event_cb(stopplay, [](lv_event_t *e)
-                        { stopwatchrunning = !stopwatchrunning; if (stopwatchrunning) {SET_SYMBOL_32((lv_obj_t *)e->user_data, FA_PAUSE);} else {SET_SYMBOL_32((lv_obj_t *)e->user_data, FA_PLAY);} }, LV_EVENT_CLICKED, playlbl);
+                        { stopwatchrunning = !stopwatchrunning; if (stopwatchrunning) {SET_SYMBOL_32((lv_obj_t *)lv_event_get_user_data(e), FA_PAUSE);} else {SET_SYMBOL_32((lv_obj_t *)lv_event_get_user_data(e), FA_PLAY);} }, LV_EVENT_CLICKED, playlbl);
     lv_obj_add_event_cb(rstbtn, [](lv_event_t *e)
-                        { stopwatchrunning = false; SET_SYMBOL_32((lv_obj_t *)e->user_data, FA_PLAY); stopwatchmillis = 0; }, LV_EVENT_CLICKED, playlbl);
+                        { stopwatchrunning = false; SET_SYMBOL_32((lv_obj_t *)lv_event_get_user_data(e), FA_PLAY); stopwatchmillis = 0; }, LV_EVENT_CLICKED, playlbl);
     lv_obj_add_event_cb(rstbtn, [](lv_event_t *e)
-                        { lv_label_set_text((lv_obj_t *)e->user_data, "00:00:00"); }, LV_EVENT_CLICKED, stoplbl);
+                        { lv_label_set_text((lv_obj_t *)lv_event_get_user_data(e), "00:00:00"); }, LV_EVENT_CLICKED, stoplbl);
     lv_obj_add_event_cb(stopplay, [](lv_event_t *e)
                         { motorVibrate(HAPTIC_BUTTON); }, LV_EVENT_PRESSED, NULL);
     lv_obj_add_event_cb(rstbtn, [](lv_event_t *e)
@@ -299,9 +299,9 @@ bool timercreate(EventBits_t event, void *arg)
     lv_obj_center(timerrstlbl);
 
     lv_obj_add_event_cb(timerplay, [](lv_event_t *e)
-                        { if (timermillis != 0) {timerrunning = !timerrunning; if (timerrunning) {SET_SYMBOL_32((lv_obj_t *)e->user_data, FA_PAUSE);} else {SET_SYMBOL_32((lv_obj_t *)e->user_data, FA_PLAY);}} }, LV_EVENT_CLICKED, timerplaylbl);
+                        { if (timermillis != 0) {timerrunning = !timerrunning; if (timerrunning) {SET_SYMBOL_32((lv_obj_t *)lv_event_get_user_data(e), FA_PAUSE);} else {SET_SYMBOL_32((lv_obj_t *)lv_event_get_user_data(e), FA_PLAY);}} }, LV_EVENT_CLICKED, timerplaylbl);
     lv_obj_add_event_cb(timerrst, [](lv_event_t *e)
-                        { timerrunning = false; SET_SYMBOL_32((lv_obj_t *)e->user_data, FA_PLAY); timermillis = 0; writeTimerTime(timermillis); }, LV_EVENT_CLICKED, timerplaylbl);
+                        { timerrunning = false; SET_SYMBOL_32((lv_obj_t *)lv_event_get_user_data(e), FA_PLAY); timermillis = 0; writeTimerTime(timermillis); }, LV_EVENT_CLICKED, timerplaylbl);
     lv_obj_add_event_cb(timerplay, [](lv_event_t *e)
                         { motorVibrate(HAPTIC_BUTTON); }, LV_EVENT_PRESSED, NULL);
     lv_obj_add_event_cb(timerrst, [](lv_event_t *e)

@@ -59,7 +59,8 @@ void createArc(uint8_t arcid, int32_t x, int32_t y, char *symbol, void (*updateC
     lv_obj_set_style_arc_width(arc->arc, 4, LV_PART_MAIN);
     lv_obj_set_style_arc_width(arc->arc, 4, LV_PART_INDICATOR);
 
-    lv_obj_remove_flag(arc->arc, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_CLICK_FOCUSABLE); /// Flags
+    lv_obj_remove_flag(arc->arc, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_remove_flag(arc->arc, LV_OBJ_FLAG_CLICK_FOCUSABLE);
     lv_arc_set_bg_angles(arc->arc, 135, 405);
     lv_arc_set_range(arc->arc, 0, 100);
     lv_arc_set_value(arc->arc, 50);
@@ -109,8 +110,10 @@ void batteryCallback(uint8_t arcid)
     static uint32_t lastbat = 0;
     if (lastbat != sysinfo.bat.percent)
     {
-        lv_arc_set_value(arc->arc, (int32_t)sysinfo.bat.percent);
-        lv_label_set_text_fmt(arc->lbl, "%i%%", sysinfo.bat.percent);
+        // lv_arc_set_value(arc->arc, (int32_t)sysinfo.bat.percent);
+        // lv_label_set_text_fmt(arc->lbl, "%i%%", sysinfo.bat.percent);
+        lv_arc_set_value(arc->arc, (int32_t)sysinfo.bat.voltage / 45);
+        lv_label_set_text_fmt(arc->lbl, "%i", (int)sysinfo.bat.voltage);
 
         if (sysinfo.bat.charging)
         {

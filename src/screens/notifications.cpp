@@ -70,16 +70,17 @@ lv_obj_t *displayNotification(Notification_t *data)
     lv_obj_set_size(space2, 160, 0);
 
     lv_obj_add_event_cb(notif, [](lv_event_t *e)
-                        { showNotification((Notification_t *)e->user_data, false); }, LV_EVENT_CLICKED, data);
+                        { showNotification((Notification_t *)lv_event_get_user_data(e), false); }, LV_EVENT_CLICKED, data);
     lv_obj_add_event_cb(base, [](lv_event_t *e)
                         {
                             int scroll = lv_obj_get_scroll_x(lv_event_get_target_obj(e));
+                            // Serial.print("Trying to pop, Scroll: ");
                             // Serial.println(scroll);
 
                             if (scroll == -30 || scroll == 326)
                             {
                                 Serial.println("popping notification");
-                                popNotificationId(((Notification_t *)e->user_data)->id);
+                                popNotificationId(((Notification_t *)lv_event_get_user_data(e))->id);
                                 lv_obj_delete(lv_event_get_target_obj(e));
                             } }, LV_EVENT_SCROLL_END, data);
 
@@ -140,14 +141,15 @@ void drawNotifs()
 
 void clearNotifs()
 {
-    static uint8_t i = 0;
     forEachNotification([](Notification_t *notif)
                         {
-                            // Log.verboseln("Clearing notification: %s", notif->title.c_str());
-                            // deleteNotification(notif->id);
+                            static uint8_t i = 0;
+
+                            Log.verboseln("Clearing notification: %s", notif->title.c_str());
+                            deleteNotification(notif->id);
                             popNotification(i++);
                             // lv_obj_delete(notif->obj);
-                            lv_obj_scroll_to_x(notif->obj, 326, LV_ANIM_ON);
+                            // lv_obj_scroll_to_x(notif->obj, -30, LV_ANIM_ON);
                         });
 }
 

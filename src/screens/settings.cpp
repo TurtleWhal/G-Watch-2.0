@@ -172,15 +172,15 @@ lv_obj_t *createSetting(Setting_t *data)
     lv_obj_add_flag(title, LV_OBJ_FLAG_EVENT_BUBBLE);
     lv_obj_add_event_cb(setting, [](lv_event_t *e)
                         {
-                            lv_obj_t *i = (lv_obj_t *)e->user_data;
+                            lv_obj_t *i = (lv_obj_t *)lv_event_get_user_data(e);
 
                             if (lv_obj_check_type(i, &lv_switch_class))
                             {
                                 lv_obj_has_state(i, LV_STATE_CHECKED) ? lv_obj_remove_state(i, LV_STATE_CHECKED) : lv_obj_add_state(i, LV_STATE_CHECKED);
-                                lv_obj_send_event(i, LV_EVENT_VALUE_CHANGED, e->param);
+                                lv_obj_send_event(i, LV_EVENT_VALUE_CHANGED, lv_event_get_param(e));
                             }
 
-                            lv_obj_send_event(i, LV_EVENT_CLICKED, e->param); }, LV_EVENT_CLICKED, input);
+                            lv_obj_send_event(i, LV_EVENT_CLICKED, lv_event_get_param(e)); }, LV_EVENT_CLICKED, input);
 
     return setting;
 }
@@ -254,8 +254,8 @@ bool settingsscreate(EventBits_t event, void *arg)
 
             lv_obj_add_event_cb(scr, [](lv_event_t *e)
                                 {
-                                    Serial.println((long)e->user_data);
-                                    setBacklight((long)e->user_data);
+                                    Serial.println((long)lv_event_get_user_data(e));
+                                    setBacklight((long)lv_event_get_user_data(e));
                                     setScreen(nullptr, LV_SCR_LOAD_ANIM_NONE, 0, true); }, LV_EVENT_CLICKED, (void *)pb);
 
             setScreen(scr, LV_SCR_LOAD_ANIM_NONE, 0, false);
@@ -381,7 +381,7 @@ bool settingsscreate(EventBits_t event, void *arg)
                                 lv_slider_set_value(lv_event_get_target_obj(e), 1, LV_ANIM_OFF);
 
                             setBacklight(lv_slider_get_value(lv_event_get_target_obj(e)));
-                            lv_obj_set_x((lv_obj_t *)e->user_data, (lv_slider_get_value(lv_event_get_target_obj(e)) * 1.4) - 4);
+                            lv_obj_set_x((lv_obj_t *)lv_event_get_user_data(e), (lv_slider_get_value(lv_event_get_target_obj(e)) * 1.4) - 4);
 
                             if (lv_slider_get_value(lv_event_get_target_obj(e)) < 50)
                             {

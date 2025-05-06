@@ -12,11 +12,9 @@ bool motorPeriodic(EventBits_t event, void *arg)
 
     if (millis() - lastms > interval_ms && vibrating)
     {
-        // digitalWrite(MOTOR_PIN1, (count % 2) ? LOW : HIGH );
-        digitalWrite(MOTOR_PIN1, count % 2 );
+        digitalWrite(MOTOR_PIN1, !(count % 2));
 #ifdef WAVESHARE_ESP32_LCD
-        // digitalWrite(MOTOR_PIN2, (count % 2) ? LOW : HIGH );
-        digitalWrite(MOTOR_PIN2, count % 2);
+        digitalWrite(MOTOR_PIN2, !(count % 2));
 #endif
 
         if (!--count)
@@ -27,7 +25,7 @@ bool motorPeriodic(EventBits_t event, void *arg)
             digitalWrite(MOTOR_PIN2, LOW);
 #endif
             count = 0;
-            interval_ms = 0xFFFFFFFF;
+            interval_ms = UINT32_MAX;
         }
         lastms = millis();
     }

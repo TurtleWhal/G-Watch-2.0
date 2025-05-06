@@ -121,7 +121,7 @@ bool powerPeriodic(EventBits_t event, void *arg)
     // voltage = voltFilter.reading(v * 1000) / 1000;
     voltage = v;
 
-    sysinfo.health.steps = v;
+    // sysinfo.health.steps = v;
 
     if (charging != CHARGING)
     {

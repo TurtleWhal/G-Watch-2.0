@@ -6,3 +6,9 @@
 /build
 build/CMakeCache.txt
 build/CMakeFiles
+build/CMakeCache.txt
+build/CMakeCache.txt
+build/CMakeFiles/3.29.2/CMakeCCompiler.cmake
+build/CMakeFiles/3.29.2/CMakeCXXCompiler.cmake
+build/CMakeFiles/CMakeConfigureLog.yaml
+/managed_components

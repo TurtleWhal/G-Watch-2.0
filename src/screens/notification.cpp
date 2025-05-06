@@ -45,7 +45,7 @@ void showNotification(Notification_t *data, bool o)
     lv_obj_add_event_cb(replybtn, [](lv_event_t *e)
                         {
                             String text = lv_textarea_get_text(replytext);
-                            Notification_t *n = (Notification_t *)e->user_data;
+                            Notification_t *n = (Notification_t *)lv_event_get_user_data(e);
 
                             if (text.length() > 0)
                             {
