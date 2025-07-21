@@ -11,6 +11,7 @@
 #include "ble/deviceinfo.h"
 
 #include "NimBLEDescriptor.h"
+#include "nimble/nimble/host/include/host/ble_sm.h"
 
 #include "ble.hpp"
 
@@ -103,7 +104,7 @@ class ServerCallbacks : public NimBLEServerCallbacks
 
         // powermgm_resume_from_ISR();
 
-        return (false);
+        return (true);  // Accept the pairing
     };
 
     void onAuthenticationComplete(ble_gap_conn_desc *desc)
@@ -112,7 +113,7 @@ class ServerCallbacks : public NimBLEServerCallbacks
         {
             if (blectl_get_event(BLECTL_PIN_AUTH))
             {
-                log_i("BLECTL pairing abort, reason: %02x", cmpl.fail_reason);
+                log_i("BLECTL pairing abort, reason: authentication failed");
                 blectl_clear_event(BLECTL_PIN_AUTH);
                 blectl_send_event_cb(BLECTL_PAIRING_ABORT, (void *)"abort");
                 NimBLEDevice::getServer()->disconnect(desc->conn_handle);
@@ -123,7 +124,7 @@ class ServerCallbacks : public NimBLEServerCallbacks
             }
             if (blectl_get_event(BLECTL_AUTHWAIT | BLECTL_CONNECT))
             {
-                log_i("BLECTL authentication unsuccessful, client disconnected, reason: %02x", cmpl.fail_reason);
+                log_i("BLECTL authentication unsuccessful, client disconnected, reason: authentication failed");
                 blectl_clear_event(BLECTL_AUTHWAIT | BLECTL_CONNECT);
                 blectl_set_event(BLECTL_DISCONNECT);
                 blectl_send_event_cb(BLECTL_DISCONNECT, (void *)"disconnected");
@@ -186,6 +187,15 @@ void blectl_setup(String device_name)
      */
     NimBLEDevice::setSecurityAuth(true, true, true);
     NimBLEDevice::setSecurityIOCap(BLE_HS_IO_DISPLAY_ONLY);
+    /*
+     * Set key distribution for bonding
+     */
+    NimBLEDevice::setSecurityInitKey(BLE_SM_PAIR_KEY_DIST_ENC | BLE_SM_PAIR_KEY_DIST_ID);
+    NimBLEDevice::setSecurityRespKey(BLE_SM_PAIR_KEY_DIST_ENC | BLE_SM_PAIR_KEY_DIST_ID);
+    /*
+     * Set a static passkey for more reliable pairing (optional)
+     */
+    // NimBLEDevice::setSecurityPasskey(123456);
     /*
      * Create the BLE Server
      */

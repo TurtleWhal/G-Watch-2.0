@@ -155,6 +155,8 @@ bool timercreate(EventBits_t event, void *arg)
 
     lv_obj_set_scroll_snap_y(timerscr, LV_SCROLL_SNAP_CENTER);
 
+    lv_obj_add_flag(timerscr, LV_OBJ_FLAG_SCROLL_ONE);
+
     timerscrollbar = createCurvedScrollbar(timerscr);
 
     // Stopwatch Screen

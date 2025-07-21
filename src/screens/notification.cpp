@@ -76,7 +76,7 @@ bool notifperiodic(EventBits_t event, void *arg)
     if (lv_indev_get_state(lv_indev_active()) == LV_INDEV_STATE_PRESSED)
         notifmillis = millis();
 
-    if (notifmillis + 30000 < millis())
+    if (notifmillis + 20000 < millis())
     {
         Log.verboseln("hiding notification with Name: %s, Body: %s, Sender: %s, Tel: %s, Time: %d", notif.title.c_str(), notif.body.c_str(), notif.sender.c_str(), String(notif.tel_number).c_str(), notif.time);
 
@@ -126,8 +126,8 @@ bool notifcreate(EventBits_t event, void *arg)
                                 setScreen(nullptr, LV_SCR_LOAD_ANIM_NONE);
                             } }, LV_EVENT_GESTURE, nullptr);
 
-    // lv_obj_add_event_cb(notifscr, [](lv_event_t *e)
-    //                     { notifmillis = millis(); }, LV_EVENT_PRESSED, NULL);
+    lv_obj_add_event_cb(notifscr, [](lv_event_t *e)
+                        { notifmillis = millis(); }, LV_EVENT_PRESSED, nullptr);
 
     scrollbar = createCurvedScrollbar(notifscr);
 

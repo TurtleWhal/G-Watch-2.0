@@ -26,9 +26,10 @@ bool screenInit(EventBits_t event, void *arg)
     lv_obj_set_scroll_snap_x(scr, LV_SCROLL_SNAP_CENTER);
     lv_obj_set_scroll_snap_y(scr, LV_SCROLL_SNAP_CENTER);
     lv_obj_update_snap(scr, LV_ANIM_ON);
-
+    
     lv_obj_set_scrollbar_mode(scr, LV_SCROLLBAR_MODE_OFF);
-
+    
+    lv_obj_add_flag(scr, LV_OBJ_FLAG_SCROLL_ONE);
     lv_obj_remove_flag(scr, LV_OBJ_FLAG_SCROLL_ELASTIC);
 
     lv_obj_add_event_cb(scr, [](lv_event_t *e)

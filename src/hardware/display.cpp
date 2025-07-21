@@ -22,6 +22,7 @@ CST816S touch(IIC_SDA, IIC_SCL, TP_RST, TP_INT); // sda, scl, rst, irq
 
 uint16_t buf1[TFT_WIDTH * TFT_HEIGHT];
 // uint16_t buf2[TFT_WIDTH * TFT_HEIGHT];
+// uint16_t buf2[TFT_WIDTH * TFT_HEIGHT];
 // uint16_t buf1[TFT_WIDTH * TFT_HEIGHT];
 // uint16_t buf2[TFT_WIDTH * TFT_HEIGHT];
 // uint16_t *buf1;
@@ -92,14 +93,18 @@ void my_input_read(lv_indev_t *indev, lv_indev_data_t *data)
     data->point.y = last_y;
 }
 
-// void lvglHandle(void *params)
-// {
-//     for (;;)
-//     {
-//         Serial.println(millis());
-//         lv_task_handler();
-//     }
-// }
+void lvglHandle(void *params)
+{
+    vTaskDelay(pdMS_TO_TICKS(5000));
+
+    while (true)
+    {
+        // Serial.println(millis());
+        lv_timer_handler();
+
+        vTaskDelay(pdMS_TO_TICKS(1));
+    }
+}
 
 static uint32_t lvTick()
 {
@@ -210,8 +215,9 @@ bool displayInit(EventBits_t event, void *arg)
     display = lv_display_create(TFT_WIDTH, TFT_HEIGHT);
     lv_display_set_flush_cb(display, (lv_display_flush_cb_t)my_flush_cb);
 
+    lv_display_set_buffers(display, buf1, NULL, BUFSIZE, LV_DISPLAY_RENDER_MODE_FULL);
     // lv_display_set_buffers(display, buf1, NULL, BUFSIZE, LV_DISPLAY_RENDER_MODE_DIRECT);
-    lv_display_set_buffers(display, buf1, NULL, BUFSIZE, LV_DISPLAY_RENDER_MODE_PARTIAL);
+    // lv_display_set_buffers(display, buf1, NULL, BUFSIZE, LV_DISPLAY_RENDER_MODE_PARTIAL);
 
 #ifdef WAVESHARE_ESP32_LCD
     lv_display_set_rotation(display, LV_DISPLAY_ROTATION_90); // lvgl rotation is counter-clockwise
@@ -243,9 +249,9 @@ bool displayInit(EventBits_t event, void *arg)
     // xTaskCreatePinnedToCore(
     //     lvglHandle,                  /* Function to implement the task */
     //     "lvgl_handle",               /* Name of the task */
-    //     LV_MEM_SIZE,             /* Stack size in words */
+    //     4096,                        /* Stack size in words */
     //     NULL,                        /* Task input parameter */
-    //     0,                           /* Priority of the task */
+    //     1,                           /* Priority of the task */
     //     (TaskHandle_t *)&lvglHandle, /* Task handle. */
     //     0);                          /* Core where the task should run */
 

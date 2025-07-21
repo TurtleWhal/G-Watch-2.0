@@ -86,7 +86,7 @@ lv_obj_t *createSetting(Setting_t *data)
     case SETTING_TYPE_NUMBER:
     {
         lv_obj_t *number = lv_textarea_create(setting);
-        lv_obj_set_size(number, 80, 30);
+        lv_obj_set_size(number, 80, 25);
         lv_obj_align(number, LV_ALIGN_RIGHT_MID, 12, 0);
         lv_obj_set_style_radius(number, 15, LV_PART_MAIN);
         lv_obj_set_scroll_dir(number, LV_DIR_HOR);
@@ -121,6 +121,7 @@ lv_obj_t *createSetting(Setting_t *data)
         lv_obj_set_style_bg_color(setting, lv_color_make(255, 80, 80), LV_PART_MAIN | LV_STATE_CHECKED);
         lv_obj_add_flag(setting, LV_OBJ_FLAG_CHECKABLE);
         lv_obj_add_event_cb(setting, data->onchange, LV_EVENT_CLICKED, NULL);
+        // lv_obj_set_style_margin_all(setting, 0, LV_PART_MAIN);
 
         lv_obj_center(title);
         SET_SYMBOL_32(title, data->title.c_str());
@@ -136,7 +137,7 @@ lv_obj_t *createSetting(Setting_t *data)
         lv_obj_set_style_bg_opa(setting, LV_OPA_TRANSP, LV_PART_MAIN);
 
         lv_obj_set_flex_flow(setting, LV_FLEX_FLOW_ROW);
-        lv_obj_set_flex_align(setting, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_SPACE_BETWEEN);
+        lv_obj_set_flex_align(setting, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
         lv_obj_set_style_pad_all(setting, 0, LV_PART_MAIN);
         lv_obj_delete(title);

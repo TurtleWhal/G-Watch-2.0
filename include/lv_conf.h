@@ -48,7 +48,7 @@
 #if LV_USE_STDLIB_MALLOC == LV_STDLIB_BUILTIN
     /*Size of the memory available for `lv_malloc()` in bytes (>= 2kB)*/
     #ifdef WAVESHARE_ESP32_LCD
-        #define LV_MEM_SIZE (70 * 1024U)          /*[bytes]*/
+        #define LV_MEM_SIZE (100 * 1024U)          /*[bytes]*/
     #else
         #define LV_MEM_SIZE (64 * 1024U)          /*[bytes]*/
     #endif
@@ -87,7 +87,8 @@
  * - LV_OS_RTTHREAD
  * - LV_OS_WINDOWS
  * - LV_OS_CUSTOM */
-#define LV_USE_OS   LV_OS_FREERTOS
+// #define LV_USE_OS   LV_OS_FREERTOS
+#define LV_USE_OS LV_OS_NONE
 
 #if LV_USE_OS == LV_OS_CUSTOM
     #define LV_OS_CUSTOM_INCLUDE <stdint.h>
@@ -116,7 +117,8 @@
     /* Set the number of draw unit.
      * > 1 requires an operating system enabled in `LV_USE_OS`
      * > 1 means multiply threads will render the screen in parallel */
-    #define LV_DRAW_SW_DRAW_UNIT_CNT    2
+    // #define LV_DRAW_SW_DRAW_UNIT_CNT    2
+    #define LV_DRAW_SW_DRAW_UNIT_CNT    1
 
     /* Use Arm-2D to accelerate the sw render */
     #define LV_USE_DRAW_ARM2D_SYNC      0
@@ -768,7 +770,7 @@
     /*1: Show the used memory and the memory fragmentation
      * Requires `LV_USE_STDLIB_MALLOC = LV_STDLIB_BUILTIN`
      * Requires `LV_USE_SYSMON = 1`*/
-    #define LV_USE_MEM_MONITOR 1
+    #define LV_USE_MEM_MONITOR 0
     #if LV_USE_MEM_MONITOR
         #define LV_USE_MEM_MONITOR_POS LV_ALIGN_CENTER
     #endif

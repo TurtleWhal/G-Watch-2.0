@@ -26,7 +26,7 @@ bool charging = false;
 
 // movingAvg voltFilter(100);
 // movingAvg percentFilter(100);
-movingAvg voltFilter(1);
+movingAvg voltFilter(10);
 movingAvg percentFilter(10);
 
 Preferences storage;

@@ -49,6 +49,11 @@ bool motorInit(EventBits_t event, void *arg)
 
 void motorVibrate(uint32_t cnt, uint32_t interval)
 {
+    digitalWrite(MOTOR_PIN1, HIGH);
+#ifdef WAVESHARE_ESP32_LCD
+    digitalWrite(MOTOR_PIN2, HIGH);
+#endif
+
     count = cnt * 2;
     interval_ms = interval;
     vibrating = true;

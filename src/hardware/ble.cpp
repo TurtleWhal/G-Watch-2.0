@@ -117,13 +117,16 @@ void pairBT(uint32_t passkey)
 
         setScreen(pairscr, LV_SCR_LOAD_ANIM_FADE_IN);
         motorVibrate(HAPTIC_NOTIFICATION);
-        powermgmTickle();
+        
+        powermgmSleepDisable();
     }
     else
     {
         Log.verboseln("Paired BLE");
 
         setScreen(nullptr, LV_SCR_LOAD_ANIM_FADE_OUT, 0, true);
+
+        powermgmSleepEnable();
     }
 }
 

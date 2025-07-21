@@ -32,12 +32,24 @@ uint8_t prevBacklight = 100;
 bool sleeping = false;
 bool tired = false;
 
+bool sleepEnabled = true;
+
 void setSpeed(int mhz)
 {
     pm_config.max_freq_mhz = mhz;
     pm_config.min_freq_mhz = 80;
     pm_config.light_sleep_enable = true;
     esp_pm_configure(&pm_config);
+}
+
+void powermgmSleepDisable()
+{
+    powermgmTickle();
+    sleepEnabled = false;
+}
+
+void powermgmSleepEnable() {
+    sleepEnabled = true;
 }
 
 void powermgmSleep()
@@ -86,7 +98,7 @@ void powermgmLoop()
     {
         if (!tired)
         {
-            if (millis() - sleepTimer > SLEEP_TIMER_MS * TIRED_TIMER_RATIO)
+            if (millis() - sleepTimer > SLEEP_TIMER_MS * TIRED_TIMER_RATIO && sleepEnabled)
             {
                 setSpeed(80);
                 tired = true;
@@ -94,7 +106,7 @@ void powermgmLoop()
                 setBacklightGradual(prevBacklight * TIRED_BL_RATIO, 500);
             }
         }
-        else if (sleepTimer + SLEEP_TIMER_MS < millis())
+        else if (sleepTimer + SLEEP_TIMER_MS < millis() && sleepEnabled)
         {
             powermgmSleep();
         }

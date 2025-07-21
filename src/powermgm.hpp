@@ -20,3 +20,6 @@ bool powermgmSendEvent(EventBits_t);
 void powermgmSleep();
 void powermgmWakeup();
 void powermgmTickle();
+
+void powermgmSleepDisable();
+void powermgmSleepEnable();
